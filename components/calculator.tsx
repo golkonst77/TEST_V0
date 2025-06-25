@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +10,20 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { CalculatorIcon, ArrowRight } from "lucide-react"
 import { useContactForm } from "@/hooks/use-contact-form"
 
+// Добавить после импортов
+interface CalculatorConfig {
+  services: {
+    [key: string]: {
+      price: number
+      description: string
+    }
+  }
+  multipliers: {
+    taxSystems: { [key: string]: number }
+    employees: { [key: string]: number }
+  }
+}
+
 interface CalculatorState {
   companyType: string
   taxSystem: string
@@ -18,29 +32,50 @@ interface CalculatorState {
   services: string[]
 }
 
-const servicePrices = {
-  accounting: 3000,
-  payroll: 1500,
-  legal: 2000,
-  registration: 5000,
-}
-
-const taxSystemMultipliers = {
-  usn: 1,
-  osn: 1.5,
-  envd: 0.8,
-  patent: 0.7,
-}
-
-const employeeMultipliers = {
-  "0": 1,
-  "1-5": 1.2,
-  "6-15": 1.5,
-  "16-50": 2,
-  "50+": 3,
-}
-
+// Добавить в начало компонента Calculator
 export function Calculator() {
+  const [config, setConfig] = useState<CalculatorConfig | null>(null)
+  const [configLoading, setConfigLoading] = useState(true)
+
+  useEffect(() => {
+    fetchCalculatorConfig()
+  }, [])
+
+  const fetchCalculatorConfig = async () => {
+    try {
+      const response = await fetch("/api/calculator/config")
+      const configData = await response.json()
+      setConfig(configData)
+    } catch (error) {
+      console.error("Error fetching calculator config:", error)
+    } finally {
+      setConfigLoading(false)
+    }
+  }
+
+  // Заменить константы servicePrices, taxSystemMultipliers, employeeMultipliers на:
+  const servicePrices = config?.services || {
+    accounting: { price: 3000, description: "Бухгалтерский учет" },
+    payroll: { price: 1500, description: "Зарплата и кадры" },
+    legal: { price: 2000, description: "Юридическое сопровождение" },
+    registration: { price: 5000, description: "Регистрация фирм" },
+  }
+
+  const taxSystemMultipliers = config?.multipliers.taxSystems || {
+    usn: 1,
+    osn: 1.5,
+    envd: 0.8,
+    patent: 0.7,
+  }
+
+  const employeeMultipliers = config?.multipliers.employees || {
+    "0": 1,
+    "1-5": 1.2,
+    "6-15": 1.5,
+    "16-50": 2,
+    "50+": 3,
+  }
+
   const { openContactForm } = useContactForm()
   const [state, setState] = useState<CalculatorState>({
     companyType: "",
@@ -50,23 +85,27 @@ export function Calculator() {
     services: [],
   })
 
+  // Обновить функцию calculatePrice:
   const calculatePrice = () => {
     let basePrice = 0
 
     // Add service prices
     state.services.forEach((service) => {
-      basePrice += servicePrices[service as keyof typeof servicePrices] || 0
+      const serviceConfig = servicePrices[service]
+      if (serviceConfig) {
+        basePrice += serviceConfig.price
+      }
     })
 
     // Apply tax system multiplier
-    if (state.taxSystem && taxSystemMultipliers[state.taxSystem as keyof typeof taxSystemMultipliers]) {
-      basePrice *= taxSystemMultipliers[state.taxSystem as keyof typeof taxSystemMultipliers]
+    if (state.taxSystem && taxSystemMultipliers[state.taxSystem]) {
+      basePrice *= taxSystemMultipliers[state.taxSystem]
     }
 
     // Apply employee multiplier
     const employeeRange = getEmployeeRange(state.employees)
-    if (employeeMultipliers[employeeRange as keyof typeof employeeMultipliers]) {
-      basePrice *= employeeMultipliers[employeeRange as keyof typeof employeeMultipliers]
+    if (employeeMultipliers[employeeRange]) {
+      basePrice *= employeeMultipliers[employeeRange]
     }
 
     return Math.round(basePrice)
@@ -88,6 +127,20 @@ export function Calculator() {
   }
 
   const totalPrice = calculatePrice()
+
+  // Добавить проверку загрузки в начало return:
+  if (configLoading) {
+    return (
+      <section className="py-20 bg-gray-50">
+        <div className="container">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Загрузка калькулятора...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-20 bg-gray-50">
@@ -180,7 +233,7 @@ export function Calculator() {
                       onCheckedChange={(checked) => handleServiceChange("accounting", checked as boolean)}
                     />
                     <Label htmlFor="accounting" className="text-sm font-normal">
-                      Бухгалтерский учет (от {servicePrices.accounting} руб/мес)
+                      Бухгалтерский учет (от {servicePrices.accounting.price} руб/мес)
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -190,7 +243,7 @@ export function Calculator() {
                       onCheckedChange={(checked) => handleServiceChange("payroll", checked as boolean)}
                     />
                     <Label htmlFor="payroll" className="text-sm font-normal">
-                      Зарплата и кадры (от {servicePrices.payroll} руб/мес)
+                      Зарплата и кадры (от {servicePrices.payroll.price} руб/мес)
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -200,7 +253,7 @@ export function Calculator() {
                       onCheckedChange={(checked) => handleServiceChange("legal", checked as boolean)}
                     />
                     <Label htmlFor="legal" className="text-sm font-normal">
-                      Юридическое сопровождение (от {servicePrices.legal} руб/мес)
+                      Юридическое сопровождение (от {servicePrices.legal.price} руб/мес)
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -210,7 +263,7 @@ export function Calculator() {
                       onCheckedChange={(checked) => handleServiceChange("registration", checked as boolean)}
                     />
                     <Label htmlFor="registration" className="text-sm font-normal">
-                      Регистрация фирм (от {servicePrices.registration} руб)
+                      Регистрация фирм (от {servicePrices.registration.price} руб)
                     </Label>
                   </div>
                 </div>

@@ -1,80 +1,55 @@
--- Создание таблиц для админки
+-- Создание таблиц для админки калькулятора
 
--- Таблица для настроек калькулятора
-CREATE TABLE IF NOT EXISTS calculator_settings (
+-- Таблица услуг
+CREATE TABLE IF NOT EXISTS calculator_services (
     id SERIAL PRIMARY KEY,
-    service_name VARCHAR(100) NOT NULL,
-    base_price INTEGER NOT NULL,
-    description TEXT,
+    service_name VARCHAR(50) UNIQUE NOT NULL,
+    base_price INTEGER NOT NULL DEFAULT 0,
+    description VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Таблица для множителей калькулятора
+-- Таблица множителей
 CREATE TABLE IF NOT EXISTS calculator_multipliers (
     id SERIAL PRIMARY KEY,
-    type VARCHAR(50) NOT NULL, -- 'tax_system' или 'employees'
-    key VARCHAR(50) NOT NULL,
-    value DECIMAL(3,2) NOT NULL,
+    multiplier_type VARCHAR(20) NOT NULL, -- 'tax_system' или 'employees'
+    key_name VARCHAR(20) NOT NULL,
+    value DECIMAL(3,2) NOT NULL DEFAULT 1.0,
     label VARCHAR(100) NOT NULL,
     is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Таблица для тарифных планов
-CREATE TABLE IF NOT EXISTS pricing_plans (
-    id SERIAL PRIMARY KEY,
-    plan_type VARCHAR(20) NOT NULL, -- 'ip' или 'ooo'
-    name VARCHAR(100) NOT NULL,
-    price INTEGER NOT NULL,
-    period VARCHAR(20) DEFAULT 'мес',
-    description TEXT,
-    is_popular BOOLEAN DEFAULT false,
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Таблица для функций тарифных планов
-CREATE TABLE IF NOT EXISTS pricing_features (
-    id SERIAL PRIMARY KEY,
-    plan_id INTEGER REFERENCES pricing_plans(id) ON DELETE CASCADE,
-    feature_text TEXT NOT NULL,
     sort_order INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Таблица для дополнительных услуг
-CREATE TABLE IF NOT EXISTS additional_services (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    price INTEGER NOT NULL,
-    description TEXT,
-    is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Вставка начальных данных для калькулятора
-INSERT INTO calculator_settings (service_name, base_price, description) VALUES
-('accounting', 3000, 'Бухгалтерский учет'),
-('payroll', 1500, 'Зарплата и кадры'),
-('legal', 2000, 'Юридическое сопровождение'),
-('registration', 5000, 'Регистрация фирм');
+-- Вставка начальных данных для услуг
+INSERT INTO calculator_services (service_name, base_price, description, is_active) VALUES
+('accounting', 3000, 'Бухгалтерский учет', true),
+('payroll', 1500, 'Зарплата и кадры', true),
+('legal', 2000, 'Юридическое сопровождение', true),
+('registration', 5000, 'Регистрация фирм', true)
+ON CONFLICT (service_name) DO NOTHING;
 
--- Вставка множителей для налоговых систем
-INSERT INTO calculator_multipliers (type, key, value, label) VALUES
-('tax_system', 'usn', 1.0, 'УСН'),
-('tax_system', 'osn', 1.5, 'ОСН'),
-('tax_system', 'envd', 0.8, 'ЕНВД'),
-('tax_system', 'patent', 0.7, 'Патент');
+-- Вставка начальных данных для множителей налоговых систем
+INSERT INTO calculator_multipliers (multiplier_type, key_name, value, label, is_active, sort_order) VALUES
+('tax_system', 'usn', 1.0, 'УСН', true, 1),
+('tax_system', 'osn', 1.5, 'ОСН', true, 2),
+('tax_system', 'envd', 0.8, 'ЕНВД', true, 3),
+('tax_system', 'patent', 0.7, 'Патент', true, 4)
+ON CONFLICT DO NOTHING;
 
--- Вставка множителей для количества сотрудников
-INSERT INTO calculator_multipliers (type, key, value, label) VALUES
-('employees', '0', 1.0, '0 сотрудников'),
-('employees', '1-5', 1.2, '1-5 сотрудников'),
-('employees', '6-15', 1.5, '6-15 сотрудников'),
-('employees', '16-50', 2.0, '16-50 сотрудников'),
-('employees', '50+', 3.0, '50+ сотрудников');
+-- Вставка начальных данных для множителей по сотрудникам
+INSERT INTO calculator_multipliers (multiplier_type, key_name, value, label, is_active, sort_order) VALUES
+('employees', '0', 1.0, '0 сотрудников', true, 1),
+('employees', '1-5', 1.2, '1-5 сотрудников', true, 2),
+('employees', '6-15', 1.5, '6-15 сотрудников', true, 3),
+('employees', '16-50', 2.0, '16-50 сотрудников', true, 4),
+('employees', '50+', 3.0, '50+ сотрудников', true, 5)
+ON CONFLICT DO NOTHING;
+
+-- Создание индексов для оптимизации
+CREATE INDEX IF NOT EXISTS idx_calculator_services_active ON calculator_services(is_active);
+CREATE INDEX IF NOT EXISTS idx_calculator_multipliers_type ON calculator_multipliers(multiplier_type);
+CREATE INDEX IF NOT EXISTS idx_calculator_multipliers_active ON calculator_multipliers(is_active);
