@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 
-// 👇 Простейший источник данных.
-//  В реальном проекте здесь можно читать из БД или Vercel Blob
+// Обновленная конфигурация с отступами
 const defaultHeroConfig = {
   badge: { text: "Защищаем ваш бизнес от налоговых рисков", show: true },
   title: { text: "Ваш личный", highlightText: "щит" },
@@ -35,10 +34,21 @@ const defaultHeroConfig = {
     },
   ],
   background: { image: "/hero-bg.jpg", overlay: 30 },
-  layout: { alignment: "left", maxWidth: "max-w-2xl" },
+  layout: {
+    alignment: "left",
+    maxWidth: "max-w-2xl",
+    marginLeft: 80,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingX: 20,
+  },
 }
 
 // GET /api/homepage
 export async function GET() {
-  return NextResponse.json({ hero: defaultHeroConfig })
+  return NextResponse.json({
+    status: "ok",
+    message: "Homepage API working",
+    hero: defaultHeroConfig,
+  })
 }

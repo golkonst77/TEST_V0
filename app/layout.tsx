@@ -5,6 +5,7 @@ import "./globals.css"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ContactForm } from "@/components/contact-form"
+import { FloatingAdminButton } from "@/components/floating-admin-button"
 import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
   description:
     "Ваш личный щит от налоговой. Бухгалтерские услуги, зарплата и кадры, юридическое сопровождение для ИП и ООО.",
   keywords: "бухгалтерские услуги, Калуга, налоги, отчетность, ИП, ООО",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -29,6 +30,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <ContactForm />
+        <FloatingAdminButton />
         <Toaster />
       </body>
     </html>
