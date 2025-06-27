@@ -23,24 +23,35 @@ const colorMap = {
 export function Hero() {
   const { openContactForm } = useContactForm()
   const [config, setConfig] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchConfig()
+    // Обновляем настройки каждые 10 секунд для отражения изменений
+    const interval = setInterval(fetchConfig, 10000)
+    return () => clearInterval(interval)
   }, [])
 
   const fetchConfig = async () => {
     try {
-      const response = await fetch("/api/admin/homepage")
+      console.log("Hero: Загрузка настроек...")
+      const response = await fetch("/api/homepage")
+
       if (response.ok) {
         const data = await response.json()
+        console.log("Hero: Настройки загружены:", data.hero)
         setConfig(data.hero)
+      } else {
+        console.error("Hero: Ошибка загрузки настроек:", response.status)
       }
     } catch (error) {
-      console.error("Ошибка загрузки конфигурации:", error)
+      console.error("Hero: Ошибка загрузки конфигурации:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
-  // Значения по умолчанию, если конфигурация не загружена
+  // Значения по умолчанию
   const defaultConfig = {
     badge: { text: "Защищаем ваш бизнес от налоговых рисков", show: true },
     title: { text: "Ваш личный", highlightText: "щит" },
@@ -78,6 +89,17 @@ export function Hero() {
   }
 
   const activeConfig = config || defaultConfig
+
+  if (loading) {
+    return (
+      <section className="relative overflow-hidden min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p>Загрузка...</p>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="relative overflow-hidden min-h-screen flex items-center">

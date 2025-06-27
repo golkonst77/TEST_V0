@@ -9,11 +9,9 @@ import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { useToast } from "@/hooks/use-toast"
 
 export default function AdminSettingsPage() {
   const { isAuthenticated, isLoading } = useAdminAuth()
-  const { toast } = useToast()
   const [settings, setSettings] = useState({
     siteName: "",
     siteDescription: "",
@@ -27,6 +25,7 @@ export default function AdminSettingsPage() {
   })
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [message, setMessage] = useState("")
 
   // Загрузка настроек при открытии страницы
   useEffect(() => {
@@ -37,24 +36,23 @@ export default function AdminSettingsPage() {
 
   const fetchSettings = async () => {
     try {
+      console.log("Fetching settings...")
       const response = await fetch("/api/admin/settings")
+      console.log("Response status:", response.status)
+
       if (response.ok) {
         const data = await response.json()
+        console.log("Loaded settings:", data)
         setSettings(data)
+        setMessage("Настройки загружены")
       } else {
-        toast({
-          title: "Ошибка",
-          description: "Не удалось загрузить настройки",
-          variant: "destructive",
-        })
+        const errorData = await response.json()
+        console.error("Error response:", errorData)
+        setMessage("Ошибка загрузки настроек")
       }
     } catch (error) {
       console.error("Error fetching settings:", error)
-      toast({
-        title: "Ошибка",
-        description: "Ошибка подключения к серверу",
-        variant: "destructive",
-      })
+      setMessage("Ошибка подключения к серверу")
     } finally {
       setLoading(false)
     }
@@ -62,7 +60,11 @@ export default function AdminSettingsPage() {
 
   const handleSave = async () => {
     setSaving(true)
+    setMessage("")
+
     try {
+      console.log("Saving settings:", settings)
+
       const response = await fetch("/api/admin/settings", {
         method: "PUT",
         headers: {
@@ -71,27 +73,22 @@ export default function AdminSettingsPage() {
         body: JSON.stringify(settings),
       })
 
+      console.log("Save response status:", response.status)
       const data = await response.json()
+      console.log("Save response data:", data)
 
       if (response.ok) {
-        toast({
-          title: "Успешно!",
-          description: data.message || "Настройки сохранены",
-        })
+        setMessage("✅ " + (data.message || "Настройки сохранены"))
+        // Обновляем локальные настройки
+        if (data.settings) {
+          setSettings(data.settings)
+        }
       } else {
-        toast({
-          title: "Ошибка",
-          description: data.error || "Не удалось сохранить настройки",
-          variant: "destructive",
-        })
+        setMessage("❌ " + (data.error || "Не удалось сохранить настройки"))
       }
     } catch (error) {
       console.error("Error saving settings:", error)
-      toast({
-        title: "Ошибка",
-        description: "Ошибка подключения к серверу",
-        variant: "destructive",
-      })
+      setMessage("❌ Ошибка подключения к серверу")
     } finally {
       setSaving(false)
     }
@@ -136,6 +133,20 @@ export default function AdminSettingsPage() {
         </Button>
       </div>
 
+      {message && (
+        <div
+          className={`mb-4 p-4 rounded-lg ${
+            message.includes("✅")
+              ? "bg-green-100 text-green-800"
+              : message.includes("❌")
+                ? "bg-red-100 text-red-800"
+                : "bg-blue-100 text-blue-800"
+          }`}
+        >
+          {message}
+        </div>
+      )}
+
       <div className="space-y-6">
         <Card>
           <CardHeader>
@@ -171,11 +182,14 @@ export default function AdminSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="phone">Телефон *</Label>
+              <Label htmlFor="phone">Телефон * (текущий: {settings.phone})</Label>
               <Input
                 id="phone"
                 value={settings.phone}
-                onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
+                onChange={(e) => {
+                  console.log("Phone changed to:", e.target.value)
+                  setSettings({ ...settings, phone: e.target.value })
+                }}
                 placeholder="+7 953 330-17-77"
               />
             </div>
@@ -256,6 +270,11 @@ export default function AdminSettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <h3 className="font-semibold mb-2">Отладочная информация:</h3>
+          <pre className="text-xs bg-white p-2 rounded overflow-auto">{JSON.stringify(settings, null, 2)}</pre>
+        </div>
       </div>
     </div>
   )

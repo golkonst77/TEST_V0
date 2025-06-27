@@ -24,17 +24,30 @@ export const Header = () => {
 
   useEffect(() => {
     fetchSettings()
+
+    // Обновляем настройки каждые 5 секунд для демонстрации
+    const interval = setInterval(fetchSettings, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   const fetchSettings = async () => {
     try {
+      console.log("Header: Fetching settings...")
       const response = await fetch("/api/settings")
       if (response.ok) {
         const data = await response.json()
-        setSettings(data)
+        console.log("Header: Loaded settings:", data)
+        setSettings({
+          siteName: data.siteName,
+          phone: data.phone,
+          telegram: data.telegram,
+          vk: data.vk,
+        })
+      } else {
+        console.error("Header: Failed to fetch settings")
       }
     } catch (error) {
-      console.error("Error fetching settings:", error)
+      console.error("Header: Error fetching settings:", error)
     }
   }
 

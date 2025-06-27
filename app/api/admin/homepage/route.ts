@@ -1,73 +1,40 @@
 import { type NextRequest, NextResponse } from "next/server"
-
-// Временное хранилище настроек (в продакшене использовать базу данных)
-let heroConfig = {
-  badge: { text: "Защищаем ваш бизнес от налоговых рисков", show: true },
-  title: { text: "Ваш личный", highlightText: "щит" },
-  description:
-    "Пока вы строите свою империю, мы защищаем её тылы от проверок, штрафов и бумажной волокиты. Спокойно занимайтесь завоеванием мира.",
-  button: { text: "Хочу на круиз без штрафов", show: true },
-  features: [
-    {
-      id: "expensive",
-      title: "Дорого",
-      description: "Штрафы и пени съедают прибыль",
-      icon: "DollarSign",
-      color: "red",
-      show: true,
-    },
-    {
-      id: "scary",
-      title: "Страшно",
-      description: "Проверки и бумажная волокита",
-      icon: "AlertTriangle",
-      color: "orange",
-      show: true,
-    },
-    {
-      id: "perfect",
-      title: "Идеально",
-      description: "Спокойствие и рост бизнеса",
-      icon: "CheckCircle",
-      color: "green",
-      show: true,
-    },
-  ],
-  background: { image: "/hero-bg.jpg", overlay: 30 },
-  layout: {
-    alignment: "left",
-    maxWidth: "max-w-2xl",
-    marginLeft: 80,
-    marginTop: 0,
-    marginBottom: 0,
-    paddingX: 20,
-  },
-}
+import { getHeroConfig, updateHeroConfig } from "@/lib/homepage-store"
 
 export async function GET() {
-  return NextResponse.json({
-    success: true,
-    hero: heroConfig,
-  })
+  try {
+    const config = getHeroConfig()
+    console.log("API: Отправка настроек главной страницы")
+
+    return NextResponse.json({
+      success: true,
+      hero: config,
+    })
+  } catch (error) {
+    console.error("Ошибка получения настроек главной страницы:", error)
+    return NextResponse.json({ success: false, message: "Ошибка сервера" }, { status: 500 })
+  }
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log("API: Получен запрос на обновление:", body)
 
     if (body.hero) {
-      heroConfig = { ...heroConfig, ...body.hero }
+      const updatedConfig = updateHeroConfig(body.hero)
+      console.log("API: Настройки обновлены успешно")
 
       return NextResponse.json({
         success: true,
-        message: "Настройки сохранены",
-        hero: heroConfig,
+        message: "Настройки главной страницы сохранены",
+        hero: updatedConfig,
       })
     }
 
     return NextResponse.json({ success: false, message: "Неверные данные" }, { status: 400 })
   } catch (error) {
-    console.error("Ошибка сохранения настроек:", error)
+    console.error("Ошибка сохранения настроек главной страницы:", error)
     return NextResponse.json({ success: false, message: "Ошибка сервера" }, { status: 500 })
   }
 }
