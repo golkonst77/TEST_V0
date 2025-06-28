@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer"
 import { ContactForm } from "@/components/contact-form"
 import { FloatingAdminButton } from "@/components/floating-admin-button"
 import { Toaster } from "@/components/ui/toaster"
+import { YandexMetrica } from "@/components/yandex-metrica"
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
@@ -23,9 +24,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const ymId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || "103085667"
+  
   return (
     <html lang="ru">
       <body className={inter.className}>
+        <YandexMetrica ymId={ymId} />
         <Header />
         {children}
         <Footer />
