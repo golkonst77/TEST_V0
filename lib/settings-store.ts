@@ -1,3 +1,5 @@
+import { createClient } from "@supabase/supabase-js"
+
 // Общее хранилище настроек для всего приложения
 export interface SiteSettings {
   siteName: string
@@ -9,27 +11,33 @@ export interface SiteSettings {
   vk: string
   maintenanceMode: boolean
   analyticsEnabled: boolean
+  quiz_mode?: "custom" | "external"
+  quiz_url?: string
 }
 
-// Глобальное хранилище настроек
-let globalSettings: SiteSettings = {
-  siteName: "ПростоБюро",
-  siteDescription: "Профессиональные бухгалтерские услуги",
-  phone: "+7 953 330-17-77",
-  email: "info@prostoburo.ru",
-  address: "г. Москва, ул. Примерная, д. 1",
-  telegram: "https://t.me/prostoburo",
-  vk: "https://m.vk.com/buh_urist?from=groups",
-  maintenanceMode: false,
-  analyticsEnabled: true,
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
+
+export async function getSettings(): Promise<SiteSettings | null> {
+  const { data, error } = await supabase
+    .from("settings")
+    .select("*")
+    .eq("id", 1)
+    .single();
+  if (error) {
+    console.error("Error fetching settings from Supabase:", error);
+    return null;
+  }
+  return data as SiteSettings;
 }
 
-export function getSettings(): SiteSettings {
-  return { ...globalSettings }
-}
-
-export function updateSettings(newSettings: Partial<SiteSettings>): SiteSettings {
-  globalSettings = { ...globalSettings, ...newSettings }
-  console.log("Settings updated in store:", globalSettings)
-  return { ...globalSettings }
+export async function updateSettings(newSettings: Partial<SiteSettings>): Promise<SiteSettings | null> {
+  // Обновляем строку с id=1
+  const { data, error } = await supabase
+    .from("settings")
+    .upsert([{ id: 1, ...newSettings }], { onConflict: "id" });
+  if (error) {
+    console.error("Error updating settings in Supabase:", error);
+    return null;
+  }
+  return data?.[0] as SiteSettings;
 }

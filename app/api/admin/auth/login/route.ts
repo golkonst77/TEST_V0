@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-const ADMIN_CREDENTIALS = {
+export const ADMIN_CREDENTIALS = {
   username: "admin",
   password: "prostoburo2024",
 }

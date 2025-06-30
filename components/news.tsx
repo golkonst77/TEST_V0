@@ -62,7 +62,7 @@ export function News() {
               </CardHeader>
               <CardContent>
                 <Button asChild variant="ghost" className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800">
-                  <Link href={article.href}>Читать далее →</Link>
+                  <Link href={article.href || "#"}>Читать далее →</Link>
                 </Button>
               </CardContent>
             </Card>

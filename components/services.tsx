@@ -72,7 +72,7 @@ export function Services() {
                   variant="outline"
                   className="w-full group-hover:bg-blue-600 group-hover:text-white transition-colors"
                 >
-                  <Link href={service.href}>
+                  <Link href={service.href || "#"}>
                     Подробнее
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>

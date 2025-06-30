@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
+import classNames from "classnames"
 
 export default function AdminSettingsPage() {
   const { isAuthenticated, isLoading } = useAdminAuth()
@@ -22,10 +23,13 @@ export default function AdminSettingsPage() {
     vk: "",
     maintenanceMode: false,
     analyticsEnabled: true,
+    quiz_mode: "custom",
+    quiz_url: "",
   })
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState("")
+  const [fieldErrors, setFieldErrors] = useState<{[k:string]:string}>({})
 
   // Загрузка настроек при открытии страницы
   useEffect(() => {
@@ -43,7 +47,19 @@ export default function AdminSettingsPage() {
       if (response.ok) {
         const data = await response.json()
         console.log("Loaded settings:", data)
-        setSettings(data)
+        setSettings({
+          siteName: data.sitename || "",
+          siteDescription: data.sitedescription || "",
+          phone: data.phone || "",
+          email: data.email || "",
+          address: data.address || "",
+          telegram: data.telegram || "",
+          vk: data.vk || "",
+          maintenanceMode: data.maintenancemode ?? false,
+          analyticsEnabled: data.analyticsenabled ?? true,
+          quiz_mode: data.quiz_mode || "custom",
+          quiz_url: data.quiz_url || "",
+        })
         setMessage("Настройки загружены")
       } else {
         const errorData = await response.json()
@@ -61,7 +77,18 @@ export default function AdminSettingsPage() {
   const handleSave = async () => {
     setSaving(true)
     setMessage("")
-
+    setFieldErrors({})
+    // Валидация обязательных полей
+    const errors: {[k:string]:string} = {}
+    if (!settings.siteName?.trim()) errors.siteName = "Заполните название сайта"
+    if (!settings.phone?.trim()) errors.phone = "Заполните телефон"
+    if (!settings.email?.trim()) errors.email = "Заполните email"
+    if (Object.keys(errors).length) {
+      setFieldErrors(errors)
+      setMessage("❌ Заполните обязательные поля: " + Object.values(errors).join(", "))
+      setSaving(false)
+      return
+    }
     try {
       console.log("Saving settings:", settings)
 
@@ -161,7 +188,9 @@ export default function AdminSettingsPage() {
                 value={settings.siteName}
                 onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
                 placeholder="ПростоБюро"
+                className={classNames(fieldErrors.siteName && "border-red-500")}
               />
+              {fieldErrors.siteName && <div className="text-xs text-red-500 mt-1">{fieldErrors.siteName}</div>}
             </div>
             <div>
               <Label htmlFor="siteDescription">Описание сайта</Label>
@@ -191,7 +220,9 @@ export default function AdminSettingsPage() {
                   setSettings({ ...settings, phone: e.target.value })
                 }}
                 placeholder="+7 953 330-17-77"
+                className={classNames(fieldErrors.phone && "border-red-500")}
               />
+              {fieldErrors.phone && <div className="text-xs text-red-500 mt-1">{fieldErrors.phone}</div>}
             </div>
             <div>
               <Label htmlFor="email">Email *</Label>
@@ -201,7 +232,9 @@ export default function AdminSettingsPage() {
                 value={settings.email}
                 onChange={(e) => setSettings({ ...settings, email: e.target.value })}
                 placeholder="info@prostoburo.ru"
+                className={classNames(fieldErrors.email && "border-red-500")}
               />
+              {fieldErrors.email && <div className="text-xs text-red-500 mt-1">{fieldErrors.email}</div>}
             </div>
             <div>
               <Label htmlFor="address">Адрес</Label>
@@ -268,6 +301,52 @@ export default function AdminSettingsPage() {
                 onCheckedChange={(checked) => setSettings({ ...settings, analyticsEnabled: checked })}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Квиз на главной</CardTitle>
+            <CardDescription>Управляйте поведением кнопки "Хочу на круиз"</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label>Режим кнопки</Label>
+              <div className="flex gap-4 mt-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="quiz_mode"
+                    value="custom"
+                    checked={settings.quiz_mode === "custom"}
+                    onChange={() => setSettings({ ...settings, quiz_mode: "custom" })}
+                  />
+                  Наш квиз
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="quiz_mode"
+                    value="external"
+                    checked={settings.quiz_mode === "external"}
+                    onChange={() => setSettings({ ...settings, quiz_mode: "external" })}
+                  />
+                  Внешний квиз/Marquiz
+                </label>
+              </div>
+            </div>
+            {settings.quiz_mode === "external" && (
+              <div>
+                <Label htmlFor="quiz_url">Ссылка или hash для внешнего квиза</Label>
+                <Input
+                  id="quiz_url"
+                  value={settings.quiz_url || ""}
+                  onChange={e => setSettings({ ...settings, quiz_url: e.target.value })}
+                  placeholder="#popup:marquiz_685a59bddc273b0019e372cd или https://..."
+                />
+                <div className="text-xs text-gray-500 mt-1">Для Marquiz: #popup:marquiz_...<br/>Для обычной ссылки: https://...</div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

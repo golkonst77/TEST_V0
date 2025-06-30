@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Lock } from "lucide-react"
+import { ADMIN_CREDENTIALS } from "@/app/api/admin/auth/login/route"
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("")
@@ -125,10 +126,10 @@ export default function AdminLoginPage() {
               <p className="text-sm text-gray-600 font-medium mb-2">Тестовые данные для входа:</p>
               <div className="text-sm text-gray-500 space-y-1">
                 <p>
-                  <strong>Логин:</strong> admin
+                  <strong>Логин:</strong> {ADMIN_CREDENTIALS.username}
                 </p>
                 <p>
-                  <strong>Пароль:</strong> prostoburo2024
+                  <strong>Пароль:</strong> {ADMIN_CREDENTIALS.password}
                 </p>
               </div>
             </div>

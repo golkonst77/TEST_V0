@@ -3,7 +3,7 @@ import { getSettings, updateSettings } from "@/lib/settings-store"
 
 export async function GET() {
   try {
-    const settings = getSettings()
+    const settings = await getSettings()
     console.log("GET settings:", settings)
     return NextResponse.json(settings)
   } catch (error) {
@@ -22,8 +22,24 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Заполните все обязательные поля" }, { status: 400 })
     }
 
+    // Маппинг полей для Supabase
+    const supabaseBody = {
+      id: 1,
+      sitename: body.siteName,
+      sitedescription: body.siteDescription,
+      phone: body.phone,
+      email: body.email,
+      address: body.address,
+      telegram: body.telegram,
+      vk: body.vk,
+      maintenancemode: body.maintenanceMode,
+      analyticsenabled: body.analyticsEnabled,
+      quiz_mode: body.quiz_mode,
+      quiz_url: body.quiz_url,
+    }
+
     // Обновляем настройки
-    const updatedSettings = updateSettings(body)
+    const updatedSettings = await updateSettings(supabaseBody)
     console.log("Settings saved successfully:", updatedSettings)
 
     return NextResponse.json({
