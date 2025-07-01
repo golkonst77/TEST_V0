@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { writeFile, readFile } from 'fs/promises'
+import { join } from 'path'
 
 // Имитация базы данных страниц
 const pages = [
@@ -12,71 +14,94 @@ const pages = [
   { id: 8, title: "Блог", slug: "/blog", status: "published", updated: "2024-01-16", type: "page", content: "" },
 ]
 
+// Функция для обновления middleware с новыми статусами
+async function updateMiddlewareStatuses() {
+  try {
+    const middlewarePath = join(process.cwd(), 'middleware.ts')
+    
+    // Создаем объект статусов из массива страниц
+    const statusesObject = pages.reduce((acc, page) => {
+      acc[page.slug] = page.status as 'published' | 'draft'
+      return acc
+    }, {} as Record<string, 'published' | 'draft'>)
+    
+    // Читаем текущий middleware
+    let middlewareContent = await readFile(middlewarePath, 'utf-8')
+    
+    // Заменяем объект pageStatuses
+    const statusesString = JSON.stringify(statusesObject, null, 2)
+      .split('\n')
+      .map((line, index) => index === 0 ? line : `  ${line}`)
+      .join('\n')
+    
+    middlewareContent = middlewareContent.replace(
+      /const pageStatuses: Record<string, 'published' \| 'draft'> = \{[\s\S]*?\}/,
+      `const pageStatuses: Record<string, 'published' | 'draft'> = ${statusesString}`
+    )
+    
+    // Записываем обновленный middleware
+    await writeFile(middlewarePath, middlewareContent, 'utf-8')
+    
+    console.log('Middleware updated with new page statuses')
+  } catch (error) {
+    console.error('Error updating middleware:', error)
+  }
+}
+
 export async function GET() {
   try {
-    return NextResponse.json({ 
-      success: true, 
-      pages: pages 
-    })
+    return NextResponse.json(pages)
   } catch (error) {
     console.error('Error fetching pages:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch pages' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch pages' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { action, pageId, status } = body
+    const { action, pageId } = body
 
-    if (action === 'updateStatus') {
-      const pageIndex = pages.findIndex(page => page.id === pageId)
-      if (pageIndex === -1) {
-        return NextResponse.json(
-          { success: false, error: 'Page not found' },
-          { status: 404 }
-        )
+    if (action === 'toggle-status') {
+      const page = pages.find(p => p.id === pageId)
+      if (!page) {
+        return NextResponse.json({ error: 'Page not found' }, { status: 404 })
       }
 
-      pages[pageIndex].status = status
-      pages[pageIndex].updated = new Date().toISOString().split('T')[0]
+      // Переключаем статус
+      page.status = page.status === 'published' ? 'draft' : 'published'
+      page.updated = new Date().toISOString().split('T')[0]
+
+      // Обновляем middleware
+      await updateMiddlewareStatuses()
 
       return NextResponse.json({ 
         success: true, 
-        message: `Page ${status === 'published' ? 'published' : 'unpublished'} successfully`,
-        page: pages[pageIndex]
+        page,
+        message: `Страница "${page.title}" ${page.status === 'published' ? 'опубликована' : 'снята с публикации'}`
       })
     }
 
     if (action === 'delete') {
-      const pageIndex = pages.findIndex(page => page.id === pageId)
+      const pageIndex = pages.findIndex(p => p.id === pageId)
       if (pageIndex === -1) {
-        return NextResponse.json(
-          { success: false, error: 'Page not found' },
-          { status: 404 }
-        )
+        return NextResponse.json({ error: 'Page not found' }, { status: 404 })
       }
 
       const deletedPage = pages.splice(pageIndex, 1)[0]
+      
+      // Обновляем middleware
+      await updateMiddlewareStatuses()
+
       return NextResponse.json({ 
         success: true, 
-        message: 'Page deleted successfully',
-        page: deletedPage
+        message: `Страница "${deletedPage.title}" удалена`
       })
     }
 
-    return NextResponse.json(
-      { success: false, error: 'Invalid action' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   } catch (error) {
     console.error('Error updating page:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to update page' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update page' }, { status: 500 })
   }
 } 
