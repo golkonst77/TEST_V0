@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer"
 import { ContactForm } from "@/components/contact-form"
 import { FloatingAdminButton } from "@/components/floating-admin-button"
 import { Toaster } from "@/components/ui/toaster"
+import { Toaster as SonnerToaster } from "sonner"
 import { YandexMetrica } from "@/components/yandex-metrica"
 import Script from 'next/script'
 
@@ -84,6 +85,7 @@ export default function RootLayout({
         <ContactForm />
         <FloatingAdminButton />
         <Toaster />
+        <SonnerToaster position="top-right" />
         <Script id="marquiz" strategy="afterInteractive">
           {`
             (function(w, d, s, o){
