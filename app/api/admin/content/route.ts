@@ -9,7 +9,7 @@ const pages = [
   { id: 5, title: "Калькулятор", slug: "/calculator", status: "published", updated: "2024-01-13", type: "page", content: "" },
   { id: 6, title: "Тарифы", slug: "/pricing", status: "published", updated: "2024-01-11", type: "page", content: "" },
   { id: 7, title: "Личный кабинет", slug: "/lk", status: "published", updated: "2024-01-09", type: "page", content: "" },
-  { id: 8, title: "Блог", slug: "/blog", status: "draft", updated: "2024-01-08", type: "page", content: "" },
+  { id: 8, title: "Блог", slug: "/blog", status: "published", updated: "2024-01-16", type: "page", content: "" },
 ]
 
 export async function GET() {
