@@ -23,10 +23,10 @@ export default function ContactsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-4">Калуга, ул. Дзержинского 37, офис 20</p>
+              <p className="text-gray-600 mb-4">Калуга</p>
               <Button variant="outline" asChild>
                 <a
-                  href="https://yandex.ru/maps/6/kaluga/search/%D0%BF%D1%80%D0%BE%D1%81%D1%82%D0%BE%20%D0%B1%D1%8E%D1%80%D0%BE/?ll=36.236982%2C54.502884&sll=36.236215%2C54.437156&sspn=0.120163%2C0.040126&z=14"
+                  href="https://yandex.ru/maps/org/prosto_byuro/180493814174/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -44,7 +44,7 @@ export default function ContactsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-blue-600 mb-2">+7 953 330-17-77</p>
+              <p className="text-2xl font-bold text-blue-600 mb-2">+7 953 777 77 77</p>
               <p className="text-gray-600">Звоните в рабочее время или оставьте заявку</p>
             </CardContent>
           </Card>
@@ -57,7 +57,7 @@ export default function ContactsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-lg font-medium mb-2">urist40@gmail.com</p>
+              <p className="text-lg font-medium mb-2">golkonst@gmail.com</p>
               <p className="text-gray-600">Отвечаем на письма в течение 2 часов</p>
             </CardContent>
           </Card>
@@ -116,17 +116,37 @@ export default function ContactsPage() {
           <Card className="h-full">
             <CardHeader>
               <CardTitle>Как нас найти</CardTitle>
-              <CardDescription>Наш офис находится в центре Калуги, удобная транспортная доступность</CardDescription>
+              <CardDescription>Наш офис находится в Калуге, удобная транспортная доступность</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                <iframe
-                  src="https://yandex.ru/map-widget/v1/?um=constructor%3A36.236982%2C54.502884&amp;source=constructor"
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
+              <div className="relative overflow-hidden rounded-lg bg-gray-100">
+                <a 
+                  href="https://yandex.ru/maps/org/prosto_byuro/180493814174/?utm_medium=mapframe&utm_source=maps" 
+                  style={{color:"#eee", fontSize:"12px", position:"absolute", top:"0px"}}
+                >
+                  Просто Бюро
+                </a>
+                <a 
+                  href="https://yandex.ru/maps/6/kaluga/category/accountants/184105392/?utm_medium=mapframe&utm_source=maps" 
+                  style={{color:"#eee", fontSize:"12px", position:"absolute", top:"14px"}}
+                >
+                  Бухгалтерские услуги в Калуге
+                </a>
+                <a 
+                  href="https://yandex.ru/maps/6/kaluga/category/legal_services/184105630/?utm_medium=mapframe&utm_source=maps" 
+                  style={{color:"#eee", fontSize:"12px", position:"absolute", top:"28px"}}
+                >
+                  Юридические услуги в Калуге
+                </a>
+                <iframe 
+                  src="https://yandex.ru/map-widget/v1/?ll=36.258698%2C54.512174&mode=search&oid=180493814174&ol=biz&sctx=ZAAAAAgBEAAaKAoSCY7pCUs8HkJAEQagUbr0N0tAEhIJj3IwmwDDvj8RkUdwI2WLpD8iBgABAgMEBSgKOABA5KINSAFiKHJlbGV2X3JhbmtpbmdfbDFfZm9ybXVsYT1sMV9kYzgwMzIyMV9leHBqAnJ1nQHNzMw9oAEAqAEAvQFbz5MXwgEGnpOUsqAFggIV0L%2FRgNC%2B0YHRgtC%2BINCx0Y7RgNC%2BigIAkgIAmgIMZGVza3RvcC1tYXBz&sll=36.258698%2C54.512174&sspn=0.120163%2C0.040052&text=%D0%BF%D1%80%D0%BE%D1%81%D1%82%D0%BE%20%D0%B1%D1%8E%D1%80%D0%BE&z=14" 
+                  width="100%" 
+                  height="400" 
+                  frameBorder="1" 
+                  allowFullScreen={true} 
+                  style={{position:"relative"}}
                   className="rounded-lg"
-                  title="Карта офиса ПростоБюро"
+                  title="Карта офиса Просто Бюро в Калуге"
                 />
               </div>
             </CardContent>

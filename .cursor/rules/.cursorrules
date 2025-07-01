@@ -1,0 +1,122 @@
+# Often used imports
+
+**Important!**
+
+- import { toast } from "@/app/components/toaster";
+- import { t } from "@/app/composables/useI18n";
+- import { api } from "@/app/services/api";
+- import { useAppLoader } from "@/app/composables/useAppLoader";
+
+# Project Overview
+- Vue 3.5 project using Composition API with <script setup>
+- Design system in `src/assets/styles/`
+- Icons in `src/assets/images/icons/`
+- i18n: use 't' from "@/app/composables/useI18n"
+- Application description in `src/app-description.md`
+- Use ES imports, not require()
+- All comments in English only. Keep comments short and to the point
+- Do not import new libraries without approval
+
+# Design System
+
+## Style Structure
+- Tokens: colors, spacing, shadows, z-index, transitions, theme
+- Base: fonts, reset, typography, animations
+- Themes: light, dark, contrast
+- Components: markdown
+- Utilities
+
+## Usage Guidelines
+- Use CSS custom properties from design tokens
+- Use CSS nesting and semantic class names
+- Use .mobile, .tablet, .notebook, .desktop CSS classes on `body` to apply styles based on screen size
+- No hardcoded values for design properties
+- Component-specific styles in component files
+- No px units (use rem)
+- No CSS comments
+- No Tailwind/SASS/SCSS
+- No BEM notation
+
+## Design Tokens
+- Typography:
+  - Font Family: `--lh-font-family-{base|heading|mono}`
+  - Font Size: `--lh-font-size-{0|1|2|3|4|5|6}`
+  - Font Weight: `--lh-font-weight-{regular|medium|bold}`
+  - Line Height: `--lh-line-height-{0|1|2|3|4}`
+  - Letter Spacing: `--lh-letter-spacing-{tight|normal|wide}`
+
+- Colors:
+  - Text: `--lh-c-text-{1|2|3}`
+  - Surface: `--lh-c-surface-{1|2|3|4|5}`
+  - Brand: `--lh-c-brand-{1|2|3}-{50|100|200|300|400|500|600|700|800|900}`
+  - Base: `--lh-c-{white|black}`
+  - Background: `--lh-c-{bg|bg-alt|bg-soft}`
+  - Border: `--lh-c-{border|divider}`
+  - Functional: `--lh-c-{success|warning|danger|info}`
+
+- Spacing: `--lh-space-{1|2|3|4|5|6|8|10|12}`
+
+- Borders: `--lh-radius-{sm|base|md|lg|xl|full}`
+
+- Shadows:
+  - Box: `--lh-shadow-{1|2|3|4|5}`
+  - Focus: `--lh-focus-ring`, `--lh-focus-ring-offset`
+
+- Transitions:
+  - Duration: `--lh-transition-{fast|base|slow}`
+  - Timing: `--lh-ease-{in|out|in-out}`
+  - Common: `--lh-transition-{all|colors|transform|opacity}`
+
+- Layout:
+  - Width: `--lh-layout-{max-width|content-width|sidebar-width}`
+  - Height: `--lh-layout-{header-height|footer-height}`
+
+- Z-index: `--lh-z-{negative|elevate|sticky|header|dropdown|modal|toast|tooltip}`
+
+# Vue 3 Best Practices
+
+## Component Design
+- Use Composition API with <script setup>
+- Keep components small and focused
+- Extract reusable logic into composables
+- Use props and emits for component communication
+- Leverage computed properties for derived state
+- Use ref() for primitives, reactive() for objects
+- Follow progressive enhancement
+- Ensure accessibility
+
+## Performance
+- Use v-show for frequent toggles
+- Use v-once for static content
+- Never implement lazy loading for routes
+- Use shallowRef when possible
+- Keep watchers targeted and efficient
+
+## State Management
+- Use provide/inject for deep prop passing in tighly coupled components
+- Keep state close to where it's used
+- Use reactive refs consistently
+
+## Code Organization
+- Group related files in feature directories
+- Use index files for clean exports
+- Keep business logic in composables
+- Maintain clear component hierarchy
+
+## TypeScript
+- Define prop types explicitly
+- Use interfaces for complex objects
+- Leverage type inference when possible
+- Use strict type checking
+
+## Security
+- Sanitize user inputs
+- Validate props
+- Use v-html sparingly
+- Implement proper CORS policies
+
+# Project Structure
+
+## Often used components
+- BaseButton
+- BaseIcon

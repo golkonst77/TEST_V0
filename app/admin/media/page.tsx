@@ -1,14 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useAdminAuth } from "@/hooks/use-admin-auth"
+import { AdminLayout } from "@/components/admin-layout"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { ImageUploader } from "@/components/admin/image-uploader"
-import { ArrowLeft, Trash2, Search, Copy, Check } from "lucide-react"
-import Link from "next/link"
+import { Trash2, Search, Copy, Check, Upload } from "lucide-react"
 
 interface MediaFile {
   name: string
@@ -19,7 +18,6 @@ interface MediaFile {
 }
 
 export default function AdminMediaPage() {
-  const { isAuthenticated, isLoading } = useAdminAuth()
   const [files, setFiles] = useState<MediaFile[]>([])
   const [filteredFiles, setFilteredFiles] = useState<MediaFile[]>([])
   const [loading, setLoading] = useState(true)
@@ -28,10 +26,8 @@ export default function AdminMediaPage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchFiles()
-    }
-  }, [isAuthenticated])
+    fetchFiles()
+  }, [])
 
   useEffect(() => {
     const filtered = files.filter((file) => file.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -131,66 +127,64 @@ export default function AdminMediaPage() {
     })
   }
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-
-  if (!isAuthenticated) {
-    return null
-  }
-
   return (
-    <div className="container py-20">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Медиафайлы</h1>
-          <p className="text-gray-600 mt-2">Управление изображениями и файлами</p>
-        </div>
-        <Button asChild variant="outline">
-          <Link href="/admin">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Назад
-          </Link>
+    <AdminLayout 
+      title="Медиафайлы" 
+      description="Управление изображениями и файлами"
+      actions={
+        <Button size="sm">
+          <Upload className="h-4 w-4 mr-2" />
+          Загрузить файлы
         </Button>
-      </div>
-
-      <div className="space-y-8">
+      }
+    >
+      <div className="p-6 space-y-6">
         {/* Загрузка файлов */}
-        <ImageUploader multiple={true} maxFiles={10} onImageSelect={() => fetchFiles()} />
-
-        {/* Поиск */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Загруженные файлы</CardTitle>
+        <Card className="border border-gray-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Загрузка файлов</CardTitle>
+            <CardDescription className="text-sm">Загрузите изображения и другие медиафайлы</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center space-x-2 mb-4">
-              <Search className="h-4 w-4 text-gray-400" />
+            <ImageUploader multiple={true} maxFiles={10} onImageSelect={() => fetchFiles()} />
+          </CardContent>
+        </Card>
+
+        {/* Поиск */}
+        <Card className="border border-gray-200">
+          <CardContent className="p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Поиск файлов..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm"
+                className="pl-10 h-8 text-sm"
               />
             </div>
+          </CardContent>
+        </Card>
 
+        {/* Список файлов */}
+        <Card className="border border-gray-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Загруженные файлы ({filteredFiles.length})</CardTitle>
+            <CardDescription className="text-sm">Управление медиафайлами</CardDescription>
+          </CardHeader>
+          <CardContent>
             {loading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="mt-2 text-gray-600">Загрузка файлов...</p>
+                <p className="mt-2 text-sm text-gray-600">Загрузка файлов...</p>
               </div>
             ) : filteredFiles.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-500">{searchTerm ? "Файлы не найдены" : "Нет загруженных файлов"}</p>
+                <p className="text-sm text-gray-500">{searchTerm ? "Файлы не найдены" : "Нет загруженных файлов"}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filteredFiles.map((file) => (
-                  <Card key={file.name} className="overflow-hidden">
+                  <Card key={file.name} className="border border-gray-200 overflow-hidden">
                     <div className="aspect-video relative">
                       <img
                         src={file.url || "/placeholder.svg"}
@@ -199,29 +193,34 @@ export default function AdminMediaPage() {
                       />
                     </div>
                     <CardContent className="p-3">
-                      <p className="text-sm font-medium truncate" title={file.name}>
-                        {file.name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {formatFileSize(file.size)} • {formatDate(file.uploadDate)}
-                      </p>
-                      <div className="flex space-x-1 mt-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => copyToClipboard(file.url)}
-                          className="flex-1"
-                        >
-                          {copiedUrl === file.url ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => deleteFile(file.name)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                      <div className="space-y-2">
+                        <h3 className="font-medium text-sm text-gray-900 truncate">{file.name}</h3>
+                        <div className="text-xs text-gray-600 space-y-1">
+                          <p>Размер: {formatFileSize(file.size)}</p>
+                          <p>Загружен: {formatDate(file.uploadDate)}</p>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => copyToClipboard(file.url)}
+                            className="h-7 w-7 p-0"
+                          >
+                            {copiedUrl === file.url ? (
+                              <Check className="h-3 w-3 text-green-600" />
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteFile(file.name)}
+                            className="h-7 w-7 p-0 text-red-500"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -230,7 +229,41 @@ export default function AdminMediaPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Статистика */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="border border-gray-200">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">{files.length}</div>
+              <div className="text-xs text-gray-600">Всего файлов</div>
+            </CardContent>
+          </Card>
+          <Card className="border border-gray-200">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {formatFileSize(files.reduce((acc, file) => acc + file.size, 0))}
+              </div>
+              <div className="text-xs text-gray-600">Общий размер</div>
+            </CardContent>
+          </Card>
+          <Card className="border border-gray-200">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-purple-600">
+                {files.filter(f => f.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)).length}
+              </div>
+              <div className="text-xs text-gray-600">Изображений</div>
+            </CardContent>
+          </Card>
+          <Card className="border border-gray-200">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-orange-600">
+                {files.filter(f => !f.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)).length}
+              </div>
+              <div className="text-xs text-gray-600">Других файлов</div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   )
 }

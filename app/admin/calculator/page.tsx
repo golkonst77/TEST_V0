@@ -1,16 +1,14 @@
 "use client"
-import { useAdminAuth } from "@/hooks/use-admin-auth"
+
+import { AdminLayout } from "@/components/admin-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
 
 export default function AdminCalculatorPage() {
-  const { isAuthenticated, isLoading } = useAdminAuth()
   const [services, setServices] = useState([
     { id: 1, name: "Ведение учета ИП", price: 3000, active: true },
     { id: 2, name: "Ведение учета ООО", price: 5000, active: true },
@@ -18,43 +16,29 @@ export default function AdminCalculatorPage() {
     { id: 4, name: "Консультации", price: 1000, active: true },
   ])
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-
-  if (!isAuthenticated) {
-    return null
-  }
+  const [multipliers, setMultipliers] = useState({
+    usn: 1.0,
+    osno: 1.5,
+    employees1to5: 1.0,
+    employees6to20: 1.3
+  })
 
   const handleSave = () => {
     alert("Настройки калькулятора сохранены!")
   }
 
   return (
-    <div className="container py-8 max-w-4xl">
-      <div className="mb-6 flex items-center space-x-4">
-        <Button asChild variant="outline" size="sm">
-          <Link href="/admin">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Назад
-          </Link>
-        </Button>
-        <h1 className="text-3xl font-bold">Редактор калькулятора</h1>
-      </div>
-
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Услуги и цены</CardTitle>
-            <CardDescription>Настройка услуг для калькулятора стоимости</CardDescription>
+    <AdminLayout title="Редактор калькулятора" description="Настройка услуг для калькулятора стоимости">
+      <div className="p-6 space-y-6">
+        {/* Услуги и цены */}
+        <Card className="border border-gray-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Услуги и цены</CardTitle>
+            <CardDescription className="text-sm">Настройка услуг для калькулятора стоимости</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             {services.map((service) => (
-              <div key={service.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+              <div key={service.id} className="flex items-center space-x-3 p-3 border rounded-md">
                 <Switch
                   checked={service.active}
                   onCheckedChange={(checked) => {
@@ -62,9 +46,9 @@ export default function AdminCalculatorPage() {
                   }}
                 />
                 <div className="flex-1">
-                  <Label>{service.name}</Label>
+                  <Label className="text-sm">{service.name}</Label>
                 </div>
-                <div className="w-32">
+                <div className="w-24">
                   <Input
                     type="number"
                     value={service.price}
@@ -75,50 +59,77 @@ export default function AdminCalculatorPage() {
                         ),
                       )
                     }}
+                    className="h-8 text-sm"
                   />
                 </div>
-                <span className="text-sm text-gray-500">₽/мес</span>
+                <span className="text-xs text-gray-500">₽/мес</span>
               </div>
             ))}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Множители</CardTitle>
-            <CardDescription>Коэффициенты для расчета стоимости</CardDescription>
+        {/* Множители */}
+        <Card className="border border-gray-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Множители</CardTitle>
+            <CardDescription className="text-sm">Коэффициенты для расчета стоимости</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>УСН (коэффициент)</Label>
-                <Input type="number" defaultValue="1.0" step="0.1" />
+                <Label className="text-sm">УСН (коэффициент)</Label>
+                <Input 
+                  type="number" 
+                  value={multipliers.usn}
+                  onChange={(e) => setMultipliers({...multipliers, usn: parseFloat(e.target.value)})}
+                  step="0.1" 
+                  className="h-8 text-sm mt-1"
+                />
               </div>
               <div>
-                <Label>ОСНО (коэффициент)</Label>
-                <Input type="number" defaultValue="1.5" step="0.1" />
+                <Label className="text-sm">ОСНО (коэффициент)</Label>
+                <Input 
+                  type="number" 
+                  value={multipliers.osno}
+                  onChange={(e) => setMultipliers({...multipliers, osno: parseFloat(e.target.value)})}
+                  step="0.1" 
+                  className="h-8 text-sm mt-1"
+                />
               </div>
               <div>
-                <Label>1-5 сотрудников</Label>
-                <Input type="number" defaultValue="1.0" step="0.1" />
+                <Label className="text-sm">1-5 сотрудников</Label>
+                <Input 
+                  type="number" 
+                  value={multipliers.employees1to5}
+                  onChange={(e) => setMultipliers({...multipliers, employees1to5: parseFloat(e.target.value)})}
+                  step="0.1" 
+                  className="h-8 text-sm mt-1"
+                />
               </div>
               <div>
-                <Label>6-20 сотрудников</Label>
-                <Input type="number" defaultValue="1.3" step="0.1" />
+                <Label className="text-sm">6-20 сотрудников</Label>
+                <Input 
+                  type="number" 
+                  value={multipliers.employees6to20}
+                  onChange={(e) => setMultipliers({...multipliers, employees6to20: parseFloat(e.target.value)})}
+                  step="0.1" 
+                  className="h-8 text-sm mt-1"
+                />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <div className="flex space-x-4">
-          <Button onClick={handleSave} className="flex-1">
+        {/* Кнопки действий */}
+        <div className="flex space-x-3">
+          <Button onClick={handleSave} size="sm">
             Сохранить настройки
           </Button>
-          <Button variant="outline" asChild>
-            <Link href="/calculator">Предпросмотр калькулятора</Link>
+          <Button variant="outline" size="sm" asChild>
+            <a href="/calculator" target="_blank">Предпросмотр калькулятора</a>
           </Button>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   )
 }

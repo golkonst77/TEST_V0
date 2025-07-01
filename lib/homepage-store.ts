@@ -68,7 +68,7 @@ let heroConfig: HeroConfig = {
       show: true,
     },
   ],
-  background: { image: "/hero-bg.jpg", overlay: 30 },
+  background: { image: "/hero-bg.jpg", overlay: 10 },
   layout: {
     alignment: "left",
     maxWidth: "max-w-2xl",
@@ -86,7 +86,19 @@ export function getHeroConfig(): HeroConfig {
 
 export function updateHeroConfig(newConfig: Partial<HeroConfig>): HeroConfig {
   console.log("Обновление настроек главной страницы:", newConfig)
-  heroConfig = { ...heroConfig, ...newConfig }
+  
+  // Глубокое слияние для правильного обновления вложенных объектов
+  heroConfig = {
+    ...heroConfig,
+    ...newConfig,
+    badge: newConfig.badge ? { ...heroConfig.badge, ...newConfig.badge } : heroConfig.badge,
+    title: newConfig.title ? { ...heroConfig.title, ...newConfig.title } : heroConfig.title,
+    button: newConfig.button ? { ...heroConfig.button, ...newConfig.button } : heroConfig.button,
+    background: newConfig.background ? { ...heroConfig.background, ...newConfig.background } : heroConfig.background,
+    layout: newConfig.layout ? { ...heroConfig.layout, ...newConfig.layout } : heroConfig.layout,
+    features: newConfig.features || heroConfig.features
+  }
+  
   console.log("Новые настройки:", heroConfig)
   return heroConfig
 }

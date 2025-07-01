@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,8 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
-import { Save, ArrowLeft, Plus, Trash2 } from "lucide-react"
-import Link from "next/link"
+import { Save, Plus, Trash2 } from "lucide-react"
 
 interface PricingPlan {
   id: number
@@ -110,118 +110,126 @@ export default function AdminPricingPage() {
 
   if (loading) {
     return (
-      <div className="container py-20">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Загрузка тарифных планов...</p>
+      <AdminLayout title="Редактирование тарифов" description="Управление тарифными планами и ценами">
+        <div className="p-6 text-center">
+          <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-2"></div>
+          <p className="text-sm text-gray-600">Загрузка тарифных планов...</p>
         </div>
-      </div>
+      </AdminLayout>
     )
   }
 
   return (
-    <div className="container py-20">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Редактирование тарифов</h1>
-          <p className="text-gray-600 mt-2">Управление тарифными планами и ценами</p>
-        </div>
-        <div className="flex space-x-4">
-          <Button asChild variant="outline">
-            <Link href="/admin">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Назад
-            </Link>
-          </Button>
-          <Button onClick={handleSave} disabled={saving}>
-            <Save className="mr-2 h-4 w-4" />
-            {saving ? "Сохранение..." : "Сохранить"}
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-        {plans.map((plan) => (
-          <Card key={plan.id} className={plan.is_popular ? "ring-2 ring-blue-500" : ""}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Тариф #{plan.id}</CardTitle>
-                <div className="flex space-x-2">
-                  <div className="flex items-center space-x-2">
-                    <Label htmlFor={`popular-${plan.id}`} className="text-sm">
-                      Популярный
-                    </Label>
+    <AdminLayout 
+      title="Редактирование тарифов" 
+      description="Управление тарифными планами и ценами"
+      actions={
+        <Button onClick={handleSave} disabled={saving} size="sm">
+          <Save className="mr-2 h-4 w-4" />
+          {saving ? "Сохранение..." : "Сохранить"}
+        </Button>
+      }
+    >
+      <div className="p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          {plans.map((plan) => (
+            <Card key={plan.id} className={`border ${plan.is_popular ? "border-blue-500" : "border-gray-200"}`}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">Тариф #{plan.id}</CardTitle>
+                  <div className="flex space-x-2">
+                    <div className="flex items-center space-x-1">
+                      <Label htmlFor={`popular-${plan.id}`} className="text-xs">
+                        Популярный
+                      </Label>
+                      <Switch
+                        id={`popular-${plan.id}`}
+                        checked={plan.is_popular}
+                        onCheckedChange={(checked) => handlePlanChange(plan.id, "is_popular", checked)}
+                      />
+                    </div>
                     <Switch
-                      id={`popular-${plan.id}`}
-                      checked={plan.is_popular}
-                      onCheckedChange={(checked) => handlePlanChange(plan.id, "is_popular", checked)}
+                      checked={plan.is_active}
+                      onCheckedChange={(checked) => handlePlanChange(plan.id, "is_active", checked)}
                     />
                   </div>
-                  <Switch
-                    checked={plan.is_active}
-                    onCheckedChange={(checked) => handlePlanChange(plan.id, "is_active", checked)}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <Label htmlFor={`name-${plan.id}`} className="text-sm">Название тарифа</Label>
+                  <Input
+                    id={`name-${plan.id}`}
+                    value={plan.name}
+                    onChange={(e) => handlePlanChange(plan.id, "name", e.target.value)}
+                    placeholder="Название тарифа"
+                    className="h-8 text-sm mt-1"
                   />
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor={`name-${plan.id}`}>Название тарифа</Label>
-                <Input
-                  id={`name-${plan.id}`}
-                  value={plan.name}
-                  onChange={(e) => handlePlanChange(plan.id, "name", e.target.value)}
-                  placeholder="Название тарифа"
-                />
-              </div>
 
-              <div>
-                <Label htmlFor={`price-${plan.id}`}>Цена (руб/мес)</Label>
-                <Input
-                  id={`price-${plan.id}`}
-                  type="number"
-                  value={plan.price}
-                  onChange={(e) => handlePlanChange(plan.id, "price", Number.parseInt(e.target.value) || 0)}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor={`description-${plan.id}`}>Описание</Label>
-                <Textarea
-                  id={`description-${plan.id}`}
-                  value={plan.description}
-                  onChange={(e) => handlePlanChange(plan.id, "description", e.target.value)}
-                  placeholder="Описание тарифа"
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Возможности тарифа</Label>
-                  <Button type="button" variant="outline" size="sm" onClick={() => addFeature(plan.id)}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
+                <div>
+                  <Label htmlFor={`price-${plan.id}`} className="text-sm">Цена (руб/мес)</Label>
+                  <Input
+                    id={`price-${plan.id}`}
+                    type="number"
+                    value={plan.price}
+                    onChange={(e) => handlePlanChange(plan.id, "price", Number.parseInt(e.target.value) || 0)}
+                    className="h-8 text-sm mt-1"
+                  />
                 </div>
-                <div className="space-y-2">
-                  {plan.features.map((feature, index) => (
-                    <div key={index} className="flex space-x-2">
-                      <Input
-                        value={feature}
-                        onChange={(e) => handleFeatureChange(plan.id, index, e.target.value)}
-                        placeholder="Возможность тарифа"
-                      />
-                      <Button type="button" variant="outline" size="sm" onClick={() => removeFeature(plan.id, index)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+
+                <div>
+                  <Label htmlFor={`description-${plan.id}`} className="text-sm">Описание</Label>
+                  <Textarea
+                    id={`description-${plan.id}`}
+                    value={plan.description}
+                    onChange={(e) => handlePlanChange(plan.id, "description", e.target.value)}
+                    placeholder="Описание тарифа"
+                    rows={2}
+                    className="text-sm mt-1"
+                  />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label className="text-sm">Возможности тарифа</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => addFeature(plan.id)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {plan.features.map((feature, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <Input
+                          value={feature}
+                          onChange={(e) => handleFeatureChange(plan.id, index, e.target.value)}
+                          placeholder="Возможность тарифа"
+                          className="h-7 text-xs"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeFeature(plan.id, index)}
+                          className="h-7 w-7 p-0 text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   )
 }
