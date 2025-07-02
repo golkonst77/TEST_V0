@@ -5,6 +5,7 @@ import { PricingSection } from "@/components/pricing-section"
 import { Calculator } from "@/components/calculator"
 import { Reviews } from "@/components/reviews"
 import { News } from "@/components/news"
+import { Contacts } from "@/components/contacts"
 
 export default function HomePage() {
   return (
@@ -16,6 +17,7 @@ export default function HomePage() {
       <Calculator />
       <Reviews />
       <News />
+      <Contacts />
     </main>
   )
 }
