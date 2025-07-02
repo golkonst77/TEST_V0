@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,6 +9,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { CalculatorIcon, ArrowRight } from "lucide-react"
 import { useContactForm } from "@/hooks/use-contact-form"
+
+interface CalculatorConfig {
+  services: {
+    [key: string]: {
+      price: number
+      description: string
+    }
+  }
+  multipliers: {
+    taxSystems: { [key: string]: number }
+    employees: { [key: string]: number }
+  }
+}
 
 interface CalculatorState {
   companyType: string
@@ -20,6 +33,8 @@ interface CalculatorState {
 
 export function Calculator() {
   const { openContactForm } = useContactForm()
+  const [config, setConfig] = useState<CalculatorConfig | null>(null)
+  const [configLoading, setConfigLoading] = useState(true)
   const [state, setState] = useState<CalculatorState>({
     companyType: "",
     taxSystem: "",
@@ -28,24 +43,51 @@ export function Calculator() {
     services: [],
   })
 
-  // Фиксированные цены на услуги
-  const servicePrices = {
+  useEffect(() => {
+    fetchCalculatorConfig()
+  }, [])
+
+  const fetchCalculatorConfig = async () => {
+    try {
+      const response = await fetch("/api/calculator/config")
+      const configData = await response.json()
+      setConfig(configData)
+    } catch (error) {
+      console.error("Error fetching calculator config:", error)
+      // Fallback к дефолтным значениям если API недоступен
+      setConfig({
+        services: {
+          accounting: { price: 3000, description: "Бухгалтерский учет" },
+          payroll: { price: 1500, description: "Зарплата и кадры" },
+          legal: { price: 2000, description: "Юридическое сопровождение" },
+          registration: { price: 5000, description: "Регистрация фирм" },
+        },
+        multipliers: {
+          taxSystems: { usn: 1, osn: 1.5, envd: 0.8, patent: 0.7 },
+          employees: { "0": 1, "1-5": 1.2, "6-15": 1.5, "16-50": 2, "50+": 3 },
+        },
+      })
+    } finally {
+      setConfigLoading(false)
+    }
+  }
+
+  // Используем данные из конфигурации или fallback значения
+  const servicePrices = config?.services || {
     accounting: { price: 3000, description: "Бухгалтерский учет" },
     payroll: { price: 1500, description: "Зарплата и кадры" },
     legal: { price: 2000, description: "Юридическое сопровождение" },
     registration: { price: 5000, description: "Регистрация фирм" },
   }
 
-  // Коэффициенты для налоговых систем
-  const taxSystemMultipliers = {
+  const taxSystemMultipliers = config?.multipliers.taxSystems || {
     usn: 1,
     osn: 1.5,
     envd: 0.8,
     patent: 0.7,
   }
 
-  // Коэффициенты для количества сотрудников
-  const employeeMultipliers = {
+  const employeeMultipliers = config?.multipliers.employees || {
     "0": 1,
     "1-5": 1.2,
     "6-15": 1.5,
@@ -94,6 +136,20 @@ export function Calculator() {
   }
 
   const totalPrice = calculatePrice()
+
+  // Показываем лоадер пока загружается конфигурация
+  if (configLoading) {
+    return (
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Загрузка калькулятора...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-20 bg-gray-50">

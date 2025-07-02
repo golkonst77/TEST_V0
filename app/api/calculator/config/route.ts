@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 // Моковые данные конфигурации калькулятора
-const calculatorConfig = {
+let calculatorConfig = {
   services: {
     accounting: { price: 3000, description: "Бухгалтерский учет" },
     payroll: { price: 1500, description: "Зарплата и кадры" },
@@ -31,5 +31,33 @@ export async function GET() {
   } catch (error) {
     console.error("Error fetching calculator config:", error)
     return NextResponse.json({ error: "Failed to fetch calculator config" }, { status: 500 })
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const newConfig = await request.json()
+    
+    // Валидация данных
+    if (!newConfig.services || !newConfig.multipliers) {
+      return NextResponse.json({ error: "Invalid config structure" }, { status: 400 })
+    }
+
+    // Обновляем конфигурацию
+    calculatorConfig = {
+      services: newConfig.services,
+      multipliers: newConfig.multipliers,
+    }
+
+    console.log("Calculator config updated:", calculatorConfig)
+
+    return NextResponse.json({
+      success: true,
+      message: "Calculator config updated successfully",
+      timestamp: new Date().toISOString(),
+    })
+  } catch (error) {
+    console.error("Error updating calculator config:", error)
+    return NextResponse.json({ error: "Failed to update calculator config" }, { status: 500 })
   }
 }
