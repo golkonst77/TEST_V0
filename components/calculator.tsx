@@ -98,26 +98,36 @@ export function Calculator() {
   const calculatePrice = () => {
     let basePrice = 0
 
+    console.log("Calculator state:", state)
+    console.log("Service prices:", servicePrices)
+
     // Добавляем стоимость выбранных услуг
     state.services.forEach((service) => {
       const serviceConfig = servicePrices[service as keyof typeof servicePrices]
       if (serviceConfig) {
         basePrice += serviceConfig.price
+        console.log(`Added service ${service}: ${serviceConfig.price}, total: ${basePrice}`)
       }
     })
 
     // Применяем коэффициент для налоговой системы
     if (state.taxSystem && taxSystemMultipliers[state.taxSystem as keyof typeof taxSystemMultipliers]) {
-      basePrice *= taxSystemMultipliers[state.taxSystem as keyof typeof taxSystemMultipliers]
+      const multiplier = taxSystemMultipliers[state.taxSystem as keyof typeof taxSystemMultipliers]
+      basePrice *= multiplier
+      console.log(`Applied tax system ${state.taxSystem} multiplier ${multiplier}, total: ${basePrice}`)
     }
 
     // Применяем коэффициент для количества сотрудников
     const employeeRange = getEmployeeRange(state.employees)
     if (employeeMultipliers[employeeRange as keyof typeof employeeMultipliers]) {
-      basePrice *= employeeMultipliers[employeeRange as keyof typeof employeeMultipliers]
+      const multiplier = employeeMultipliers[employeeRange as keyof typeof employeeMultipliers]
+      basePrice *= multiplier
+      console.log(`Applied employee ${employeeRange} multiplier ${multiplier}, total: ${basePrice}`)
     }
 
-    return Math.round(basePrice)
+    const finalPrice = Math.round(basePrice)
+    console.log("Final calculated price:", finalPrice)
+    return finalPrice
   }
 
   const getEmployeeRange = (count: number) => {
