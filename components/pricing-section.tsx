@@ -228,32 +228,39 @@ export function PricingSection() {
         </div>
 
         {/* Дополнительные услуги */}
-        <div className="mt-20 bg-gray-50 rounded-2xl p-8">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Дополнительные услуги</h3>
-            <p className="text-gray-600">Разовые услуги и консультации</p>
-          </div>
+        <div 
+          className="mt-20 rounded-2xl p-8 relative bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.85), rgba(30, 58, 138, 0.85)), url('/business-services-bg.jpg')`
+          }}
+        >
+          <div className="relative z-10">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-white mb-4">Дополнительные услуги</h3>
+              <p className="text-blue-100">Разовые услуги и консультации</p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center">
-              <h4 className="font-semibold text-gray-900 mb-2">Регистрация ИП</h4>
-              <p className="text-2xl font-bold text-blue-600 mb-2">3 990 ₽</p>
-              <p className="text-sm text-gray-600">Под ключ за 3 дня</p>
-            </div>
-            <div className="text-center">
-              <h4 className="font-semibold text-gray-900 mb-2">Регистрация ООО</h4>
-              <p className="text-2xl font-bold text-blue-600 mb-2">9 990 ₽</p>
-              <p className="text-sm text-gray-600">Полное сопровождение</p>
-            </div>
-            <div className="text-center">
-              <h4 className="font-semibold text-gray-900 mb-2">Налоговая консультация</h4>
-              <p className="text-2xl font-bold text-blue-600 mb-2">2 500 ₽</p>
-              <p className="text-sm text-gray-600">1 час с экспертом</p>
-            </div>
-            <div className="text-center">
-              <h4 className="font-semibold text-gray-900 mb-2">Восстановление учета</h4>
-              <p className="text-2xl font-bold text-blue-600 mb-2">от 15 000 ₽</p>
-              <p className="text-sm text-gray-600">За период</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <h4 className="font-semibold text-white mb-2">Регистрация ИП</h4>
+                <p className="text-2xl font-bold text-blue-300 mb-2">3 990 ₽</p>
+                <p className="text-sm text-blue-100">Под ключ за 3 дня</p>
+              </div>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <h4 className="font-semibold text-white mb-2">Регистрация ООО</h4>
+                <p className="text-2xl font-bold text-blue-300 mb-2">9 990 ₽</p>
+                <p className="text-sm text-blue-100">Полное сопровождение</p>
+              </div>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <h4 className="font-semibold text-white mb-2">Налоговая консультация</h4>
+                <p className="text-2xl font-bold text-blue-300 mb-2">2 500 ₽</p>
+                <p className="text-sm text-blue-100">1 час с экспертом</p>
+              </div>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <h4 className="font-semibold text-white mb-2">Восстановление учета</h4>
+                <p className="text-2xl font-bold text-blue-300 mb-2">от 15 000 ₽</p>
+                <p className="text-sm text-blue-100">За период</p>
+              </div>
             </div>
           </div>
         </div>
