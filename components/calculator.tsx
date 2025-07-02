@@ -27,7 +27,7 @@ interface CalculatorState {
   companyType: string
   taxSystem: string
   employees: number
-  revenue: number
+  documents: number
   services: string[]
 }
 
@@ -39,7 +39,7 @@ export function Calculator() {
     companyType: "",
     taxSystem: "",
     employees: 0,
-    revenue: 0,
+    documents: 0,
     services: [],
   })
 
@@ -95,6 +95,15 @@ export function Calculator() {
     "50+": 3,
   }
 
+  // Коэффициенты для количества документов в месяц
+  const documentMultipliers = {
+    "0-50": 1,
+    "51-100": 1.1,
+    "101-200": 1.2,
+    "201-500": 1.4,
+    "500+": 1.6,
+  }
+
   const calculatePrice = () => {
     let basePrice = 0
 
@@ -125,6 +134,14 @@ export function Calculator() {
       console.log(`Applied employee ${employeeRange} multiplier ${multiplier}, total: ${basePrice}`)
     }
 
+    // Применяем коэффициент для количества документов
+    const documentRange = getDocumentRange(state.documents)
+    if (documentMultipliers[documentRange as keyof typeof documentMultipliers]) {
+      const multiplier = documentMultipliers[documentRange as keyof typeof documentMultipliers]
+      basePrice *= multiplier
+      console.log(`Applied document ${documentRange} multiplier ${multiplier}, total: ${basePrice}`)
+    }
+
     const finalPrice = Math.round(basePrice)
     console.log("Final calculated price:", finalPrice)
     return finalPrice
@@ -136,6 +153,14 @@ export function Calculator() {
     if (count <= 15) return "6-15"
     if (count <= 50) return "16-50"
     return "50+"
+  }
+
+  const getDocumentRange = (count: number) => {
+    if (count <= 50) return "0-50"
+    if (count <= 100) return "51-100"
+    if (count <= 200) return "101-200"
+    if (count <= 500) return "201-500"
+    return "500+"
   }
 
   const handleServiceChange = (service: string, checked: boolean) => {
@@ -231,13 +256,13 @@ export function Calculator() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="revenue">Месячная выручка (руб.)</Label>
+                  <Label htmlFor="documents">Количество документов в месяц</Label>
                   <Input
-                    id="revenue"
+                    id="documents"
                     type="number"
                     placeholder="0"
-                    value={state.revenue || ""}
-                    onChange={(e) => setState((prev) => ({ ...prev, revenue: Number.parseInt(e.target.value) || 0 }))}
+                    value={state.documents || ""}
+                    onChange={(e) => setState((prev) => ({ ...prev, documents: Number.parseInt(e.target.value) || 0 }))}
                   />
                 </div>
               </div>
