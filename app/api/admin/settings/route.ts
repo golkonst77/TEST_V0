@@ -36,6 +36,7 @@ export async function PUT(request: NextRequest) {
       analyticsenabled: body.analyticsEnabled,
       quiz_mode: body.quiz_mode,
       quiz_url: body.quiz_url,
+      working_hours: body.working_hours,
     }
 
     // Обновляем настройки

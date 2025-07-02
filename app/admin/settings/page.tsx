@@ -24,6 +24,11 @@ export default function AdminSettingsPage() {
     analyticsEnabled: true,
     quiz_mode: "custom",
     quiz_url: "",
+    working_hours: {
+      monday_friday: "9:00 - 18:00",
+      saturday: "10:00 - 15:00",
+      sunday: "Выходной"
+    }
   })
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -50,6 +55,11 @@ export default function AdminSettingsPage() {
           analyticsEnabled: data.analyticsenabled ?? true,
           quiz_mode: data.quiz_mode || "custom",
           quiz_url: data.quiz_url || "",
+          working_hours: data.working_hours || {
+            monday_friday: "9:00 - 18:00",
+            saturday: "10:00 - 15:00",
+            sunday: "Выходной"
+          }
         })
         setMessage("Настройки загружены")
       } else {
@@ -194,6 +204,66 @@ export default function AdminSettingsPage() {
                 placeholder="Калуга"
                 className="h-8 text-sm mt-1"
               />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Время работы */}
+        <Card className="border border-gray-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Время работы</CardTitle>
+            <CardDescription className="text-sm">Рабочие часы для отображения в контактах</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="monday-friday" className="text-sm">Понедельник - Пятница</Label>
+              <Input
+                id="monday-friday"
+                value={settings.working_hours.monday_friday}
+                onChange={(e) => setSettings({ 
+                  ...settings, 
+                  working_hours: { 
+                    ...settings.working_hours, 
+                    monday_friday: e.target.value 
+                  } 
+                })}
+                placeholder="9:00 - 18:00"
+                className="h-8 text-sm mt-1"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="saturday" className="text-sm">Суббота</Label>
+                <Input
+                  id="saturday"
+                  value={settings.working_hours.saturday}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    working_hours: { 
+                      ...settings.working_hours, 
+                      saturday: e.target.value 
+                    } 
+                  })}
+                  placeholder="10:00 - 15:00"
+                  className="h-8 text-sm mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="sunday" className="text-sm">Воскресенье</Label>
+                <Input
+                  id="sunday"
+                  value={settings.working_hours.sunday}
+                  onChange={(e) => setSettings({ 
+                    ...settings, 
+                    working_hours: { 
+                      ...settings.working_hours, 
+                      sunday: e.target.value 
+                    } 
+                  })}
+                  placeholder="Выходной"
+                  className="h-8 text-sm mt-1"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

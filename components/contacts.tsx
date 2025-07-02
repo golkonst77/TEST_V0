@@ -8,6 +8,11 @@ interface Settings {
   email: string
   address: string
   telegram: string
+  working_hours?: {
+    monday_friday?: string
+    saturday?: string
+    sunday?: string
+  }
 }
 
 export function Contacts() {
@@ -52,9 +57,18 @@ export function Contacts() {
   ]
 
   const workingHours = [
-    { day: 'Понедельник - Пятница', time: '9:00 - 18:00' },
-    { day: 'Суббота', time: '10:00 - 15:00' },
-    { day: 'Воскресенье', time: 'Выходной' }
+    { 
+      day: 'Понедельник - Пятница', 
+      time: settings?.working_hours?.monday_friday || '9:00 - 18:00' 
+    },
+    { 
+      day: 'Суббота', 
+      time: settings?.working_hours?.saturday || '10:00 - 15:00' 
+    },
+    { 
+      day: 'Воскресенье', 
+      time: settings?.working_hours?.sunday || 'Выходной' 
+    }
   ]
 
   return (

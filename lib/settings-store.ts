@@ -13,6 +13,12 @@ export interface SiteSettings {
   analyticsEnabled: boolean
   quiz_mode?: "custom" | "external"
   quiz_url?: string
+  // Время работы
+  working_hours?: {
+    monday_friday?: string
+    saturday?: string
+    sunday?: string
+  }
 }
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
