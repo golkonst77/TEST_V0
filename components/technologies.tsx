@@ -61,7 +61,7 @@ const benefits = [
 export function Technologies() {
   return (
     <section className="py-20 bg-gray-50">
-      <div className="container">
+      <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-gradient-to-r from-blue-600 to-purple-600">Новинка: ИИ-обработка документов</Badge>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">

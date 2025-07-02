@@ -132,7 +132,7 @@ export function Calculator() {
   if (configLoading) {
     return (
       <section className="py-20 bg-gray-50">
-        <div className="container">
+        <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Загрузка калькулятора...</p>
@@ -144,7 +144,7 @@ export function Calculator() {
 
   return (
     <section className="py-20 bg-gray-50">
-      <div className="container">
+      <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <div className="flex justify-center mb-4">
             <CalculatorIcon className="h-12 w-12 text-blue-600" />

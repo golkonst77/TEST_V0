@@ -30,7 +30,7 @@ const news = [
 export function News() {
   return (
     <section className="py-20 bg-gray-50">
-      <div className="container">
+      <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-16">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">Новости и статьи</h2>
