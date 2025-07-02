@@ -140,7 +140,7 @@ export function AIDocuments() {
             </svg>
           </div>
           <h2 className="text-4xl font-bold text-white mb-4">
-            Сопровождение налоговых проверок
+            ИИ-обработка документов
           </h2>
           <p className="text-xl text-blue-100 mb-4">
             Автоматическая обработка и анализ документов с помощью искусственного интеллекта
