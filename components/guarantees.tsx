@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Shield, Clock, Lock, Users, CheckCircle } from "lucide-react"
+import { AIDocuments } from "@/components/ai-documents"
 
 const guarantees = [
   {
@@ -28,18 +29,7 @@ const guarantees = [
   },
 ]
 
-const caseStudies = [
-  {
-    title: "Строительная компания",
-    description: "Оспорили доначисления ФНС на 1.5 млн руб.",
-    result: "Экономия 1.5 млн руб.",
-  },
-  {
-    title: "Торговая сеть",
-    description: "Успешно прошли выездную налоговую проверку",
-    result: "Нулевые доначисления",
-  },
-]
+
 
 export function Guarantees() {
   return (
@@ -83,47 +73,9 @@ export function Guarantees() {
           </div>
         </div>
 
-        {/* Legal Support */}
-        <div className="mb-16 bg-gray-50 rounded-2xl p-8">
-          <h3 className="text-2xl font-bold text-center mb-8">Сопровождение налоговых проверок</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <h4 className="text-xl font-semibold mb-4">Что мы делаем:</h4>
-              <ul className="space-y-3">
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Анализ рисков и подготовка к проверке</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Подготовка всех необходимых документов</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Защита интересов во время проверки</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Обжалование решений налоговых органов</span>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-xl font-semibold mb-4">Наша команда:</h4>
-              <p className="text-gray-600 mb-4">
-                В нашей команде – опытные налоговые юристы для решения сложных споров с ФНС, ПФР, ФСС.
-              </p>
-              <div className="space-y-3">
-                {caseStudies.map((caseStudy, index) => (
-                  <div key={index} className="bg-white p-4 rounded-lg">
-                    <h5 className="font-semibold text-gray-900">{caseStudy.title}</h5>
-                    <p className="text-sm text-gray-600 mb-2">{caseStudy.description}</p>
-                    <p className="text-sm font-medium text-green-600">{caseStudy.result}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {/* AI Documents Section */}
+        <div className="mb-16 -mx-4">
+          <AIDocuments />
         </div>
 
         {/* CTA */}

@@ -1,6 +1,5 @@
 import { Hero } from "@/components/hero"
 import { Services } from "@/components/services"
-import { AIDocuments } from "@/components/ai-documents"
 import { Guarantees } from "@/components/guarantees"
 import { PricingSection } from "@/components/pricing-section"
 import { Calculator } from "@/components/calculator"
@@ -12,7 +11,6 @@ export default function HomePage() {
     <main className="min-h-screen">
       <Hero />
       <Services />
-      <AIDocuments />
       <Guarantees />
       <PricingSection />
       <Calculator />
