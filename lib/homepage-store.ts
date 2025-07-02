@@ -70,9 +70,9 @@ let heroConfig: HeroConfig = {
   ],
   background: { image: "/hero-bg.jpg", overlay: 10 },
   layout: {
-    alignment: "left",
-    maxWidth: "max-w-2xl",
-    marginLeft: 80,
+    alignment: "center",
+    maxWidth: "max-w-4xl",
+    marginLeft: 0,
     marginTop: 0,
     marginBottom: 0,
     paddingX: 20,

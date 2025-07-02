@@ -170,7 +170,7 @@ export function Hero() {
       },
     ],
     background: { image: "/hero-bg.jpg", overlay: 30 },
-    layout: { alignment: "left", maxWidth: "max-w-2xl", marginLeft: 80, marginTop: 0, marginBottom: 0, paddingX: 20 },
+    layout: { alignment: "center", maxWidth: "max-w-4xl", marginLeft: 0, marginTop: 0, marginBottom: 0, paddingX: 20 },
   }
 
   const activeConfig = config || defaultConfig
@@ -203,7 +203,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-grid-slate-200/20 [mask-image:linear-gradient(0deg,transparent,rgba(0,0,0,0.1))]" />
 
       <div
-        className="container relative z-10"
+        className="container relative z-10 mx-auto"
         style={{
           paddingLeft: `${activeConfig.layout.marginLeft}px`,
           paddingTop: `${activeConfig.layout.marginTop}px`,
@@ -211,7 +211,7 @@ export function Hero() {
         }}
       >
         <div
-          className={`${activeConfig.layout.maxWidth} text-${activeConfig.layout.alignment}`}
+          className={`${activeConfig.layout.maxWidth} mx-auto text-${activeConfig.layout.alignment}`}
           style={{
             paddingLeft: `${activeConfig.layout.paddingX}px`,
             paddingRight: `${activeConfig.layout.paddingX}px`,
@@ -252,7 +252,7 @@ export function Hero() {
           )}
 
           {/* Features */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 max-w-2xl">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 max-w-3xl mx-auto">
             {activeConfig.features
               .filter((feature: any) => feature.show)
               .map((feature: any) => {
