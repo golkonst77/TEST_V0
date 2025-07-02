@@ -132,33 +132,52 @@ export function Contacts() {
               <div className="p-4 border-b border-gray-700">
                 <h3 className="text-lg font-semibold flex items-center">
                   <MapPin className="w-5 h-5 mr-2 text-red-400" />
-                  Наше местоположение
+                  Как нас найти
                 </h3>
+                <p className="text-gray-400 text-sm mt-1">Наш офис находится в Калуге, удобная транспортная доступность</p>
               </div>
               <div id="map" className="relative">
-                {/* Яндекс карта для Калуги */}
-                <iframe
-                  src="https://yandex.ru/map-widget/v1/?ll=36.272219%2C54.513845&z=12&l=map&pt=36.272219%2C54.513845%2Cpm2rdm"
-                  width="100%"
-                  height="400"
-                  frameBorder="0"
-                  allowFullScreen
-                  className="w-full"
-                  title="Яндекс карта - Калуга"
-                ></iframe>
+                <a 
+                  href="https://yandex.ru/maps/org/prosto_byuro/180493814174/?utm_medium=mapframe&utm_source=maps" 
+                  style={{color:"#eee", fontSize:"12px", position:"absolute", top:"0px", zIndex: 10}}
+                >
+                  Просто Бюро
+                </a>
+                <a 
+                  href="https://yandex.ru/maps/6/kaluga/category/accountants/184105392/?utm_medium=mapframe&utm_source=maps" 
+                  style={{color:"#eee", fontSize:"12px", position:"absolute", top:"14px", zIndex: 10}}
+                >
+                  Бухгалтерские услуги в Калуге
+                </a>
+                <a 
+                  href="https://yandex.ru/maps/6/kaluga/category/legal_services/184105630/?utm_medium=mapframe&utm_source=maps" 
+                  style={{color:"#eee", fontSize:"12px", position:"absolute", top:"28px", zIndex: 10}}
+                >
+                  Юридические услуги в Калуге
+                </a>
+                <iframe 
+                  src="https://yandex.ru/map-widget/v1/?ll=36.258698%2C54.512174&mode=search&oid=180493814174&ol=biz&sctx=ZAAAAAgBEAAaKAoSCY7pCUs8HkJAEQagUbr0N0tAEhIJj3IwmwDDvj8RkUdwI2WLpD8iBgABAgMEBSgKOABA5KINSAFiKHJlbGV2X3JhbmtpbmdfbDFfZm9ybXVsYT1sMV9kYzgwMzIyMV9leHBqAnJ1nQHNzMw9oAEAqAEAvQFbz5MXwgEGnpOUsqAFggIV0L%2FRgNC%2B0YHRgtC%2BINCx0Y7RgNC%2BigIAkgIAmgIMZGVza3RvcC1tYXBz&sll=36.258698%2C54.512174&sspn=0.120163%2C0.040052&text=%D0%BF%D1%80%D0%BE%D1%81%D1%82%D0%BE%20%D0%B1%D1%8E%D1%80%D0%BE&z=14" 
+                  width="100%" 
+                  height="400" 
+                  frameBorder="0" 
+                  allowFullScreen={true} 
+                  style={{position:"relative"}}
+                  className="w-full rounded-lg"
+                  title="Карта офиса Просто Бюро в Калуге"
+                />
               </div>
               
               {/* Информация под картой */}
-              <div className="p-4 bg-gray-750">
+              <div className="p-4 bg-gray-800">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-400">Калуга, Россия</span>
                   <a 
-                    href="https://yandex.ru/maps/?text=Калуга"
+                    href="https://yandex.ru/maps/org/prosto_byuro/180493814174/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-400 hover:text-blue-300 transition-colors"
                   >
-                    Открыть в Яндекс.Картах →
+                    Показать на карте →
                   </a>
                 </div>
               </div>
