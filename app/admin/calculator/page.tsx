@@ -38,7 +38,7 @@ export default function AdminCalculatorPage() {
     { id: 1, name: "Бухгалтерский учет", serviceKey: "accounting", price: 3000, active: true },
     { id: 2, name: "Зарплата и кадры", serviceKey: "payroll", price: 1500, active: true },
     { id: 3, name: "Юридическое сопровождение", serviceKey: "legal", price: 2000, active: true },
-    { id: 4, name: "Регистрация фирм", serviceKey: "registration", price: 5000, active: true },
+    { id: 4, name: "Кассовый терминал", serviceKey: "terminal", price: 1200, active: true },
   ])
 
   const [multipliers, setMultipliers] = useState<Multipliers>({

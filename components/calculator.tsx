@@ -60,7 +60,7 @@ export function Calculator() {
           accounting: { price: 3000, description: "Бухгалтерский учет" },
           payroll: { price: 1500, description: "Зарплата и кадры" },
           legal: { price: 2000, description: "Юридическое сопровождение" },
-          registration: { price: 5000, description: "Регистрация фирм" },
+          terminal: { price: 1200, description: "Кассовый терминал" },
         },
         multipliers: {
           taxSystems: { usn: 1, osn: 1.5, envd: 0.8, patent: 0.7 },
@@ -77,7 +77,7 @@ export function Calculator() {
     accounting: { price: 3000, description: "Бухгалтерский учет" },
     payroll: { price: 1500, description: "Зарплата и кадры" },
     legal: { price: 2000, description: "Юридическое сопровождение" },
-    registration: { price: 5000, description: "Регистрация фирм" },
+    terminal: { price: 1200, description: "Кассовый терминал" },
   }
 
   const taxSystemMultipliers = config?.multipliers.taxSystems || {
@@ -302,12 +302,12 @@ export function Calculator() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
-                      id="registration"
-                      checked={state.services.includes("registration")}
-                      onCheckedChange={(checked) => handleServiceChange("registration", checked as boolean)}
+                      id="terminal"
+                      checked={state.services.includes("terminal")}
+                      onCheckedChange={(checked) => handleServiceChange("terminal", checked as boolean)}
                     />
-                    <Label htmlFor="registration" className="text-sm font-normal">
-                      Регистрация фирм (от {servicePrices.registration.price.toLocaleString()} руб)
+                    <Label htmlFor="terminal" className="text-sm font-normal">
+                      Кассовый терминал (от {servicePrices.terminal.price.toLocaleString()} руб)
                     </Label>
                   </div>
                 </div>

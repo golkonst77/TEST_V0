@@ -6,7 +6,7 @@ let calculatorConfig = {
     accounting: { price: 3000, description: "Бухгалтерский учет" },
     payroll: { price: 1500, description: "Зарплата и кадры" },
     legal: { price: 2000, description: "Юридическое сопровождение" },
-    registration: { price: 5000, description: "Регистрация фирм" },
+    terminal: { price: 1200, description: "Кассовый терминал" },
   },
   multipliers: {
     taxSystems: {
