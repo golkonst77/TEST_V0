@@ -20,7 +20,8 @@ import {
   ChevronRight,
   Eye,
   ArrowLeft,
-  Palette
+  Palette,
+  Mail
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -71,6 +72,12 @@ const menuItems = [
     href: "/admin/coupons",
     icon: Gift,
     color: "text-pink-600"
+  },
+  {
+    title: "Рассылка",
+    href: "/admin/newsletter",
+    icon: Mail,
+    color: "text-blue-600"
   },
   {
     title: "Медиафайлы",
