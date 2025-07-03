@@ -21,7 +21,7 @@ export interface SiteSettings {
   }
 }
 
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
 export async function getSettings(): Promise<SiteSettings | null> {
   const { data, error } = await supabase
