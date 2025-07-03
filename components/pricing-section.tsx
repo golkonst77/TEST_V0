@@ -100,30 +100,31 @@ const oooPlans = [
 
 export function PricingSection() {
   return (
-    <section className="py-20 bg-white">
+    <section className="py-8 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div className="text-center mb-6">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
             Прозрачные тарифы без скрытых платежей
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Выберите подходящий тариф для вашего бизнеса. Все цены указаны с учетом НДС.
-          </p>
+          <div className="flex justify-center w-full mb-6">
+            <div className="px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-base font-medium text-gray-900">
+              Выберите подходящий тариф для вашего бизнеса.
+            </div>
+          </div>
         </div>
 
         {/* ИП Тарифы */}
-        <div className="mb-20">
-          <div className="text-center mb-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Тарифы для ИП</h3>
-            <p className="text-gray-600">Ведение учета для индивидуальных предпринимателей</p>
+        <div className="mb-10">
+          <div className="text-center mb-4">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Тарифы для ИП</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {ipPlans.map((plan, index) => (
               <Card
                 key={index}
-                className={`relative ${
-                  plan.popular ? "border-2 border-blue-500 shadow-lg scale-105" : "border border-gray-200"
+                className={`relative shadow-xl h-auto ${
+                  plan.popular ? "border-2 border-blue-500 scale-105" : "border border-gray-200"
                 }`}
               >
                 {plan.popular && (
@@ -134,14 +135,14 @@ export function PricingSection() {
                 )}
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
+                  <CardDescription>{plan.description || "\u00A0"}</CardDescription>
                   <div className="mt-4">
                     <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                     <span className="text-gray-600 ml-2">₽/{plan.period}</span>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 mb-6">
+                <CardContent className="flex flex-col px-6">
+                  <ul className="space-y-3 max-h-[180px] overflow-auto">
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start">
                         <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
@@ -149,39 +150,43 @@ export function PricingSection() {
                       </li>
                     ))}
                   </ul>
-                  <Button
-                    className={`w-full ${
-                      plan.popular
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        : ""
-                    }`}
-                    variant={plan.popular ? "default" : "outline"}
-                    asChild
-                  >
-                    <Link href="/pricing/ip">
-                      Выбрать тариф
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
                 </CardContent>
               </Card>
+            ))}
+          </div>
+          {/* Кнопки под карточками ИП */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center mt-8 mb-12 w-full">
+            {ipPlans.map((plan, index) => (
+              <Button
+                key={index}
+                size="lg"
+                className={`w-full max-w-[320px] text-lg font-bold shadow-xl flex items-center justify-center rounded-xl px-8 py-4 transition-all duration-200 ${
+                  plan.popular ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" : "bg-white border-2 border-blue-200 hover:border-blue-400 text-blue-900"
+                }`}
+                variant={plan.popular ? "default" : "outline"}
+                asChild
+              >
+                <Link href="/pricing/ip">
+                  Выбрать тариф
+                  <ArrowRight className="ml-3 h-5 w-5" />
+                </Link>
+              </Button>
             ))}
           </div>
         </div>
 
         {/* ООО Тарифы */}
         <div>
-          <div className="text-center mb-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Тарифы для ООО</h3>
-            <p className="text-gray-600">Полное бухгалтерское обслуживание организаций</p>
+          <div className="text-center mb-4">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Тарифы для ООО</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {oooPlans.map((plan, index) => (
               <Card
                 key={index}
-                className={`relative ${
-                  plan.popular ? "border-2 border-blue-500 shadow-lg scale-105" : "border border-gray-200"
+                className={`relative shadow-xl h-auto ${
+                  plan.popular ? "border-2 border-blue-500 scale-105" : "border border-gray-200"
                 }`}
               >
                 {plan.popular && (
@@ -192,14 +197,14 @@ export function PricingSection() {
                 )}
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
+                  <CardDescription>{plan.description || "\u00A0"}</CardDescription>
                   <div className="mt-4">
                     <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                     <span className="text-gray-600 ml-2">₽/{plan.period}</span>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 mb-6">
+                <CardContent className="flex flex-col px-6">
+                  <ul className="space-y-3 max-h-[180px] overflow-auto">
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start">
                         <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
@@ -207,22 +212,27 @@ export function PricingSection() {
                       </li>
                     ))}
                   </ul>
-                  <Button
-                    className={`w-full ${
-                      plan.popular
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        : ""
-                    }`}
-                    variant={plan.popular ? "default" : "outline"}
-                    asChild
-                  >
-                    <Link href="/pricing/ooo">
-                      Выбрать тариф
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
                 </CardContent>
               </Card>
+            ))}
+          </div>
+          {/* Кнопки под карточками ООО */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center mt-8 mb-12 w-full">
+            {oooPlans.map((plan, index) => (
+              <Button
+                key={index}
+                size="lg"
+                className={`w-full max-w-[320px] text-lg font-bold shadow-xl flex items-center justify-center rounded-xl px-8 py-4 transition-all duration-200 ${
+                  plan.popular ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" : "bg-white border-2 border-blue-200 hover:border-blue-400 text-blue-900"
+                }`}
+                variant={plan.popular ? "default" : "outline"}
+                asChild
+              >
+                <Link href="/pricing/ooo">
+                  Выбрать тариф
+                  <ArrowRight className="ml-3 h-5 w-5" />
+                </Link>
+              </Button>
             ))}
           </div>
         </div>
