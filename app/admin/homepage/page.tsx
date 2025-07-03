@@ -11,7 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Save, Eye } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { Save, Eye, Upload, Image, Trash2 } from "lucide-react"
 
 interface HeroConfig {
   badge: {
@@ -53,7 +54,10 @@ export default function HomepageEditor() {
   const [config, setConfig] = useState<HeroConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [lastSaved, setLastSaved] = useState<string>("")
+  const [imageKey, setImageKey] = useState(0)
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchConfig()
@@ -115,6 +119,89 @@ export default function HomepageEditor() {
     const newFeatures = [...config.features]
     newFeatures[index] = { ...newFeatures[index], [field]: value }
     setConfig({ ...config, features: newFeatures })
+  }
+
+  const handleImageUpload = async (file: File) => {
+    setUploadingImage(true)
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      console.log("Homepage: Uploading background image:", file.name)
+      const response = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log("Homepage: Upload result:", data)
+        
+        // Обновляем состояние с новым URL изображения
+        updateConfig("background.image", data.url)
+        
+        // Принудительно обновляем состояние для отображения
+        setConfig(prev => prev ? {
+          ...prev,
+          background: {
+            ...prev.background,
+            image: data.url
+          }
+        } : prev)
+        
+        // Принудительно обновляем изображение
+        setImageKey(prev => prev + 1)
+        
+        toast({
+          title: "Изображение загружено!",
+          description: "Фоновое изображение успешно загружено",
+        })
+        
+        // Автосохранение через 500мс
+        setTimeout(async () => {
+          try {
+            const saveResponse = await fetch("/api/admin/homepage", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ 
+                hero: {
+                  ...config,
+                  background: {
+                    ...config?.background,
+                    image: data.url
+                  }
+                }
+              }),
+            })
+            
+            if (saveResponse.ok) {
+              setLastSaved(new Date().toLocaleTimeString())
+              console.log("Homepage: Auto-saved after image upload")
+            }
+          } catch (error) {
+            console.error("Homepage: Auto-save failed:", error)
+          }
+        }, 500)
+        
+      } else {
+        const errorData = await response.json()
+        console.error("Homepage: Upload error:", errorData)
+        toast({
+          title: "Ошибка",
+          description: errorData.error || "Ошибка при загрузке изображения",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error('Homepage: Upload exception:', error)
+      toast({
+        title: "Ошибка",
+        description: "Ошибка при загрузке изображения",
+        variant: "destructive",
+      })
+    } finally {
+      setUploadingImage(false)
+    }
   }
 
   if (loading) {
@@ -306,6 +393,90 @@ export default function HomepageEditor() {
           <TabsContent value="layout" className="space-y-4">
             <Card className="border border-gray-200">
               <CardHeader className="pb-3">
+                <CardTitle className="text-base">Фоновое изображение</CardTitle>
+                <CardDescription className="text-sm">Настройка фона главной страницы</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label className="text-sm">Фоновое изображение</Label>
+                  <div className="mt-2 space-y-3">
+                    {config.background.image && (
+                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <Image className="h-5 w-5 text-gray-400" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">Текущее изображение</p>
+                          <p className="text-xs text-gray-500">{config.background.image}</p>
+                        </div>
+                        <img 
+                          src={`${config.background.image}?v=${imageKey}`} 
+                          alt="Фон" 
+                          className="h-16 w-24 object-cover rounded border"
+                          key={`${config.background.image}-${imageKey}`}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => updateConfig("background.image", "")}
+                          className="h-8 w-8 p-0 text-red-500"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById('background-upload')?.click()}
+                        className="flex items-center space-x-2"
+                        disabled={uploadingImage}
+                      >
+                        <Upload className="h-4 w-4" />
+                        <span>{uploadingImage ? "Загрузка..." : "Загрузить изображение"}</span>
+                      </Button>
+                      <input
+                        id="background-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            handleImageUpload(file)
+                          }
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm">Прямая ссылка на изображение</Label>
+                      <Input
+                        value={config.background.image}
+                        onChange={(e) => updateConfig("background.image", e.target.value)}
+                        placeholder="https://example.com/image.jpg"
+                        className="h-8 text-sm mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm">Затемнение фона: {config.background.overlay}%</Label>
+                  <Slider
+                    value={[config.background.overlay]}
+                    onValueChange={([value]) => updateConfig("background.overlay", value)}
+                    max={100}
+                    step={5}
+                    className="mt-2"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>Прозрачно</span>
+                    <span>Темно</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border border-gray-200">
+              <CardHeader className="pb-3">
                 <CardTitle className="text-base">Расположение и отступы</CardTitle>
                 <CardDescription className="text-sm">Настройка позиционирования контента</CardDescription>
               </CardHeader>
@@ -350,16 +521,6 @@ export default function HomepageEditor() {
                     onValueChange={([value]) => updateConfig("layout.marginBottom", value)}
                     max={100}
                     step={10}
-                    className="mt-2"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm">Прозрачность фона: {config.background.overlay}%</Label>
-                  <Slider
-                    value={[config.background.overlay]}
-                    onValueChange={([value]) => updateConfig("background.overlay", value)}
-                    max={100}
-                    step={5}
                     className="mt-2"
                   />
                 </div>

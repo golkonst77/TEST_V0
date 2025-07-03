@@ -314,9 +314,26 @@ export function Calculator() {
               </div>
 
               {/* Блок с итоговой стоимостью - показываем всегда */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border-2 border-blue-100">
+              <div className={`bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border-2 border-blue-100 ${totalPrice > 0 ? 'animate-pulse-glow' : ''}`}>
+                <style jsx>{`
+                  @keyframes pulse-glow {
+                    0%, 100% {
+                      background: linear-gradient(to right, rgb(239 246 255), rgb(250 245 255));
+                      border-color: rgb(147 197 253);
+                      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+                    }
+                    50% {
+                      background: linear-gradient(to right, rgb(219 234 254), rgb(237 233 254));
+                      border-color: rgb(99 102 241);
+                      box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.3);
+                    }
+                  }
+                  .animate-pulse-glow {
+                    animation: pulse-glow 2s ease-in-out infinite;
+                  }
+                `}</style>
                 <div className="text-center">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Ориентировочная стоимость</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Стоимость вашего тарифа</h3>
                   <div className="text-4xl font-bold text-blue-600 mb-4">
                     {totalPrice > 0 ? `${totalPrice.toLocaleString()} руб/мес` : "Выберите услуги"}
                   </div>

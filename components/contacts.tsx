@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react'
+import { useContactForm } from "@/hooks/use-contact-form"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 
 interface Settings {
   phone: string
@@ -17,6 +19,8 @@ interface Settings {
 
 export function Contacts() {
   const [settings, setSettings] = useState<Settings | null>(null)
+  const { openContactForm } = useContactForm()
+  const { handleCruiseClick } = useCruiseClick()
 
   useEffect(() => {
     fetch('/api/settings')
@@ -72,7 +76,7 @@ export function Contacts() {
   ]
 
   return (
-    <section className="py-20 bg-gray-600 text-white">
+    <section id="contacts" className="py-20 bg-gray-600 text-white">
       <div className="container mx-auto px-4">
         {/* Заголовок */}
         <div className="text-center mb-16">
@@ -80,7 +84,7 @@ export function Contacts() {
             Свяжитесь с нами
           </h2>
           <p className="text-xl text-gray-200 max-w-2xl mx-auto">
-            Готовы обсудить ваш проект? Мы всегда на связи и готовы помочь
+            Готовы обсудить ваш вопрос? Мы всегда на связи и готовы помочь
           </p>
         </div>
 
@@ -134,7 +138,10 @@ export function Contacts() {
               <p className="text-blue-100 mb-4">
                 Оставьте заявку, и мы свяжемся с вами в течение 15 минут
               </p>
-              <button className="w-full bg-white text-blue-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors">
+              <button 
+                onClick={handleCruiseClick}
+                className="w-full bg-white text-blue-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors"
+              >
                 Получить консультацию
               </button>
             </div>

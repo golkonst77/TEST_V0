@@ -1,0 +1,53 @@
+{
+  "badge": {
+    "text": "Защищаем ваш бизнес",
+    "show": true
+  },
+  "title": {
+    "text": "ПростоБюро — бухгалтерия, с которой вы спокойно едете к своей мечте на",
+    "highlightText": "круиз контроле!"
+  },
+  "description": "Полный аутсорсинг бухгалтерии для ИП и ООО. Всё прозрачно, вовремя и без головной боли — ведение, отчётность, налоги, консультации и юридическое сопровождение.",
+  "button": {
+    "text": "Хочу на круиз без штрафов",
+    "show": true
+  },
+  "features": [
+    {
+      "id": "cruise-control",
+      "title": "Круиз-контроль:",
+      "description": "Мы следим за сроками, вы — за ростом",
+      "icon": "CheckCircle",
+      "color": "blue",
+      "show": true
+    },
+    {
+      "id": "communication",
+      "title": "На связи:",
+      "description": "Личный бухгалтер в Telegram или WhatsApp",
+      "icon": "MessageCircle",
+      "color": "green",
+      "show": true
+    },
+    {
+      "id": "no-risks",
+      "title": "Без рисков:",
+      "description": "Защита от штрафов и проверок",
+      "icon": "Shield",
+      "color": "orange",
+      "show": true
+    }
+  ],
+  "background": {
+    "image": "/uploads/1751558242496_ChatGPT_Image_24____._2025__.__11_06_22.png",
+    "overlay": 0
+  },
+  "layout": {
+    "alignment": "left",
+    "maxWidth": "max-w-4xl",
+    "marginLeft": 100,
+    "marginTop": 0,
+    "marginBottom": 0,
+    "paddingX": 60
+  }
+}

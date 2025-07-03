@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight, Phone } from "lucide-react"
 import { QuizModalTariff } from "@/components/quiz-modal-tariff"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 import React from "react"
 
 const oooPlans = [
@@ -57,6 +58,7 @@ const oooPlans = [
 
 export default function OOOPricingPage() {
   const [quizOpen, setQuizOpen] = React.useState(false)
+  const { handleCruiseClick } = useCruiseClick()
   return (
     <div className="container py-20">
       <div className="text-center mb-16">
@@ -144,7 +146,10 @@ export default function OOOPricingPage() {
             <p className="text-gray-600 mb-4">
               Нужны дополнительные услуги или особые условия? Мы составим персональное предложение под ваш бизнес.
             </p>
-            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+            <Button 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              onClick={handleCruiseClick}
+            >
               Получить предложение
             </Button>
           </CardContent>

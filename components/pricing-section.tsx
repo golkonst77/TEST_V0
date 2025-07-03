@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { QuizModalTariff } from "@/components/quiz-modal-tariff"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 import React from "react"
 
 const ipPlans = [
@@ -104,9 +105,30 @@ const oooPlans = [
 
 export function PricingSection() {
   const [quizOpen, setQuizOpen] = React.useState(false)
+  const { handleCruiseClick } = useCruiseClick()
 
   return (
     <section className="py-8 bg-white">
+      <style jsx global>{`
+        @keyframes priceGlow {
+          0%, 100% {
+            color: rgb(17, 24, 39);
+            text-shadow: 0 0 0 transparent;
+            transform: scale(1);
+          }
+          50% {
+            color: rgb(59, 130, 246);
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+            transform: scale(1.05);
+          }
+        }
+        
+        .price-animate {
+          animation: priceGlow 2s ease-in-out infinite;
+          display: inline-block;
+        }
+      `}</style>
+      
       <div className="container mx-auto px-4">
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
@@ -143,7 +165,7 @@ export function PricingSection() {
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
                   <CardDescription>{plan.description || "\u00A0"}</CardDescription>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                    <span className="text-4xl font-bold price-animate">{plan.price}</span>
                     <span className="text-gray-600 ml-2">₽/{plan.period}</span>
                   </div>
                 </CardHeader>
@@ -203,7 +225,7 @@ export function PricingSection() {
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
                   <CardDescription>{plan.description || "\u00A0"}</CardDescription>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                    <span className="text-4xl font-bold price-animate">{plan.price}</span>
                     <span className="text-gray-600 ml-2">₽/{plan.period}</span>
                   </div>
                 </CardHeader>
@@ -255,22 +277,22 @@ export function PricingSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
                 <h4 className="font-semibold text-white mb-2">Регистрация ИП</h4>
-                <p className="text-2xl font-bold text-blue-300 mb-2">3 990 ₽</p>
+                <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">3 990 ₽</p>
                 <p className="text-sm text-blue-100">Под ключ за 3 дня</p>
               </div>
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
                 <h4 className="font-semibold text-white mb-2">Регистрация ООО</h4>
-                <p className="text-2xl font-bold text-blue-300 mb-2">9 990 ₽</p>
+                <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">9 990 ₽</p>
                 <p className="text-sm text-blue-100">Полное сопровождение</p>
               </div>
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
                 <h4 className="font-semibold text-white mb-2">Налоговая консультация</h4>
-                <p className="text-2xl font-bold text-blue-300 mb-2">2 500 ₽</p>
+                <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">2 500 ₽</p>
                 <p className="text-sm text-blue-100">1 час с экспертом</p>
               </div>
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
                 <h4 className="font-semibold text-white mb-2">Восстановление учета</h4>
-                <p className="text-2xl font-bold text-blue-300 mb-2">от 15 000 ₽</p>
+                <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">от 15 000 ₽</p>
                 <p className="text-sm text-blue-100">За период</p>
               </div>
             </div>
@@ -284,6 +306,7 @@ export function PricingSection() {
           <Button
             size="lg"
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            onClick={handleCruiseClick}
           >
             Получить консультацию
           </Button>

@@ -11,6 +11,26 @@ import { useContactForm } from "@/hooks/use-contact-form"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowRight, ArrowLeft, Gift, Phone, X } from "lucide-react"
 
+// CSS анимация для мигающей карточки скидки
+const discountCardAnimation = `
+  @keyframes discountGlow {
+    0%, 100% {
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e5e7eb;
+    }
+    50% {
+      background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
+      box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.2), 0 4px 6px -2px rgba(6, 182, 212, 0.1);
+      border: 1px solid #06b6d4;
+    }
+  }
+  
+  .discount-card-animate {
+    animation: discountGlow 2s ease-in-out infinite;
+  }
+`
+
 interface QuizAnswer {
   questionId: number
   answer: string | string[]
@@ -88,8 +108,9 @@ function QuizSidebar({
 }) {
   return (
     <div className="w-80 bg-gray-50 px-6 py-6 border-l border-gray-100 flex flex-col justify-between items-center">
+      <style dangerouslySetInnerHTML={{ __html: discountCardAnimation }} />
       <div className="w-full flex flex-col items-center">
-        <div className="bg-white rounded-2xl shadow-md flex flex-col items-center mb-3 min-h-[80px] max-h-[100px] p-2 w-full">
+        <div className={`rounded-2xl flex flex-col items-center mb-3 min-h-[80px] max-h-[100px] p-2 w-full ${calculateDiscount() > 0 ? 'discount-card-animate' : 'bg-white shadow-md'}`}>
           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-100 mb-1">
             <span className="text-xl text-cyan-500">₽</span>
           </div>
@@ -123,9 +144,12 @@ function QuizSidebar({
           <Button
             onClick={handleSubmit}
             disabled={!phone.trim() || isSubmitting}
-            className="bg-green-500 hover:bg-green-600 text-white w-full mt-4 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-full mt-4 py-4 rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 border-2 border-orange-400 hover:border-orange-300"
+            style={{
+              boxShadow: '0 10px 25px rgba(249, 115, 22, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+            }}
           >
-            {isSubmitting ? "Отправляем..." : "Получить предложение"}
+            {isSubmitting ? "Отправляем..." : "🎁 Получить предложение"}
           </Button>
         ) : null}
       </div>
@@ -204,12 +228,31 @@ export function QuizModal() {
 
     setIsSubmitting(true)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      // Генерируем купон
       const discount = calculateDiscount()
       const code = `PROSTOBURO-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-      setCoupon(`${code}-${discount}`)
+      const fullCoupon = `${code}-${discount}`
+      
+      // Сохраняем купон в базу данных
+      const response = await fetch('/api/coupons', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: fullCoupon,
+          phone: phone.trim(),
+          discount: discount
+        })
+      })
+      
+      if (!response.ok) {
+        throw new Error('Ошибка при сохранении купона')
+      }
+      
+      const result = await response.json()
+      console.log('Купон сохранен:', result)
+      
+      setCoupon(fullCoupon)
       setShowThanks(true)
       // Reset form
       setCurrentStep(0)
@@ -217,7 +260,13 @@ export function QuizModal() {
       setPhone("")
       setWantChecklist(true)
       closeContactForm()
+      
+      toast({
+        title: "Успешно!",
+        description: "Ваш купон сохранен. Мы свяжемся с вами в ближайшее время.",
+      })
     } catch (error) {
+      console.error('Ошибка при отправке:', error)
       toast({
         title: "Ошибка отправки",
         description: "Попробуйте еще раз или свяжитесь с нами по телефону.",

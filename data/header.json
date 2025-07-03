@@ -1,0 +1,72 @@
+{
+  "header": {
+    "logo": {
+      "text": "ПростоБюро",
+      "show": true,
+      "type": "image",
+      "imageUrl": "/uploads/1751554532718________.jpg"
+    },
+    "phone": {
+      "number": "+7 953 330-17-77",
+      "show": true
+    },
+    "social": {
+      "telegram": "https://t.me/prostoburo",
+      "vk": "https://m.vk.com/buh_urist?from=groups",
+      "show": true
+    },
+    "ctaButton": {
+      "text": "Получить скидку",
+      "show": true
+    },
+    "menuItems": [
+      {
+        "id": "services",
+        "title": "Услуги",
+        "href": "/services",
+        "show": true,
+        "type": "link"
+      },
+      {
+        "id": "pricing",
+        "title": "Тарифы",
+        "href": "/pricing",
+        "show": true,
+        "type": "link"
+      },
+      {
+        "id": "calculator",
+        "title": "Калькулятор",
+        "href": "/calculator",
+        "show": true,
+        "type": "link"
+      },
+      {
+        "id": "about",
+        "title": "О компании",
+        "href": "/about",
+        "show": true,
+        "type": "link"
+      },
+      {
+        "id": "blog",
+        "title": "Блог",
+        "href": "/blog",
+        "show": true,
+        "type": "link"
+      },
+      {
+        "id": "contacts",
+        "title": "Контакты",
+        "href": "#contacts",
+        "show": true,
+        "type": "link"
+      }
+    ],
+    "layout": {
+      "sticky": true,
+      "background": "white",
+      "height": 64
+    }
+  }
+}

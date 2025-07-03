@@ -6,11 +6,7 @@ export async function GET() {
     const config = getHeroConfig()
     console.log("Публичный API: Отправка настроек главной страницы")
 
-    return NextResponse.json({
-      status: "ok",
-      message: "Homepage API working",
-      hero: config,
-    })
+    return NextResponse.json(config)
   } catch (error) {
     console.error("Ошибка публичного API главной страницы:", error)
     return NextResponse.json({ status: "error", message: "Ошибка сервера" }, { status: 500 })

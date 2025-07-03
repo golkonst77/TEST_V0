@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar, Clock, User, ArrowRight, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { NewsletterSubscription } from "@/components/newsletter-subscription"
 
 export default function BlogPage() {
   const posts = [
@@ -168,23 +169,7 @@ export default function BlogPage() {
 
         {/* Подписка на новости */}
         <div className="mt-20">
-          <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-            <CardContent className="p-8 text-center">
-              <h3 className="text-2xl font-bold mb-4">Подпишитесь на наши новости</h3>
-              <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-                Получайте свежие статьи о бухгалтерии, изменениях в законодательстве и полезные советы для бизнеса
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                <Input
-                  placeholder="Ваш email"
-                  className="bg-white text-gray-900 border-0"
-                />
-                <Button variant="secondary" className="bg-white text-blue-600 hover:bg-gray-100">
-                  Подписаться
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <NewsletterSubscription />
         </div>
       </div>
     </div>

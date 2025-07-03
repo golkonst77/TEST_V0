@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "code": "PROSTOBURO-DWA7V1-10000",
+    "phone": "+79398414892",
+    "discount": 10000,
+    "createdAt": "2025-07-03T14:03:44.156Z",
+    "used": false
+  },
+  {
+    "id": 2,
+    "code": "PROSTOBURO-NQLLAR-10000",
+    "phone": "+7 953 330-17-22",
+    "discount": 10000,
+    "createdAt": "2025-07-03T14:04:29.592Z",
+    "used": true,
+    "usedAt": "2025-07-03T14:06:06.034Z"
+  }
+]

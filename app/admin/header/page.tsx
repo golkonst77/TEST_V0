@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Save, Eye, RotateCcw, Plus, Trash2 } from "lucide-react"
+import { Save, Eye, RotateCcw, Plus, Trash2, Upload, Image } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 
@@ -25,6 +25,8 @@ interface HeaderConfig {
   logo: {
     text: string
     show: boolean
+    type: "text" | "image"
+    imageUrl?: string
   }
   phone: {
     number: string
@@ -51,6 +53,8 @@ const defaultConfig: HeaderConfig = {
   logo: {
     text: "ПростоБюро",
     show: true,
+    type: "text",
+    imageUrl: "",
   },
   phone: {
     number: "+7 953 777 77 77",
@@ -81,6 +85,7 @@ export default function HeaderEditor() {
   const [config, setConfig] = useState<HeaderConfig>(defaultConfig)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -88,6 +93,7 @@ export default function HeaderEditor() {
         const response = await fetch("/api/admin/header")
         if (response.ok) {
           const data = await response.json()
+          console.log("HeaderEditor: Fetched config:", data)
           setConfig(data.header || defaultConfig)
         }
       } catch (error) {
@@ -104,6 +110,7 @@ export default function HeaderEditor() {
   const handleSave = async () => {
     setSaving(true)
     try {
+      console.log("HeaderEditor: Saving config:", config)
       const response = await fetch("/api/admin/header", {
         method: "PUT",
         headers: {
@@ -113,6 +120,8 @@ export default function HeaderEditor() {
       })
 
       if (response.ok) {
+        const result = await response.json()
+        console.log("HeaderEditor: Save result:", result)
         toast.success("Настройки шапки сохранены!")
       } else {
         toast.error("Ошибка при сохранении настроек")
@@ -131,6 +140,7 @@ export default function HeaderEditor() {
   }
 
   const updateConfig = (path: string, value: any) => {
+    console.log("HeaderEditor: Updating config path:", path, "value:", value)
     setConfig((prev) => {
       const newConfig = { ...prev }
       const keys = path.split(".")
@@ -141,6 +151,7 @@ export default function HeaderEditor() {
       }
 
       current[keys[keys.length - 1]] = value
+      console.log("HeaderEditor: New config:", newConfig)
       return newConfig
     })
   }
@@ -171,6 +182,41 @@ export default function HeaderEditor() {
       ...prev,
       menuItems: prev.menuItems.filter((_, i) => i !== index),
     }))
+  }
+
+  const handleLogoUpload = async (file: File) => {
+    setUploadingLogo(true)
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      console.log("HeaderEditor: Uploading logo file:", file.name)
+      const response = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log("HeaderEditor: Upload result:", data)
+        updateConfig("logo.imageUrl", data.url)
+        toast.success("Логотип загружен!")
+        
+        // Автосохранение после загрузки
+        setTimeout(() => {
+          handleSave()
+        }, 500)
+      } else {
+        const errorData = await response.json()
+        console.error("HeaderEditor: Upload error:", errorData)
+        toast.error(errorData.error || "Ошибка при загрузке логотипа")
+      }
+    } catch (error) {
+      console.error('HeaderEditor: Upload exception:', error)
+      toast.error("Ошибка при загрузке логотипа")
+    } finally {
+      setUploadingLogo(false)
+    }
   }
 
   if (loading) {
@@ -231,14 +277,75 @@ export default function HeaderEditor() {
                   />
                 </div>
                 {config.logo.show && (
-                  <div>
-                    <Label htmlFor="logo-text" className="text-sm">Текст логотипа</Label>
-                    <Input
-                      id="logo-text"
-                      value={config.logo.text}
-                      onChange={(e) => updateConfig("logo.text", e.target.value)}
-                      className="h-8 text-sm mt-1"
-                    />
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm">Тип логотипа</Label>
+                      <Select value={config.logo.type} onValueChange={(value) => updateConfig("logo.type", value)}>
+                        <SelectTrigger className="h-8 text-sm mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="text">Текстовый</SelectItem>
+                          <SelectItem value="image">Изображение</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {config.logo.type === "text" ? (
+                      <div>
+                        <Label htmlFor="logo-text" className="text-sm">Текст логотипа</Label>
+                        <Input
+                          id="logo-text"
+                          value={config.logo.text}
+                          onChange={(e) => updateConfig("logo.text", e.target.value)}
+                          className="h-8 text-sm mt-1"
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <Label className="text-sm">Изображение логотипа</Label>
+                        <div className="mt-2 space-y-3">
+                          {config.logo.imageUrl && (
+                            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                              <Image className="h-5 w-5 text-gray-400" />
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-900">Текущий логотип</p>
+                                <p className="text-xs text-gray-500">{config.logo.imageUrl}</p>
+                              </div>
+                              <img 
+                                src={config.logo.imageUrl} 
+                                alt="Логотип" 
+                                className="h-10 w-10 object-contain rounded border"
+                              />
+                            </div>
+                          )}
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => document.getElementById('logo-upload')?.click()}
+                              className="flex items-center space-x-2"
+                              disabled={uploadingLogo}
+                            >
+                              <Upload className="h-4 w-4" />
+                              <span>{uploadingLogo ? "Загрузка..." : "Загрузить логотип"}</span>
+                            </Button>
+                            <input
+                              id="logo-upload"
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0]
+                                if (file) {
+                                  handleLogoUpload(file)
+                                }
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="flex items-center justify-between">

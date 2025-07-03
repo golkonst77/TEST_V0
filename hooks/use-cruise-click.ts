@@ -1,3 +1,5 @@
+"use client"
+
 import { useContactForm } from "./use-contact-form"
 import { useState } from "react"
 

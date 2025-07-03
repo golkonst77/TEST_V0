@@ -9,6 +9,7 @@ import {
   Settings, 
   Calculator, 
   DollarSign, 
+  Gift,
   Users, 
   FileText, 
   ImageIcon, 
@@ -64,6 +65,12 @@ const menuItems = [
     href: "/admin/pricing",
     icon: DollarSign,
     color: "text-amber-600"
+  },
+  {
+    title: "Купоны",
+    href: "/admin/coupons",
+    icon: Gift,
+    color: "text-pink-600"
   },
   {
     title: "Медиафайлы",
