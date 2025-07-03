@@ -1,8 +1,12 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { QuizModalTariff } from "@/components/quiz-modal-tariff"
+import React from "react"
 
 const ipPlans = [
   {
@@ -99,6 +103,8 @@ const oooPlans = [
 ]
 
 export function PricingSection() {
+  const [quizOpen, setQuizOpen] = React.useState(false)
+
   return (
     <section className="py-8 bg-white">
       <div className="container mx-auto px-4">
@@ -164,12 +170,10 @@ export function PricingSection() {
                   plan.popular ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" : "bg-white border-2 border-blue-200 hover:border-blue-400 text-blue-900"
                 }`}
                 variant={plan.popular ? "default" : "outline"}
-                asChild
+                onClick={() => setQuizOpen(true)}
               >
-                <Link href="/pricing/ip">
-                  Выбрать тариф
-                  <ArrowRight className="ml-3 h-5 w-5" />
-                </Link>
+                Выбрать тариф
+                <ArrowRight className="ml-3 h-5 w-5" />
               </Button>
             ))}
           </div>
@@ -226,12 +230,10 @@ export function PricingSection() {
                   plan.popular ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" : "bg-white border-2 border-blue-200 hover:border-blue-400 text-blue-900"
                 }`}
                 variant={plan.popular ? "default" : "outline"}
-                asChild
+                onClick={() => setQuizOpen(true)}
               >
-                <Link href="/pricing/ooo">
-                  Выбрать тариф
-                  <ArrowRight className="ml-3 h-5 w-5" />
-                </Link>
+                Выбрать тариф
+                <ArrowRight className="ml-3 h-5 w-5" />
               </Button>
             ))}
           </div>
@@ -286,6 +288,8 @@ export function PricingSection() {
             Получить консультацию
           </Button>
         </div>
+
+        <QuizModalTariff open={quizOpen} onOpenChange={setQuizOpen} />
       </div>
     </section>
   )

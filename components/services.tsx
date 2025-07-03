@@ -36,30 +36,34 @@ const services = [
 
 export function Services() {
   return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
+    <section className="py-0 bg-white p-0 m-0">
+      <div className="w-full px-0">
+        <div className="flex justify-center w-full mb-4">
+          <div className="px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-lg font-semibold text-gray-900">
             Мы приручили налогового зверя. И научим его работать на вас.
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Налоги могут быть не только головной болью, но и инструментом для оптимизации. Мы знаем все его повадки и
-            слабые места.
+          </div>
+        </div>
+        <div className="text-center mb-0">
+          <p className="text-xl text-gray-600 mt-0 mb-0">
+            Налоги могут быть не только головной болью, но и инструментом для оптимизации. Мы знаем все его повадки и слабые места.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 mt-0 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
           {services.map((service, index) => (
-            <Card key={index} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md">
-              <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white mb-4">
-                  <service.icon className="h-6 w-6" />
+            <Card
+              key={index}
+              className="flex flex-col justify-between items-stretch w-full shadow-2xl border-0 bg-white transition-all duration-300 hover:shadow-blue-400"
+            >
+              <CardHeader className="flex flex-col items-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white mb-4 shadow-lg">
+                  <service.icon className="h-7 w-7" />
                 </div>
-                <CardTitle className="text-xl">{service.title}</CardTitle>
-                <CardDescription className="text-gray-600">{service.description}</CardDescription>
+                <CardTitle className="text-xl text-center font-bold">{service.title}</CardTitle>
+                <CardDescription className="text-gray-600 text-center">{service.description}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 mb-6">
+              <CardContent className="flex flex-col flex-grow justify-between">
+                <ul className="space-y-2 mb-4">
                   {service.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center text-sm text-gray-600">
                       <div className="h-1.5 w-1.5 rounded-full bg-blue-600 mr-2" />
@@ -67,10 +71,10 @@ export function Services() {
                     </li>
                   ))}
                 </ul>
+                <div className="flex-grow"></div>
                 <Button
                   asChild
-                  variant="outline"
-                  className="w-full group-hover:bg-blue-600 group-hover:text-white transition-colors"
+                  className="w-full bg-blue-600 text-white rounded-xl shadow-lg font-semibold py-3 mt-auto hover:bg-blue-700 transition-colors text-base"
                 >
                   <Link href={service.href || "#"}>
                     Подробнее

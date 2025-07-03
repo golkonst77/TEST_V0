@@ -2,6 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight, Phone } from "lucide-react"
+import { QuizModalTariff } from "@/components/quiz-modal-tariff"
+import React from "react"
 
 const oooPlans = [
   {
@@ -54,6 +56,7 @@ const oooPlans = [
 ]
 
 export default function OOOPricingPage() {
+  const [quizOpen, setQuizOpen] = React.useState(false)
   return (
     <div className="container py-20">
       <div className="text-center mb-16">
@@ -118,6 +121,7 @@ export default function OOOPricingPage() {
                     : ""
                 }`}
                 variant={plan.popular ? "default" : "outline"}
+                onClick={() => setQuizOpen(true)}
               >
                 Выбрать тариф
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -172,6 +176,7 @@ export default function OOOPricingPage() {
           </CardContent>
         </Card>
       </div>
+      <QuizModalTariff open={quizOpen} onOpenChange={setQuizOpen} />
     </div>
   )
 }
