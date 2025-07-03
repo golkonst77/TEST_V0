@@ -72,14 +72,14 @@ export function Contacts() {
   ]
 
   return (
-    <section className="py-20 bg-gray-900 text-white">
+    <section className="py-20 bg-gray-600 text-white">
       <div className="container mx-auto px-4">
         {/* Заголовок */}
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">
             Свяжитесь с нами
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-200 max-w-2xl mx-auto">
             Готовы обсудить ваш проект? Мы всегда на связи и готовы помочь
           </p>
         </div>

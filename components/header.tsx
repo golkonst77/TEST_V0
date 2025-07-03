@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Phone, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useContactForm } from "@/hooks/use-contact-form"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 import { useState, useEffect, useRef } from "react"
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -12,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Mail, Lock, User, Loader2, FileText } from "lucide-react"
+import { CruiseQuizModal } from "@/components/ui/cruise-quiz-modal"
 
 interface SiteSettings {
   siteName: string
@@ -159,6 +161,7 @@ function AuthModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: bo
 
 export const Header = () => {
   const { openContactForm } = useContactForm()
+  const { handleCruiseClick, modalOpen, setModalOpen, quizUrl } = useCruiseClick()
   const [settings, setSettings] = useState<SiteSettings>({
     siteName: "ПростоБюро",
     phone: "+7 953 330-17-77",
@@ -261,7 +264,7 @@ export const Header = () => {
 
           {/* CTA */}
           <Button
-            onClick={openContactForm}
+            onClick={handleCruiseClick}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
           >
             Хочу на круиз без штрафов
@@ -273,6 +276,9 @@ export const Header = () => {
           <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
         </div>
       </div>
+      {quizUrl && (
+        <CruiseQuizModal open={modalOpen} onOpenChange={setModalOpen} quizUrl={quizUrl} />
+      )}
     </header>
   )
 }

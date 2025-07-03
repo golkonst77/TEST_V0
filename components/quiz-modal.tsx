@@ -63,6 +63,76 @@ const questions = [
 
 const bonuses = ["Бесплатная консультация", "Скидка 50% на обслуживание первый месяц"]
 
+function QuizSidebar({
+  canProceed,
+  handleNext,
+  isPhoneStep,
+  currentQuestion,
+  calculateDiscount,
+  getBonusCount,
+  bonuses
+}: {
+  canProceed: boolean,
+  handleNext: () => void,
+  isPhoneStep: boolean,
+  currentQuestion: any,
+  calculateDiscount: () => number,
+  getBonusCount: () => number,
+  bonuses: string[]
+}) {
+  return (
+    <div className="w-80 bg-gray-50 px-8 py-8 border-l border-gray-100 flex flex-col justify-between">
+      <div>
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <span className="text-white text-xl font-bold">₽</span>
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Ваша скидка</h3>
+          <div className="text-2xl font-bold text-cyan-500 mb-2">{calculateDiscount().toLocaleString()} ₽</div>
+          <p className="text-xs text-gray-500">на первый месяц обслуживания</p>
+        </div>
+        <div className="mb-8">
+          <div className="flex items-center mb-4">
+            <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center mr-3">
+              <Gift className="h-3 w-3 text-white" />
+            </div>
+            <h4 className="font-bold text-gray-900">Бонусы в подарок:</h4>
+          </div>
+          <ul className="space-y-3">
+            {bonuses.slice(0, getBonusCount()).map((bonus, index) => (
+              <li key={index} className="flex items-start text-sm text-gray-700">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0" />
+                <span className="font-medium">{bonus}</span>
+              </li>
+            ))}
+            {bonuses.slice(getBonusCount()).map((bonus, index) => (
+              <li key={index + getBonusCount()} className="flex items-start text-sm text-gray-400">
+                <div className="w-2 h-2 bg-gray-300 rounded-full mt-2 mr-3 flex-shrink-0" />
+                <span>{bonus}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+          <p className="text-sm text-gray-500 mb-2 font-medium">Ваша экономия:</p>
+          <div className="text-2xl font-bold text-green-500">{calculateDiscount().toLocaleString()} ₽</div>
+        </div>
+      </div>
+      {/* Кнопка Далее справа для multiple choice */}
+      {!isPhoneStep && currentQuestion?.type === "multiple" && (
+        <Button
+          onClick={handleNext}
+          disabled={!canProceed}
+          className="bg-cyan-500 hover:bg-cyan-600 text-white w-full mt-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+        >
+          Далее
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+      )}
+    </div>
+  )
+}
+
 export function QuizModal() {
   const { isOpen, closeContactForm } = useContactForm()
   const { toast } = useToast()
@@ -197,31 +267,31 @@ export function QuizModal() {
                 </div>
 
                 {/* Question or Phone Step */}
-                <div className="flex-1 flex flex-col justify-center">
-                  {!isPhoneStep ? (
-                    <>
-                      <h2 className="text-2xl font-bold mb-12 text-gray-900 leading-tight">{currentQuestion.title}</h2>
+                {!isPhoneStep ? (
+                  <>
+                    <div className="flex flex-col px-0 py-0 overflow-y-auto max-h-[60vh]">
+                      <h2 className="text-xl font-bold mb-2 mt-2 text-gray-900 leading-tight">{currentQuestion.title}</h2>
 
                       {currentQuestion.type === "single" ? (
                         <RadioGroup
                           value={Array.isArray(currentAnswer?.answer) ? "" : currentAnswer?.answer || ""}
                           onValueChange={(value) => handleAnswer(currentQuestion.id, value)}
-                          className="space-y-4"
+                          className="space-y-1"
                         >
                           {currentQuestion.options.map((option) => (
                             <div
                               key={option.value}
-                              className="group relative bg-white border border-gray-200 rounded-2xl p-6 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                              className="group relative bg-white border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
                             >
-                              <div className="flex items-center space-x-4">
+                              <div className="flex items-center space-x-2">
                                 <RadioGroupItem
                                   value={option.value}
                                   id={option.value}
-                                  className="text-cyan-500 border-2 border-gray-300 w-5 h-5"
+                                  className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5"
                                 />
                                 <Label
                                   htmlFor={option.value}
-                                  className="text-base cursor-pointer text-gray-700 flex-1 font-normal"
+                                  className="text-xs cursor-pointer text-gray-700 flex-1 font-normal"
                                 >
                                   {option.label}
                                 </Label>
@@ -230,13 +300,13 @@ export function QuizModal() {
                           ))}
                         </RadioGroup>
                       ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-1">
                           {currentQuestion.options.map((option) => (
                             <div
                               key={option.value}
-                              className="group relative bg-white border border-gray-200 rounded-2xl p-6 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                              className="group relative bg-white border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
                             >
-                              <div className="flex items-center space-x-4">
+                              <div className="flex items-center space-x-2">
                                 <Checkbox
                                   id={option.value}
                                   checked={
@@ -255,11 +325,11 @@ export function QuizModal() {
                                       )
                                     }
                                   }}
-                                  className="text-cyan-500 border-2 border-gray-300 w-5 h-5 rounded"
+                                  className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5 rounded"
                                 />
                                 <Label
                                   htmlFor={option.value}
-                                  className="text-base cursor-pointer text-gray-700 flex-1 font-normal"
+                                  className="text-xs cursor-pointer text-gray-700 flex-1 font-normal"
                                 >
                                   {option.label}
                                 </Label>
@@ -268,9 +338,34 @@ export function QuizModal() {
                           ))}
                         </div>
                       )}
-                    </>
-                  ) : (
-                    <div className="text-center max-w-lg mx-auto">
+                    </div>
+                    {/* Navigation */}
+                    <div className="flex justify-between items-center mt-6 pt-4">
+                      <Button
+                        variant="ghost"
+                        onClick={handleBack}
+                        disabled={currentStep === 0}
+                        className="flex items-center text-gray-500 hover:text-gray-700 px-6 py-3 rounded-xl"
+                      >
+                        <ArrowLeft className="mr-2 h-5 w-5" />
+                        Назад
+                      </Button>
+                      {/* Show 'Next' button only for multiple choice questions */}
+                      {currentQuestion?.type === "multiple" && (
+                        <Button
+                          onClick={handleNext}
+                          disabled={!canProceed}
+                          className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+                        >
+                          Далее
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </Button>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex-1 overflow-y-auto flex flex-col justify-between text-center max-w-lg mx-auto w-full px-0 py-0">
+                    <div>
                       <div className="mb-8">
                         <h2 className="text-2xl font-bold mb-4 text-gray-900">Последний шаг!</h2>
                         <p className="text-base text-gray-600 mb-8 leading-relaxed">
@@ -292,18 +387,13 @@ export function QuizModal() {
                             className="text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm"
                           />
                         </div>
-                        <div className="bg-gray-50 rounded-2xl p-4 text-center">
-                          <p className="text-xs font-bold text-gray-900 uppercase tracking-wide">
-                            ЗВОНИТЬ НЕ БУДЕМ! ОТПРАВИМ ПРЕДЛОЖЕНИЕ В WHATSAPP
-                          </p>
-                        </div>
                         {/* Checklist checkbox */}
                         <div className="bg-green-50 border border-green-200 rounded-2xl p-6">
                           <div className="flex items-start space-x-4">
                             <Checkbox
                               id="checklist"
                               checked={wantChecklist}
-                              onCheckedChange={(checked) => setWantChecklist(checked as boolean)}
+                              onCheckedChange={(checked) => setWantChecklist(Boolean(checked))}
                               className="mt-1 text-green-600 border-2 border-green-300 w-5 h-5"
                             />
                             <Label htmlFor="checklist" className="cursor-pointer leading-relaxed text-gray-700">
@@ -314,84 +404,36 @@ export function QuizModal() {
                         </div>
                       </div>
                     </div>
-                  )}
-                </div>
-
-                {/* Navigation */}
-                <div className="flex justify-between items-center mt-6 pt-4">
-                  <Button
-                    variant="ghost"
-                    onClick={handleBack}
-                    disabled={currentStep === 0}
-                    className="flex items-center text-gray-500 hover:text-gray-700 px-6 py-3 rounded-xl"
-                  >
-                    <ArrowLeft className="mr-2 h-5 w-5" />
-                    Назад
-                  </Button>
-
-                  {!isPhoneStep ? (
-                    // Show "Next" button only for multiple choice questions
-                    currentQuestion?.type === "multiple" && (
-                      <Button
-                        onClick={handleNext}
-                        disabled={!canProceed}
-                        className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
-                      >
-                        Далее
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
-                    )
-                  ) : (
-                    <Button
-                      onClick={handleSubmit}
-                      disabled={!phone.trim() || isSubmitting}
-                      className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
-                    >
-                      {isSubmitting ? "Отправляем..." : "Получить предложение"}
-                    </Button>
-                  )}
-                </div>
+                    <div>
+                      <div className="bg-gray-50 rounded-2xl p-4 text-center mt-2">
+                        <p className="text-xs font-bold text-gray-900 uppercase tracking-wide">
+                          ЗВОНИТЬ НЕ БУДЕМ! ОТПРАВИМ ПРЕДЛОЖЕНИЕ В WHATSAPP
+                        </p>
+                      </div>
+                      <div className="flex justify-center items-center mt-2 pt-2">
+                        <Button
+                          onClick={handleSubmit}
+                          disabled={!phone.trim() || isSubmitting}
+                          className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+                        >
+                          {isSubmitting ? "Отправляем..." : "Получить предложение"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Right side - Discount & Bonuses */}
-              <div className="w-80 bg-gray-50 px-8 py-8 border-l border-gray-100">
-                <div className="text-center mb-8">
-                  <div className="w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <span className="text-white text-xl font-bold">₽</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Ваша скидка</h3>
-                  <div className="text-2xl font-bold text-cyan-500 mb-2">{calculateDiscount().toLocaleString()} ₽</div>
-                  <p className="text-xs text-gray-500">на первый месяц обслуживания</p>
-                </div>
-
-                <div className="mb-8">
-                  <div className="flex items-center mb-4">
-                    <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center mr-3">
-                      <Gift className="h-3 w-3 text-white" />
-                    </div>
-                    <h4 className="font-bold text-gray-900">Бонусы в подарок:</h4>
-                  </div>
-                  <ul className="space-y-3">
-                    {bonuses.slice(0, getBonusCount()).map((bonus, index) => (
-                      <li key={index} className="flex items-start text-sm text-gray-700">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0" />
-                        <span className="font-medium">{bonus}</span>
-                      </li>
-                    ))}
-                    {bonuses.slice(getBonusCount()).map((bonus, index) => (
-                      <li key={index + getBonusCount()} className="flex items-start text-sm text-gray-400">
-                        <div className="w-2 h-2 bg-gray-300 rounded-full mt-2 mr-3 flex-shrink-0" />
-                        <span>{bonus}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
-                  <p className="text-sm text-gray-500 mb-2 font-medium">Ваша экономия:</p>
-                  <div className="text-2xl font-bold text-green-500">{calculateDiscount().toLocaleString()} ₽</div>
-                </div>
-              </div>
+              <QuizSidebar
+                canProceed={canProceed}
+                handleNext={handleNext}
+                isPhoneStep={isPhoneStep}
+                currentQuestion={currentQuestion}
+                calculateDiscount={calculateDiscount}
+                getBonusCount={getBonusCount}
+                bonuses={bonuses}
+              />
             </div>
           </div>
         </DialogContent>

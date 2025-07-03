@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Shield, CheckCircle, DollarSign, AlertTriangle } from "lucide-react"
 import { useContactForm } from "@/hooks/use-contact-form"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
+import { CruiseQuizModal } from "@/components/ui/cruise-quiz-modal"
 
 // Типы для Marquiz API
 declare global {
@@ -31,6 +33,7 @@ const colorMap = {
 
 export function Hero() {
   const { openContactForm } = useContactForm()
+  const { handleCruiseClick, modalOpen, setModalOpen, quizUrl } = useCruiseClick()
   const [config, setConfig] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
@@ -60,81 +63,7 @@ export function Hero() {
     }
   }
 
-  // Новый обработчик для кнопки круиза
-  const handleCruiseClick = async () => {
-    try {
-      const res = await fetch("/api/settings")
-      const settings = await res.json()
-      console.log("[CRUISE] settings:", settings)
-      if (settings.quiz_mode === "custom") {
-        console.log("[CRUISE] mode: custom → openContactForm")
-        openContactForm()
-      } else if (settings.quiz_mode === "external" && settings.quiz_url) {
-        console.log("[CRUISE] mode: external, url:", settings.quiz_url)
-        if (settings.quiz_url.startsWith("#popup:marquiz_")) {
-          const quizId = settings.quiz_url.split("_")[1]
-          console.log("[CRUISE] Detected Marquiz popup, quizId:", quizId)
-          // Создаем popup окно с агрессивными параметрами
-          console.log("[CRUISE] Creating aggressive popup window:", settings.quiz_url)
-          
-          const directUrl = `https://quiz.marquiz.ru/${quizId}`
-          
-          // Более агрессивные параметры для принуждения popup
-          const width = 1200
-          const height = 800
-          const left = Math.round((screen.width - width) / 2)
-          const top = Math.round((screen.height - height) / 2)
-          
-          const features = [
-            `width=${width}`,
-            `height=${height}`,
-            `left=${left}`,
-            `top=${top}`,
-            'resizable=yes',
-            'scrollbars=yes',
-            'toolbar=no',
-            'menubar=no',
-            'location=no',
-            'directories=no',
-            'status=no',
-            'titlebar=no',
-            'fullscreen=no',
-            'channelmode=no'
-          ].join(',')
-          
-          console.log("[CRUISE] Opening with features:", features)
-          
-          const popup = window.open(directUrl, 'marquiz_quiz_window', features)
-          
-          if (popup) {
-            popup.focus()
-            console.log("[CRUISE] Popup window opened and focused")
-            
-            // Принудительно фокусируем окно через небольшую задержку
-            setTimeout(() => {
-              if (popup && !popup.closed) {
-                popup.focus()
-                console.log("[CRUISE] Popup refocused")
-              }
-            }, 100)
-          } else {
-            console.log("[CRUISE] Failed to open popup")
-            window.open(directUrl, "_blank")
-          }
-        } else {
-          // Обычная внешняя ссылка
-          console.log("[CRUISE] Opening external link:", settings.quiz_url)
-          window.open(settings.quiz_url, "_blank")
-        }
-      } else {
-        console.log("[CRUISE] No valid quiz configuration, fallback to contact form")
-        openContactForm()
-      }
-    } catch (error) {
-      console.error("[CRUISE] Error:", error)
-      openContactForm()
-    }
-  }
+
 
   // Значения по умолчанию
   const defaultConfig = {
@@ -277,6 +206,9 @@ export function Hero() {
           </div>
         </div>
       </div>
+      {quizUrl && (
+        <CruiseQuizModal open={modalOpen} onOpenChange={setModalOpen} quizUrl={quizUrl} />
+      )}
     </section>
   )
 }
