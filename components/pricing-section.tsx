@@ -275,27 +275,30 @@ export function PricingSection() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <div className="text-center bg-white/30 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/40 transition-all duration-300">
                 <h4 className="font-semibold text-white mb-2">Регистрация ИП</h4>
-                <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">3 990 ₽</p>
+                <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">3 990 ₽<span className="text-blue-200 align-super text-base">*</span></p>
                 <p className="text-sm text-blue-100">Под ключ за 3 дня</p>
               </div>
-              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <div className="text-center bg-white/30 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/40 transition-all duration-300">
                 <h4 className="font-semibold text-white mb-2">Регистрация ООО</h4>
-                <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">9 990 ₽</p>
+                <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">9 990 ₽<span className="text-blue-200 align-super text-base">*</span></p>
                 <p className="text-sm text-blue-100">Полное сопровождение</p>
               </div>
-              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <div className="text-center bg-white/30 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/40 transition-all duration-300">
                 <h4 className="font-semibold text-white mb-2">Налоговая консультация</h4>
                 <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">2 500 ₽</p>
                 <p className="text-sm text-blue-100">1 час с экспертом</p>
               </div>
-              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <div className="text-center bg-white/30 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:bg-white/40 transition-all duration-300">
                 <h4 className="font-semibold text-white mb-2">Восстановление учета</h4>
                 <p className="text-2xl font-bold text-blue-300 mb-2 price-animate">от 15 000 ₽</p>
                 <p className="text-sm text-blue-100">За период</p>
               </div>
             </div>
+          </div>
+          <div className="text-left text-sm font-bold text-white mt-4 ml-2">
+            * НЕ ВЗИМАЕТСЯ при заключении договора бухгалтерского обслуживания на 6 месяцев.
           </div>
         </div>
 
