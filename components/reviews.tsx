@@ -1,7 +1,10 @@
+'use client'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Star, Quote } from "lucide-react"
+import { useEffect, useState } from "react"
 
-const reviews = [
+const fallbackReviews = [
   {
     name: "Анна Петрова",
     company: 'ООО "Строй-Мастер"',
@@ -26,6 +29,28 @@ const reviews = [
 ]
 
 export function Reviews() {
+  const [reviews, setReviews] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    fetch("/api/yandex-reviews")
+      .then(res => res.json())
+      .then(data => {
+        if (data.reviews && data.reviews.length > 0) {
+          setReviews(data.reviews)
+        } else {
+          setReviews(fallbackReviews)
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setReviews(fallbackReviews)
+        setError("Не удалось загрузить отзывы с Яндекса, показаны примеры.")
+        setLoading(false)
+      })
+  }, [])
+
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -36,28 +61,34 @@ export function Reviews() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {reviews.map((review, index) => (
-            <Card key={index} className="relative">
-              <CardHeader>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-1">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
+        {loading ? (
+          <div className="text-center text-gray-500 py-12">Загрузка отзывов...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {reviews.map((review, index) => (
+              <Card key={index} className="relative">
+                <CardHeader>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-1">
+                      {[...Array(Number(review.rating) || 5)].map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <Quote className="h-6 w-6 text-gray-300" />
                   </div>
-                  <Quote className="h-6 w-6 text-gray-300" />
-                </div>
-                <CardTitle className="text-lg">{review.name}</CardTitle>
-                <CardDescription>{review.company}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">{review.text}</p>
-                <p className="text-sm text-gray-400">{review.date}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <CardTitle className="text-lg">{review.name}</CardTitle>
+                  {review.company && <CardDescription>{review.company}</CardDescription>}
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">{review.text}</p>
+                  <p className="text-sm text-gray-400">{review.date}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {error && <div className="text-center text-red-500 mt-4 text-sm">{error}</div>}
 
         <div className="text-center mt-12">
           <p className="text-gray-600 mb-4">

@@ -128,7 +128,7 @@ export function AIDocuments() {
     <section 
       className="py-16 relative bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.85), rgba(30, 58, 138, 0.85)), url('/tax-audit-bg.jpg')`
+        backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.4), rgba(30, 58, 138, 0.2)), url('/digital-art-ai-technology-background.jpg')`
       }}
     >
       <div className="container mx-auto px-4 relative z-10">

@@ -6,18 +6,24 @@ import { Calculator } from "@/components/calculator"
 import { Reviews } from "@/components/reviews"
 import { News } from "@/components/news"
 import { Contacts } from "@/components/contacts"
+import Head from "next/head"
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen">
-      <Hero />
-      <Services />
-      <Guarantees />
-      <PricingSection />
-      <Calculator />
-      <Reviews />
-      <News />
-      <Contacts />
-    </main>
+    <>
+      <Head>
+        <title>Главная | ПростоБюро</title>
+      </Head>
+      <main id="home-page" className="min-h-screen">
+        <Hero />
+        <Services />
+        <Guarantees />
+        <PricingSection />
+        <Calculator />
+        <Reviews />
+        <News />
+        <Contacts />
+      </main>
+    </>
   )
 }
