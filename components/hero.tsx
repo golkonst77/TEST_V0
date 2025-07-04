@@ -120,19 +120,8 @@ export function Hero() {
         />
       )}
 
-      <div className="relative z-10 w-full">
-        <div 
-          className={`${layout.maxWidth} px-4 ${layout.alignment === 'left' ? 'text-left ml-0' : 'text-center mx-auto'} rounded-2xl shadow-xl p-8 border border-gray-200`}
-          style={{
-            marginLeft: layout.alignment === 'left' ? `${layout.marginLeft}px` : 'auto',
-            marginRight: layout.alignment === 'left' ? 'auto' : 'auto',
-            marginTop: `${layout.marginTop}px`,
-            marginBottom: `${layout.marginBottom}px`,
-            paddingLeft: `${layout.paddingX}px`,
-            paddingRight: `${layout.paddingX}px`,
-            backgroundColor: '#f3f4f6', // Более темный серый
-          }}
-        >
+      <div className="relative z-10 w-full flex">
+        <div className="max-w-xl md:max-w-lg lg:max-w-xl xl:max-w-2xl text-left">
           {/* Badge */}
           {badge.show && (
             <div className="mb-6">
@@ -146,13 +135,13 @@ export function Hero() {
           )}
 
           {/* Title */}
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-gray-900">
+          <h1 className="text-xl md:text-3xl lg:text-4xl font-bold mb-6 leading-tight text-white">
             {title.text}{" "}
-            <span className="text-blue-800">{title.highlightText}</span>
+            <span className="text-blue-400">{title.highlightText}</span>
           </h1>
 
           {/* Description */}
-          <p className={`text-lg md:text-xl mb-8 leading-relaxed ${layout.alignment === 'left' ? 'max-w-4xl' : 'max-w-4xl mx-auto'} text-gray-800 font-medium`}>
+          <p className="text-base md:text-lg mb-8 leading-relaxed text-gray-800 font-medium">
             {description}
           </p>
 

@@ -15,5 +15,13 @@
     "createdAt": "2025-07-03T14:04:29.592Z",
     "used": true,
     "usedAt": "2025-07-03T14:06:06.034Z"
+  },
+  {
+    "id": 3,
+    "code": "PROSTOBURO-MUT7HF-10000",
+    "phone": "+7 953 330-17-77",
+    "discount": 10000,
+    "createdAt": "2025-07-04T07:02:27.934Z",
+    "used": false
   }
 ]
