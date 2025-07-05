@@ -2,6 +2,7 @@ import { Hero } from "@/components/hero"
 import { Services } from "@/components/services"
 import { Guarantees } from "@/components/guarantees"
 import { PricingSection } from "@/components/pricing-section"
+import { FAQ } from "@/components/faq"
 import { Calculator } from "@/components/calculator"
 import { Reviews } from "@/components/reviews"
 import { News } from "@/components/news"
@@ -19,6 +20,7 @@ export default function HomePage() {
         <Services />
         <Guarantees />
         <PricingSection />
+        <FAQ />
         <Calculator />
         <Reviews />
         <News />

@@ -113,15 +113,7 @@ export function AIDocuments() {
       title: 'Безопасное хранение',
       description: 'Облачное хранение документов по стандартам 1С'
     },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-        </svg>
-      ),
-      title: 'ИИ-обработка документов',
-      description: 'Автоматическая обработка и анализ документов с помощью искусственного интеллекта'
-    }
+
   ]
 
   return (

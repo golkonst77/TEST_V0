@@ -3,15 +3,16 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight, Phone } from "lucide-react"
 import { QuizModalTariff } from "@/components/quiz-modal-tariff"
+import { FAQ } from "@/components/faq"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
 import React from "react"
 
 const oooPlans = [
   {
-    name: "Базовый",
+    name: "Круиз-Контроль",
     price: "8 990",
     period: "мес",
-    description: "Для малых ООО",
+    description: "Надежная система для ровного и спокойного движения по заданному курсу. Установите скорость — и двигайтесь уверенно, не отвлекаясь на рутину.",
     popular: false,
     features: [
       "Ведение бухучета",
@@ -23,13 +24,13 @@ const oooPlans = [
     suitable: ["УСН", "До 20 операций в месяц", "Без сотрудников"],
   },
   {
-    name: "Стандарт",
+    name: "Адаптивный Круиз",
     price: "14 990",
     period: "мес",
-    description: "Оптимальное решение",
+    description: "Интеллектуальная система, которая не просто держит скорость, но и подстраивается под меняющийся «трафик» вашего бизнеса, помогая уверенно лавировать в потоке и идти на обгон.",
     popular: true,
     features: [
-      "Все из тарифа Базовый",
+      "Все из тарифа Круиз-Контроль",
       "Кадровое делопроизводство",
       "Расчет зарплаты",
       "Отчеты в ПФР и ФСС",
@@ -39,13 +40,13 @@ const oooPlans = [
     suitable: ["УСН/ОСНО", "До 100 операций в месяц", "До 10 сотрудников"],
   },
   {
-    name: "Бизнес",
+    name: "Полный Автопилот",
     price: "24 990",
     period: "мес",
-    description: "Для растущих компаний",
+    description: "Максимальный пакет технологий для полного контроля над самыми сложными маршрутами. Мы не просто ведем ваш бизнес-автомобиль, а прокладываем оптимальный маршрут, предвидя все сложности. Ваше участие — минимально.",
     popular: false,
     features: [
-      "Все из тарифа Стандарт",
+      "Все из тарифа Адаптивный Круиз",
       "Управленческий учет",
       "Финансовая аналитика",
       "Налоговое планирование",
@@ -80,7 +81,7 @@ export default function OOOPricingPage() {
             {plan.popular && (
               <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
                 <Star className="w-3 h-3 mr-1" />
-                Популярный
+                Оптимальный выбор
               </Badge>
             )}
             <CardHeader className="text-center">
@@ -181,6 +182,9 @@ export default function OOOPricingPage() {
           </CardContent>
         </Card>
       </div>
+      
+      <FAQ />
+      
       <QuizModalTariff open={quizOpen} onOpenChange={setQuizOpen} />
     </div>
   )

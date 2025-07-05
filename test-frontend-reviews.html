@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест отзывов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .review {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .error {
+            color: red;
+            padding: 10px;
+            background: #ffe6e6;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+            padding: 10px;
+            background: #e6ffe6;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тест загрузки отзывов</h1>
+    
+    <div id="status" class="loading">Загрузка...</div>
+    <div id="reviews"></div>
+    
+    <h2>Тесты API</h2>
+    <button onclick="testDatabaseReviews()">Тест БД отзывов</button>
+    <button onclick="testYandexReviews()">Тест Яндекс отзывов</button>
+    
+    <script>
+        async function testDatabaseReviews() {
+            const statusDiv = document.getElementById('status');
+            const reviewsDiv = document.getElementById('reviews');
+            
+            try {
+                statusDiv.innerHTML = '<div class="loading">Загружаю отзывы из базы данных...</div>';
+                
+                const response = await fetch('/api/reviews?published=true&limit=6');
+                const data = await response.json();
+                
+                console.log('📊 Ответ от базы данных:', data);
+                
+                if (response.ok && data.reviews && data.reviews.length > 0) {
+                    statusDiv.innerHTML = `<div class="success">✅ Найдено ${data.reviews.length} отзывов из базы данных</div>`;
+                    
+                    reviewsDiv.innerHTML = data.reviews.map(review => `
+                        <div class="review">
+                            <h3>${review.name}</h3>
+                            <p><strong>Рейтинг:</strong> ${review.rating}/5</p>
+                            <p>${review.text}</p>
+                            <p><small>Компания: ${review.company || 'Не указана'}</small></p>
+                            <p><small>Источник: ${review.source || 'manual'}</small></p>
+                        </div>
+                    `).join('');
+                } else {
+                    statusDiv.innerHTML = '<div class="error">❌ Отзывы из БД не найдены</div>';
+                }
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+                statusDiv.innerHTML = `<div class="error">❌ Ошибка: ${error.message}</div>`;
+            }
+        }
+        
+        async function testYandexReviews() {
+            const statusDiv = document.getElementById('status');
+            const reviewsDiv = document.getElementById('reviews');
+            
+            try {
+                statusDiv.innerHTML = '<div class="loading">Загружаю отзывы с Яндекс.Карт...</div>';
+                
+                const response = await fetch('/api/yandex-reviews');
+                const data = await response.json();
+                
+                console.log('📊 Ответ от Яндекс.Карт:', data);
+                
+                if (response.ok && data.reviews && data.reviews.length > 0) {
+                    statusDiv.innerHTML = `<div class="success">✅ Найдено ${data.reviews.length} отзывов с Яндекс.Карт (источник: ${data.source})</div>`;
+                    
+                    reviewsDiv.innerHTML = data.reviews.map(review => `
+                        <div class="review">
+                            <h3>${review.name}</h3>
+                            <p><strong>Рейтинг:</strong> ${review.rating}/5</p>
+                            <p>${review.text}</p>
+                            <p><small>Дата: ${review.date}</small></p>
+                        </div>
+                    `).join('');
+                } else {
+                    statusDiv.innerHTML = '<div class="error">❌ Отзывы с Яндекс.Карт не найдены</div>';
+                }
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+                statusDiv.innerHTML = `<div class="error">❌ Ошибка: ${error.message}</div>`;
+            }
+        }
+        
+        // Автоматически тестируем БД при загрузке
+        document.addEventListener('DOMContentLoaded', testDatabaseReviews);
+    </script>
+</body>
+</html> 

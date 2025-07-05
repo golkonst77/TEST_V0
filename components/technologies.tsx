@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Cloud, Zap, Shield, Clock, Database, Bot } from "lucide-react"
+import { Cloud, Zap, Shield, Clock, Database } from "lucide-react"
 
 const technologies = [
   {
@@ -51,11 +51,7 @@ const benefits = [
     title: "Безопасное хранение",
     description: "Облачное хранение документов по стандартам 1С",
   },
-  {
-    icon: Bot,
-    title: "ИИ-обработка документов",
-    description: "Автоматическая обработка и анализ документов с помощью искусственного интеллекта",
-  },
+
 ]
 
 export function Technologies() {
@@ -72,32 +68,7 @@ export function Technologies() {
           </p>
         </div>
 
-        {/* AI Block */}
-        <Card className="mb-12 border-2 border-gradient-to-r from-blue-600 to-purple-600 bg-gradient-to-r from-blue-50 to-purple-50">
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <Bot className="h-12 w-12 text-blue-600" />
-            </div>
-            <CardTitle className="text-2xl">ИИ-обработка документов</CardTitle>
-            <CardDescription className="text-lg">
-              Автоматическая обработка и анализ документов с помощью искусственного интеллекта
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-gray-600 mb-4">
-              Наша система на базе ИИ автоматически распознает, классифицирует и обрабатывает ваши документы,
-              значительно ускоряя процесс ведения учета и снижая вероятность ошибок.
-            </p>
-            <a
-              href="https://ecm-journal.ru/future-accounting/accounting-services"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Узнать подробнее →
-            </a>
-          </CardContent>
-        </Card>
+
 
         {/* Technologies Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">

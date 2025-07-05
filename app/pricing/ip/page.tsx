@@ -3,15 +3,16 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight, Phone } from "lucide-react"
 import { QuizModalTariff } from "@/components/quiz-modal-tariff"
+import { FAQ } from "@/components/faq"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
 import React from "react"
 
 const ipPlans = [
   {
-    name: "Старт",
+    name: "Круиз-Контроль",
     price: "2 990",
     period: "мес",
-    description: "Для начинающих ИП",
+    description: "Надежная система для ровного и спокойного движения по заданному курсу. Установите скорость — и двигайтесь уверенно, не отвлекаясь на рутину.",
     popular: false,
     features: [
       "Ведение КУДиР",
@@ -23,13 +24,13 @@ const ipPlans = [
     suitable: ["УСН доходы", "Патент", "До 10 операций в месяц"],
   },
   {
-    name: "Оптимум",
+    name: "Адаптивный Круиз",
     price: "4 990",
     period: "мес",
-    description: "Самый популярный тариф",
+    description: "Интеллектуальная система, которая не просто держит скорость, но и подстраивается под меняющийся «трафик» вашего бизнеса, помогая уверенно лавировать в потоке и идти на обгон.",
     popular: true,
     features: [
-      "Все из тарифа Старт",
+      "Все из тарифа Круиз-Контроль",
       "Ведение учета в 1С",
       "Расчет взносов ИП",
       "Консультации по оптимизации",
@@ -39,13 +40,13 @@ const ipPlans = [
     suitable: ["УСН доходы/доходы-расходы", "До 50 операций в месяц", "Работа с НДС"],
   },
   {
-    name: "Премиум",
+    name: "Полный Автопилот",
     price: "7 990",
     period: "мес",
-    description: "Для активных ИП",
+    description: "Максимальный пакет технологий для полного контроля над самыми сложными маршрутами. Мы не просто ведем ваш бизнес-автомобиль, а прокладываем оптимальный маршрут, предвидя все сложности. Ваше участие — минимально.",
     popular: false,
     features: [
-      "Все из тарифа Оптимум",
+      "Все из тарифа Адаптивный Круиз",
       "Ведение кадрового учета",
       "Расчет зарплаты сотрудников",
       "Юридическое сопровождение",
@@ -80,7 +81,7 @@ export default function IPPricingPage() {
             {plan.popular && (
               <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
                 <Star className="w-3 h-3 mr-1" />
-                Популярный
+                Оптимальный выбор
               </Badge>
             )}
             <CardHeader className="text-center">
@@ -181,6 +182,9 @@ export default function IPPricingPage() {
           </CardContent>
         </Card>
       </div>
+      
+      <FAQ />
+      
       <QuizModalTariff open={quizOpen} onOpenChange={setQuizOpen} />
     </div>
   )
