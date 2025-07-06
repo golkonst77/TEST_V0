@@ -5,7 +5,7 @@ import { Check, Star, ArrowRight, Phone } from "lucide-react"
 import { QuizModalTariff } from "@/components/quiz-modal-tariff"
 import { FAQ } from "@/components/faq"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
-import React from "react"
+import { useState } from "react"
 
 const oooPlans = [
   {
@@ -58,7 +58,7 @@ const oooPlans = [
 ]
 
 export default function OOOPricingPage() {
-  const [quizOpen, setQuizOpen] = React.useState(false)
+  const [quizOpen, setQuizOpen] = useState(false)
   const { handleCruiseClick } = useCruiseClick()
   return (
     <div className="container py-20">

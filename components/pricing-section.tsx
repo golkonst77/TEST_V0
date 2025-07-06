@@ -7,7 +7,7 @@ import { Check, Star, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { QuizModalTariff } from "@/components/quiz-modal-tariff"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
-import React from "react"
+import { useState } from "react"
 
 const ipPlans = [
   {
@@ -104,7 +104,7 @@ const oooPlans = [
 ]
 
 export function PricingSection() {
-  const [quizOpen, setQuizOpen] = React.useState(false)
+  const [quizOpen, setQuizOpen] = useState(false)
   const { handleCruiseClick } = useCruiseClick()
 
   return (

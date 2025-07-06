@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { promises as fs } from 'fs'
 import path from 'path'
 
+// Отключаем статическую генерацию для этого API route
+export const dynamic = 'force-dynamic'
+
 const DATA_FILE = path.join(process.cwd(), 'data', 'coupons.json')
 
 interface Coupon {
