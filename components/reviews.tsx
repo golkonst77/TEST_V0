@@ -165,32 +165,56 @@ export function Reviews() {
   const handleVideoUpload = async (file: File) => {
     try {
       setVideoUploading(true)
+      setError('')
+      
+      // Проверяем размер файла на клиенте
+      const maxSize = 100 * 1024 * 1024 // 100MB
+      if (file.size > maxSize) {
+        setError('Файл слишком большой. Максимальный размер: 100MB')
+        return
+      }
+
+      // Проверяем тип файла
+      const allowedTypes = ['video/mp4', 'video/webm', 'video/mov', 'video/avi']
+      if (!allowedTypes.includes(file.type)) {
+        setError('Неподдерживаемый формат. Используйте MP4, WebM, MOV или AVI')
+        return
+      }
       
       // Создаем FormData для загрузки файла
       const formData = new FormData()
       formData.append('video', file)
       
-      // Создаем временный URL для предварительного просмотра
-      const tempUrl = URL.createObjectURL(file)
-      setVideoUrl(tempUrl)
+      // Отправляем файл на сервер
+      const response = await fetch('/api/upload/video', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      const result = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Ошибка загрузки видео')
+      }
+      
+      // Устанавливаем URL загруженного видео
+      setVideoUrl(result.videoUrl)
       setVideoFile(file)
       
-      console.log('Видео загружено:', file.name, 'Размер:', (file.size / 1024 / 1024).toFixed(2) + 'MB')
+      console.log('Видео успешно загружено:', result.fileName, 'Размер:', (file.size / 1024 / 1024).toFixed(2) + 'MB')
       
     } catch (error) {
       console.error('Ошибка загрузки видео:', error)
-      setError('Не удалось загрузить видео')
+      setError(error instanceof Error ? error.message : 'Не удалось загрузить видео')
     } finally {
       setVideoUploading(false)
     }
   }
 
   const removeVideo = () => {
-    if (videoUrl) {
-      URL.revokeObjectURL(videoUrl)
-    }
     setVideoUrl(null)
     setVideoFile(null)
+    setError('')
   }
 
   return (
@@ -436,8 +460,16 @@ export function Reviews() {
                       Здесь будет отображаться видеоотзыв клиента о работе ПростоБюро
                     </p>
                     <p className="text-xs text-gray-500 mb-4">
-                      Поддерживаемые форматы: MP4, WebM, MOV, AVI
+                      Поддерживаемые форматы: MP4, WebM, MOV, AVI<br/>
+                      Максимальный размер: 100MB
                     </p>
+                    
+                    {error && (
+                      <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-600">{error}</p>
+                      </div>
+                    )}
+                    
                     <div className="mt-4">
                       <label className={`inline-flex items-center px-4 py-2 rounded-lg cursor-pointer transition-colors ${
                         videoUploading 
@@ -467,6 +499,8 @@ export function Reviews() {
                             if (file) {
                               handleVideoUpload(file);
                             }
+                            // Сбрасываем значение input для возможности повторной загрузки того же файла
+                            e.target.value = '';
                           }}
                         />
                       </label>
