@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// Проверяем наличие переменных окружения
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+let supabase: any = null
+if (supabaseUrl && supabaseKey) {
+  supabase = createClient(supabaseUrl, supabaseKey)
+}
 
 export async function GET(request: NextRequest) {
+  // Если Supabase не настроен, возвращаем пустые данные
+  if (!supabase) {
+    return NextResponse.json([])
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const published = searchParams.get('published')
@@ -45,10 +54,10 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching reviews:', error)
-      return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 })
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ reviews })
+    return NextResponse.json(reviews || [])
   } catch (error) {
     console.error('Error in reviews API:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -56,6 +65,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!supabase) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+  }
+
   try {
     const body = await request.json()
     const { name, company, email, phone, rating, text, source = 'manual', is_published = false, is_featured = false, admin_notes } = body
@@ -91,10 +104,10 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating review:', error)
-      return NextResponse.json({ error: 'Failed to create review' }, { status: 500 })
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ review }, { status: 201 })
+    return NextResponse.json(review, { status: 201 })
   } catch (error) {
     console.error('Error in reviews POST API:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -1,12 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// Проверяем наличие переменных окружения
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+let supabase: any = null
+if (supabaseUrl && supabaseKey) {
+  supabase = createClient(supabaseUrl, supabaseKey)
+}
 
 export async function GET() {
+  // Если Supabase не настроен, возвращаем пустые данные
+  if (!supabase) {
+    return NextResponse.json({
+      reviews: [],
+      stats: {
+        total: 0,
+        published: 0,
+        featured: 0,
+        avgRating: 0
+      }
+    })
+  }
+
   try {
     const { data: reviews, error } = await supabase
       .from('reviews')
@@ -41,6 +58,10 @@ export async function GET() {
 }
 
 export async function PATCH(request: NextRequest) {
+  if (!supabase) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+  }
+
   try {
     const { id, updates } = await request.json()
 
@@ -84,6 +105,10 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  if (!supabase) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+  }
+
   try {
     const { id } = await request.json()
 

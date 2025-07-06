@@ -21,9 +21,37 @@ export interface SiteSettings {
   }
 }
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_KEY!);
+// Проверяем наличие переменных окружения
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+let supabase: any = null
+if (supabaseUrl && supabaseKey) {
+  supabase = createClient(supabaseUrl, supabaseKey)
+}
 
 export async function getSettings(): Promise<SiteSettings | null> {
+  if (!supabase) {
+    console.warn("Supabase not configured - returning default settings")
+    return {
+      siteName: "ПростоБюро",
+      siteDescription: "Профессиональная бухгалтерская компания",
+      phone: "+7 953 330-17-77",
+      email: "info@prostoburo.ru",
+      address: "г. Москва",
+      telegram: "https://t.me/prostoburo",
+      vk: "https://vk.com/prostoburo",
+      maintenanceMode: false,
+      analyticsEnabled: true,
+      quiz_mode: "custom",
+      working_hours: {
+        monday_friday: "09:00-18:00",
+        saturday: "10:00-16:00",
+        sunday: "выходной"
+      }
+    }
+  }
+
   const { data, error } = await supabase
     .from("settings")
     .select("*")
@@ -37,6 +65,11 @@ export async function getSettings(): Promise<SiteSettings | null> {
 }
 
 export async function updateSettings(newSettings: Partial<SiteSettings>): Promise<SiteSettings | null> {
+  if (!supabase) {
+    console.warn("Supabase not configured - cannot update settings")
+    return null;
+  }
+
   // Обновляем строку с id=1
   const { data, error } = await supabase
     .from("settings")
