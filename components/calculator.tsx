@@ -175,11 +175,13 @@ export function Calculator() {
   // Показываем лоадер пока загружается конфигурация
   if (configLoading) {
     return (
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 relative z-10">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Загрузка калькулятора...</p>
+            <div className="bg-white/80 backdrop-blur-sm rounded-full p-6 shadow-lg mx-auto w-fit">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            </div>
+            <p className="mt-4 text-gray-700 font-medium">Загрузка калькулятора...</p>
           </div>
         </div>
       </section>
@@ -187,11 +189,13 @@ export function Calculator() {
   }
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 relative z-10">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <div className="flex justify-center mb-4">
-            <CalculatorIcon className="h-12 w-12 text-blue-600" />
+            <div className="bg-white/80 backdrop-blur-sm rounded-full p-4 shadow-lg">
+              <CalculatorIcon className="h-12 w-12 text-blue-600" />
+            </div>
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
             Калькулятор стоимости услуг
@@ -202,9 +206,9 @@ export function Calculator() {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0 ring-1 ring-white/20">
             <CardHeader>
-              <CardTitle>Параметры вашего бизнеса</CardTitle>
+              <CardTitle className="text-2xl">Параметры вашего бизнеса</CardTitle>
               <CardDescription>Заполните информацию о вашей компании для расчета стоимости</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
