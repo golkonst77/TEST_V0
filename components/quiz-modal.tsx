@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useContactForm } from "@/hooks/use-contact-form"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowRight, ArrowLeft, Gift, Phone, X } from "lucide-react"
@@ -333,20 +332,20 @@ export function QuizModal() {
                       <h2 className="text-xl font-bold mb-2 mt-2 text-gray-900 leading-tight">{currentQuestion.title}</h2>
 
                       {currentQuestion.type === "single" ? (
-                        <RadioGroup
-                          value={Array.isArray(currentAnswer?.answer) ? "" : currentAnswer?.answer || ""}
-                          onValueChange={(value) => handleAnswer(currentQuestion.id, value)}
-                          className="space-y-1"
-                        >
+                        <div className="space-y-1">
                           {currentQuestion.options.map((option) => (
                             <div
                               key={option.value}
                               className="group relative bg-white border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value={option.value}
+                                <input
+                                  type="radio"
                                   id={option.value}
+                                  name={`question-${currentQuestion.id}`}
+                                  value={option.value}
+                                  checked={!Array.isArray(currentAnswer?.answer) && currentAnswer?.answer === option.value}
+                                  onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
                                   className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5"
                                 />
                                 <Label
@@ -358,7 +357,7 @@ export function QuizModal() {
                               </div>
                             </div>
                           ))}
-                        </RadioGroup>
+                        </div>
                       ) : (
                         <div className="space-y-1">
                           {currentQuestion.options.map((option) => (

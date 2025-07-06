@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowRight, ArrowLeft, X } from "lucide-react"
 
@@ -308,66 +307,46 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
                     <div className="flex flex-col px-0 py-0 overflow-y-auto max-h-[60vh]">
                       <h2 className="text-xl font-bold mb-2 mt-2 text-gray-900 leading-tight">{currentQuestion.title}</h2>
                       {currentQuestion.type === "single" ? (
-                        <RadioGroup
-                          value={Array.isArray(currentAnswer?.answer) ? "" : currentAnswer?.answer || ""}
-                          onValueChange={(value) => handleAnswer(currentQuestion.id, value)}
-                          className="space-y-1"
-                        >
+                        <div className="space-y-1">
                           {currentQuestion.options.map((option) => (
-                            <div
-                              key={option.value}
-                              className="group relative bg-white border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value={option.value}
-                                  id={option.value}
-                                  className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5"
-                                />
-                                <Label
-                                  htmlFor={option.value}
-                                  className="text-xs cursor-pointer text-gray-700 flex-1 font-normal"
-                                >
-                                  {option.label}
-                                </Label>
-                              </div>
-                            </div>
+                            <label key={option.value} className="flex items-center">
+                              <input
+                                type="radio"
+                                name={`question-${currentQuestion.id}`}
+                                value={option.value}
+                                checked={!Array.isArray(currentAnswer?.answer) && currentAnswer?.answer === option.value}
+                                onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
+                                className="mr-2 border-2 border-gray-300 rounded-full text-cyan-500 focus:ring-cyan-500"
+                              />
+                              <span className="text-xs cursor-pointer text-gray-700 flex-1 font-normal">{option.label}</span>
+                            </label>
                           ))}
-                        </RadioGroup>
+                        </div>
                       ) : (
                         <div className="space-y-1">
                           {currentQuestion.options.map((option) => (
-                            <div
-                              key={option.value}
-                              className="group relative bg-white border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={option.value}
-                                  checked={!!(Array.isArray(currentAnswer?.answer) && currentAnswer.answer.includes(option.value))}
-                                  onCheckedChange={(checked) => {
-                                    const currentAnswers = Array.isArray(currentAnswer?.answer)
-                                      ? currentAnswer.answer
-                                      : [];
-                                    if (checked === true) {
-                                      handleAnswer(currentQuestion.id, [...currentAnswers, option.value]);
-                                    } else {
-                                      handleAnswer(
-                                        currentQuestion.id,
-                                        currentAnswers.filter((a) => a !== option.value)
-                                      );
-                                    }
-                                  }}
-                                  className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5 rounded"
-                                />
-                                <Label
-                                  htmlFor={option.value}
-                                  className="text-xs cursor-pointer text-gray-700 flex-1 font-normal"
-                                >
-                                  {option.label}
-                                </Label>
-                              </div>
-                            </div>
+                            <label key={option.value} className="flex items-center">
+                              <input
+                                type="checkbox"
+                                value={option.value}
+                                checked={!!(Array.isArray(currentAnswer?.answer) && currentAnswer.answer.includes(option.value))}
+                                onChange={(e) => {
+                                  const currentAnswers = Array.isArray(currentAnswer?.answer)
+                                    ? currentAnswer.answer
+                                    : [];
+                                  if (e.target.checked) {
+                                    handleAnswer(currentQuestion.id, [...currentAnswers, option.value]);
+                                  } else {
+                                    handleAnswer(
+                                      currentQuestion.id,
+                                      currentAnswers.filter((a) => a !== option.value)
+                                    );
+                                  }
+                                }}
+                                className="mr-2 border-2 border-gray-300 rounded-full text-cyan-500 focus:ring-cyan-500"
+                              />
+                              <span className="text-xs cursor-pointer text-gray-700 flex-1 font-normal">{option.label}</span>
+                            </label>
                           ))}
                         </div>
                       )}
