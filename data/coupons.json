@@ -55,5 +55,101 @@
     "discount": 10000,
     "createdAt": "2025-07-07T07:45:03.475Z",
     "used": false
+  },
+  {
+    "id": 8,
+    "code": "PROSTOBURO-W6H27M-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T07:47:55.246Z",
+    "used": false
+  },
+  {
+    "id": 9,
+    "code": "PROSTOBURO-5QYQBW-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T07:50:24.088Z",
+    "used": false
+  },
+  {
+    "id": 10,
+    "code": "PROSTOBURO-XFA2IG-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T07:51:26.918Z",
+    "used": false
+  },
+  {
+    "id": 11,
+    "code": "PROSTOBURO-56M3RT-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T07:53:41.079Z",
+    "used": false
+  },
+  {
+    "id": 12,
+    "code": "PROSTOBURO-JBDNTR-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T07:56:38.207Z",
+    "used": false
+  },
+  {
+    "id": 13,
+    "code": "PROSTOBURO-R2T8C5-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T08:00:27.864Z",
+    "used": false
+  },
+  {
+    "id": 14,
+    "code": "PROSTOBURO-0P6FSG-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T10:16:35.381Z",
+    "used": false
+  },
+  {
+    "id": 15,
+    "code": "PROSTOBURO-36DLIO-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T10:32:59.850Z",
+    "used": false
+  },
+  {
+    "id": 16,
+    "code": "PROSTOBURO-XH2RZF-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T10:47:53.660Z",
+    "used": false
+  },
+  {
+    "id": 17,
+    "code": "PROSTOBURO-EOFA66-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T10:53:09.056Z",
+    "used": false
+  },
+  {
+    "id": 18,
+    "code": "PROSTOBURO-2XYN5U-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T10:54:25.791Z",
+    "used": false
+  },
+  {
+    "id": 19,
+    "code": "PROSTOBURO-SWHEA4-10000",
+    "phone": "9106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T11:09:25.343Z",
+    "used": false
   }
 ]

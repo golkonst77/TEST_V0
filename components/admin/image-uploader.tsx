@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
-import { Upload, Copy, Check } from "lucide-react"
+import { Upload, Copy, Check, X } from "lucide-react"
 
 interface UploadedFile {
   url: string
@@ -22,9 +22,10 @@ interface ImageUploaderProps {
   onImageSelect?: (url: string) => void
   multiple?: boolean
   maxFiles?: number
+  acceptPdf?: boolean
 }
 
-export function ImageUploader({ onImageSelect, multiple = false, maxFiles = 10 }: ImageUploaderProps) {
+export function ImageUploader({ onImageSelect, multiple = false, maxFiles = 10, acceptPdf = false }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [dragOver, setDragOver] = useState(false)
@@ -55,15 +56,37 @@ export function ImageUploader({ onImageSelect, multiple = false, maxFiles = 10 }
       return
     }
 
-    uploadFiles(fileArray)
-  }
+    // Проверяем тип файлов
+    const allowedTypes = acceptPdf 
+      ? ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "application/pdf"]
+      : ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]
 
-  const uploadFiles = async (files: File[]) => {
-    setUploading(true)
-    const newUploadedFiles: UploadedFile[] = []
+    const invalidFiles = fileArray.filter(file => !allowedTypes.includes(file.type))
+    if (invalidFiles.length > 0) {
+      toast({
+        title: "Ошибка",
+        description: `Неподдерживаемый тип файла: ${invalidFiles.map(f => f.name).join(", ")}`,
+        variant: "destructive",
+      })
+      return
+    }
 
-    try {
-      for (const file of files) {
+    // Проверяем размер файлов (максимум 5MB на файл)
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    const oversizedFiles = fileArray.filter(file => file.size > maxSize)
+    if (oversizedFiles.length > 0) {
+      toast({
+        title: "Ошибка",
+        description: `Файлы слишком большие (максимум 5MB): ${oversizedFiles.map(f => f.name).join(", ")}`,
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Загружаем файлы
+    fileArray.forEach(async (file) => {
+      setUploading(true)
+      try {
         const formData = new FormData()
         formData.append("file", file)
 
@@ -74,38 +97,29 @@ export function ImageUploader({ onImageSelect, multiple = false, maxFiles = 10 }
 
         const result = await response.json()
 
-        if (result.success) {
-          newUploadedFiles.push(result)
-
-          if (onImageSelect) {
-            onImageSelect(result.url)
-          }
-        } else {
-          toast({
-            title: "Ошибка загрузки",
-            description: result.error || "Не удалось загрузить файл",
-            variant: "destructive",
-          })
+        if (!response.ok) {
+          throw new Error(result.error || "Ошибка загрузки файла")
         }
-      }
 
-      if (newUploadedFiles.length > 0) {
-        setUploadedFiles((prev) => [...newUploadedFiles, ...prev])
+        if (onImageSelect) {
+          onImageSelect(result.url)
+        }
+
         toast({
-          title: "Успешно загружено",
-          description: `Загружено ${newUploadedFiles.length} файл(ов)`,
+          title: "Успешно",
+          description: `Файл ${file.name} загружен`,
         })
+      } catch (error) {
+        console.error("Ошибка загрузки:", error)
+        toast({
+          title: "Ошибка",
+          description: `Не удалось загрузить файл ${file.name}`,
+          variant: "destructive",
+        })
+      } finally {
+        setUploading(false)
       }
-    } catch (error) {
-      console.error("Ошибка загрузки:", error)
-      toast({
-        title: "Ошибка",
-        description: "Произошла ошибка при загрузке",
-        variant: "destructive",
-      })
-    } finally {
-      setUploading(false)
-    }
+    })
   }
 
   const handleDrop = (e: React.DragEvent) => {
@@ -154,48 +168,80 @@ export function ImageUploader({ onImageSelect, multiple = false, maxFiles = 10 }
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Загрузка изображений</CardTitle>
+        <CardTitle>Загрузка {acceptPdf ? "файлов" : "изображений"}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Зона загрузки */}
         <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            dragOver ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
-          }`}
+          className={`
+            border-2 border-dashed rounded-lg p-6 text-center
+            ${dragOver ? "border-blue-500 bg-blue-50" : "border-gray-300"}
+            ${uploading ? "opacity-50" : ""}
+          `}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
         >
-          <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-lg font-medium text-gray-900 mb-2">Перетащите изображения сюда</p>
-          <p className="text-sm text-gray-500 mb-4">или нажмите кнопку для выбора файлов</p>
-          <Button onClick={() => fileInputRef.current?.click()} disabled={uploading} variant="outline">
-            {uploading ? "Загрузка..." : "Выбрать файлы"}
-          </Button>
-          <Input
-            ref={fileInputRef}
+          <input
             type="file"
-            accept="image/*"
-            multiple={multiple}
-            onChange={(e) => handleFileSelect(e.target.files)}
+            ref={fileInputRef}
             className="hidden"
+            onChange={(e) => handleFileSelect(e.target.files)}
+            multiple={multiple}
+            accept={acceptPdf ? ".jpg,.jpeg,.png,.gif,.webp,.pdf" : ".jpg,.jpeg,.png,.gif,.webp"}
           />
-          <p className="text-xs text-gray-400 mt-2">Поддерживаются: JPG, PNG, GIF, WebP (максимум 5MB)</p>
+          <div className="flex flex-col items-center justify-center space-y-2">
+            <Upload className="h-8 w-8 text-gray-400" />
+            <div className="text-sm text-gray-600">
+              {uploading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+                  <span>Загрузка...</span>
+                </div>
+              ) : (
+                <>
+                  <p>
+                    Перетащите {multiple ? "файлы" : "файл"} сюда или{" "}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-blue-500 hover:text-blue-600 font-medium"
+                    >
+                      выберите на компьютере
+                    </button>
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {acceptPdf 
+                      ? "JPG, PNG, GIF, WEBP или PDF до 5MB"
+                      : "JPG, PNG, GIF или WEBP до 5MB"}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Загруженные файлы */}
         {uploadedFiles.length > 0 && (
           <div>
-            <Label className="text-sm font-medium">Загруженные изображения</Label>
+            <Label className="text-sm font-medium">Загруженные файлы</Label>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
               {uploadedFiles.map((file, index) => (
                 <Card key={index} className="overflow-hidden">
                   <div className="aspect-video relative">
-                    <img
-                      src={file.url || "/placeholder.svg"}
-                      alt={file.originalName}
-                      className="w-full h-full object-cover"
-                    />
+                    {file.type === "application/pdf" ? (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                        <svg className="w-12 h-12 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    ) : (
+                      <img
+                        src={file.url || "/placeholder.svg"}
+                        alt={file.originalName}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </div>
                   <CardContent className="p-3">
                     <p className="text-sm font-medium truncate" title={file.originalName}>

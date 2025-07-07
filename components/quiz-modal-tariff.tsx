@@ -6,8 +6,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowRight, ArrowLeft, X } from "lucide-react"
+import InputMask from 'react-input-mask'
+
+interface QuizAnswer {
+  questionId: number
+  answer: string | string[]
+}
 
 // CSS анимация для мигающей карточки скидки
 const discountCardAnimation = `
@@ -74,12 +81,12 @@ const questions = [
   },
 ]
 
-const bonuses = ["Бесплатная консультация", "Скидка 50% на обслуживание первый месяц"]
+const bonuses = ["Бесплатная консультация", "Дополнительные услуги"]
 
 // Добавим функцию отправки WhatsApp
 async function sendWhatsAppMessage(phone: string, message: string) {
-  // Приводим номер к формату 79XXXXXXXXX
-  const cleanPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
+  // phone теперь только 10 цифр, добавляем +7
+  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(0, 10);
   if (cleanPhone.length !== 11) return;
   await fetch('https://gate.whapi.cloud/messages/text', {
     method: 'POST',
@@ -94,23 +101,79 @@ async function sendWhatsAppMessage(phone: string, message: string) {
   });
 }
 
-// Добавим функцию отправки PDF-файла
-async function sendWhatsAppDocument(phone: string, filePath: string, caption: string) {
-  // Приводим номер к формату 79XXXXXXXXX
-  const cleanPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
-  if (cleanPhone.length !== 11) return;
+// Определяем тип бизнеса на основе ответов
+const getBusinessType = (answers: QuizAnswer[]): "ip" | "ooo" | "both" => {
+  // Ищем ответ на вопрос о типе бизнеса
+  const businessTypeAnswer = answers.find(a => a.questionId === 1)?.answer
   
-  await fetch('/api/send-whatsapp-document', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      phone: cleanPhone,
-      filePath: filePath,
-      caption: caption,
-    }),
-  });
+  if (!businessTypeAnswer) return "both"
+  
+  if (Array.isArray(businessTypeAnswer)) {
+    return businessTypeAnswer.includes("ip") && businessTypeAnswer.includes("ooo") 
+      ? "both" 
+      : businessTypeAnswer.includes("ip") 
+        ? "ip" 
+        : "ooo"
+  }
+  
+  return businessTypeAnswer === "ip" ? "ip" : "ooo"
+}
+
+// Обновляем функцию отправки документа
+async function sendWhatsAppDocument(phone: string, quiz_result: "ip" | "ooo" | "both", caption: string) {
+  console.log('[QUIZ-TARIFF] Начинаем отправку PDF:', { phone, quiz_result, caption });
+  
+  // phone теперь только 10 цифр, добавляем +7
+  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(0, 10);
+  if (cleanPhone.length !== 11) {
+    console.log('[QUIZ-TARIFF] Неверный формат номера:', phone);
+    return;
+  }
+  
+  try {
+    // Получаем подходящий чек-лист
+    const checklistResponse = await fetch('/api/get-checklist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ quiz_result }),
+    });
+    
+    if (!checklistResponse.ok) {
+      console.error('[QUIZ-TARIFF] Ошибка получения чек-листа:', await checklistResponse.text());
+      return;
+    }
+    
+    const { checklist } = await checklistResponse.json();
+    
+    if (!checklist) {
+      console.error('[QUIZ-TARIFF] Чек-лист не найден для результата:', quiz_result);
+      return;
+    }
+    
+    // Отправляем чек-лист через WhatsApp
+    const response = await fetch('/api/send-whatsapp-document', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        phone: cleanPhone,
+        filePath: checklist.file_url,
+        caption: caption,
+      }),
+    });
+    
+    const result = await response.json();
+    console.log('[QUIZ-TARIFF] Ответ от API отправки файла:', result);
+    
+    if (!response.ok) {
+      console.error('[QUIZ-TARIFF] Ошибка отправки файла:', result);
+    }
+  } catch (error) {
+    console.error('[QUIZ-TARIFF] Ошибка при отправке файла:', error);
+  }
 }
 
 function QuizSidebar({
@@ -199,12 +262,16 @@ function QuizSidebar({
 export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
   const { toast } = useToast()
   const [currentStep, setCurrentStep] = useState(0)
-  const [answers, setAnswers] = useState<any[]>([])
+  const [answers, setAnswers] = useState<QuizAnswer[]>([])
   const [phone, setPhone] = useState("")
-  const [wantChecklist, setWantChecklist] = useState(true)
+  const [wantChecklist, setWantChecklist] = useState<boolean>(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showThanks, setShowThanks] = useState(false)
   const [coupon, setCoupon] = useState<string | null>(null)
+
+  const handleCheckedChange = (checked: CheckboxPrimitive.CheckedState) => {
+    setWantChecklist(!!checked)
+  }
 
   const totalSteps = questions.length + 1
   const progress = ((currentStep + 1) / totalSteps) * 100
@@ -253,6 +320,9 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
       const code = `PROSTOBURO-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
       const fullCoupon = `${code}-${discount}`
       
+      // Определяем тип бизнеса
+      const businessType = getBusinessType(answers)
+      
       // Сохраняем купон в базу данных
       const response = await fetch('/api/coupons', {
         method: 'POST',
@@ -262,7 +332,8 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
         body: JSON.stringify({
           code: fullCoupon,
           phone: phone.trim(),
-          discount: discount
+          discount: discount,
+          business_type: businessType
         })
       })
       
@@ -274,10 +345,16 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
       console.log('Купон сохранен:', result)
 
       // Отправляем WhatsApp-сообщение клиенту
-      await sendWhatsAppMessage(phone, `Спасибо за прохождение квиза! Ваш купон: ${fullCoupon}. Мы свяжемся с вами скоро.`)
+      await sendWhatsAppMessage(phone, `Здравствуйте, спасибо за интерес к нашей компании. Вам купон на скидку ${fullCoupon}. Также Вам бесплатная консультация 30 минут и СКИДКА 50% на первый месяц обслуживания! Если есть вопросы — пишите прямо здесь, ответим оперативно.`)
       
       // Отправляем PDF-файл с чек-листом
-      await sendWhatsAppDocument(phone, 'CHEK_LIST/Kak-izbezhat-blokirovki-scheta.pdf', 'Ваш подарок: Чек-лист "Как избежать блокировки счета"')
+      if (wantChecklist) {
+        await sendWhatsAppDocument(
+          phone, 
+          businessType,
+          'Ваш подарок: Чек-лист с полезной информацией для вашего бизнеса'
+        )
+      }
       
       setCoupon(fullCoupon)
       setShowThanks(true)
@@ -414,24 +491,31 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
                         Оставьте номер телефона и мы отправим персональное предложение со скидкой {" "}
                         <span className="font-bold text-cyan-500">{calculateDiscount().toLocaleString()} ₽</span> в WhatsApp
                       </p>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+7 (___) ___-__-__"
+                      <InputMask
+                        mask="+7 (999) 999-99-99"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm"
-                      />
-                      <div className="mb-4">
+                        onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      >
+                        {(inputProps) => (
+                          <Input
+                            {...inputProps}
+                            id="phone"
+                            type="tel"
+                            placeholder="+7 (___) ___-__-__"
+                            className="text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
+                          />
+                        )}
+                      </InputMask>
+                      <div className="flex items-center space-x-2 mt-4">
                         <Checkbox
                           id="checklist"
-                          checked={!!wantChecklist}
+                          checked={wantChecklist}
                           onCheckedChange={(checked) => setWantChecklist(!!checked)}
                           className="mt-1 text-green-600 border-2 border-green-300 w-5 h-5"
                         />
                         <Label htmlFor="checklist" className="cursor-pointer leading-relaxed text-gray-700">
                           <span className="text-lg mr-3">🎁</span>
-                          <span className="font-bold text-green-700">Ваш подарок:</span> Чек-лист «7 ошибок, из-за которых бизнес получает штрафы».
+                          <span className="font-bold text-green-700">Ваш подарок:</span> Чек-лист с полезной информацией для вашего бизнеса
                         </Label>
                       </div>
                     </div>

@@ -1,7 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { writeFile, mkdir } from "fs/promises"
-import { join } from "path"
-import { existsSync } from "fs"
+import { createClient } from "@supabase/supabase-js"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Проверяем тип файла
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "application/pdf"]
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json({ error: "Неподдерживаемый тип файла" }, { status: 400 })
     }
@@ -31,22 +34,45 @@ export async function POST(request: NextRequest) {
     const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_")
     const fileName = `${timestamp}_${originalName}`
 
-    // Создаем папку uploads если её нет
-    const uploadsDir = join(process.cwd(), "public", "uploads")
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
+    // Определяем bucket в зависимости от типа файла
+    const bucket = file.type.startsWith("image/") ? "images" : "checklists"
+
+    // Загружаем файл в Supabase Storage
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, buffer, {
+        contentType: file.type,
+        cacheControl: "3600",
+        upsert: false
+      })
+
+    if (error) {
+      console.error("Ошибка загрузки в Storage:", error)
+      return NextResponse.json({ error: "Ошибка загрузки файла" }, { status: 500 })
     }
 
-    // Сохраняем файл
-    const filePath = join(uploadsDir, fileName)
-    await writeFile(filePath, buffer)
+    // Получаем публичный URL файла для проверки
+    const { data: { publicUrl } } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName)
 
-    // Возвращаем URL файла
-    const fileUrl = `/uploads/${fileName}`
+    // Проверяем доступность файла
+    try {
+      const fileCheck = await fetch(publicUrl, { method: 'HEAD' })
+      if (!fileCheck.ok) {
+        // Если файл недоступен, удаляем его из Storage
+        await supabase.storage.from(bucket).remove([fileName])
+        return NextResponse.json({ error: "Ошибка загрузки файла" }, { status: 500 })
+      }
+    } catch (error) {
+      // Если произошла ошибка, удаляем файл из Storage
+      await supabase.storage.from(bucket).remove([fileName])
+      return NextResponse.json({ error: "Ошибка загрузки файла" }, { status: 500 })
+    }
 
     return NextResponse.json({
       success: true,
-      url: fileUrl,
+      url: fileName, // Возвращаем только имя файла для сохранения в БД
       fileName: fileName,
       originalName: file.name,
       size: file.size,

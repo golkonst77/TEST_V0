@@ -84,6 +84,12 @@ const menuItems: MenuItem[] = [
     color: "text-pink-600"
   },
   {
+    title: "Чек-листы",
+    href: "/admin/checklists",
+    icon: FileText,
+    color: "text-cyan-600"
+  },
+  {
     title: "Рассылка",
     href: "/admin/newsletter",
     icon: Mail,

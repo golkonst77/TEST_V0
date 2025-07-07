@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Whapi API</title>
+</head>
+<body>
+    <h1>Test Whapi API</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const payload = {
+                phone: '+79106000612',
+                filePath: 'https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf',
+                caption: 'Test PDF'
+            };
+
+            try {
+                const response = await fetch('/api/send-whatsapp-document', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                document.getElementById('result').innerHTML = `
+                    <h3>Status: ${response.status}</h3>
+                    <pre>${JSON.stringify(result, null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <h3>Error</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 
