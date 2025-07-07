@@ -85,8 +85,8 @@ const bonuses = ["Бесплатная консультация", "Дополн�
 
 // Добавим функцию отправки WhatsApp
 async function sendWhatsAppMessage(phone: string, message: string) {
-  // phone теперь только 10 цифр, добавляем +7
-  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(0, 10);
+  // phone теперь вся маска, извлекаем только цифры
+  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
   if (cleanPhone.length !== 11) return;
   await fetch('https://gate.whapi.cloud/messages/text', {
     method: 'POST',
@@ -123,8 +123,8 @@ const getBusinessType = (answers: QuizAnswer[]): "ip" | "ooo" | "both" => {
 async function sendWhatsAppDocument(phone: string, quiz_result: "ip" | "ooo" | "both", caption: string) {
   console.log('[QUIZ-TARIFF] Начинаем отправку PDF:', { phone, quiz_result, caption });
   
-  // phone теперь только 10 цифр, добавляем +7
-  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(0, 10);
+  // phone теперь вся маска, извлекаем только цифры
+  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
   if (cleanPhone.length !== 11) {
     console.log('[QUIZ-TARIFF] Неверный формат номера:', phone);
     return;
@@ -270,7 +270,22 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
   const [coupon, setCoupon] = useState<string | null>(null)
 
   const handleCheckedChange = (checked: CheckboxPrimitive.CheckedState) => {
-    setWantChecklist(!!checked)
+    setWantChecklist(checked === true)
+  }
+
+  const handleOptionCheckedChange = (questionId: number, optionValue: string, checked: CheckboxPrimitive.CheckedState) => {
+    const currentAnswers = Array.isArray(answers.find(a => a.questionId === questionId)?.answer)
+      ? answers.find(a => a.questionId === questionId)?.answer as string[]
+      : [];
+
+    if (checked === true) {
+      handleAnswer(questionId, [...currentAnswers, optionValue]);
+    } else {
+      handleAnswer(
+        questionId,
+        currentAnswers.filter((a) => a !== optionValue)
+      );
+    }
   }
 
   const totalSteps = questions.length + 1
@@ -361,7 +376,7 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
       setCurrentStep(0)
       setAnswers([])
       setPhone("")
-      setWantChecklist(true)
+      setWantChecklist(false)
       onOpenChange(false)
       
       toast({
@@ -429,44 +444,52 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
                       {currentQuestion.type === "single" ? (
                         <div className="space-y-1">
                           {currentQuestion.options.map((option) => (
-                            <label key={option.value} className="flex items-center">
-                              <input
-                                type="radio"
-                                name={`question-${currentQuestion.id}`}
-                                value={option.value}
-                                checked={!Array.isArray(currentAnswer?.answer) && currentAnswer?.answer === option.value}
-                                onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
-                                className="mr-2 border-2 border-gray-300 rounded-full text-cyan-500 focus:ring-cyan-500"
-                              />
-                              <span className="text-xs cursor-pointer text-gray-700 flex-1 font-normal">{option.label}</span>
-                            </label>
+                            <div
+                              key={option.value}
+                              className="group relative bg-cyan-50 border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="radio"
+                                  id={option.value}
+                                  name={`question-${currentQuestion.id}`}
+                                  value={option.value}
+                                  checked={!Array.isArray(currentAnswer?.answer) && currentAnswer?.answer === option.value}
+                                  onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
+                                  className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5"
+                                />
+                                <Label
+                                  htmlFor={option.value}
+                                  className="text-xs cursor-pointer text-gray-700 flex-1 font-normal"
+                                >
+                                  {option.label}
+                                </Label>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       ) : (
                         <div className="space-y-1">
                           {currentQuestion.options.map((option) => (
-                            <label key={option.value} className="flex items-center">
-                              <input
-                                type="checkbox"
-                                value={option.value}
-                                checked={!!(Array.isArray(currentAnswer?.answer) && currentAnswer.answer.includes(option.value))}
-                                onChange={(e) => {
-                                  const currentAnswers = Array.isArray(currentAnswer?.answer)
-                                    ? currentAnswer.answer
-                                    : [];
-                                  if (e.target.checked) {
-                                    handleAnswer(currentQuestion.id, [...currentAnswers, option.value]);
-                                  } else {
-                                    handleAnswer(
-                                      currentQuestion.id,
-                                      currentAnswers.filter((a: string) => a !== option.value)
-                                    );
-                                  }
-                                }}
-                                className="mr-2 border-2 border-gray-300 rounded-full text-cyan-500 focus:ring-cyan-500"
-                              />
-                              <span className="text-xs cursor-pointer text-gray-700 flex-1 font-normal">{option.label}</span>
-                            </label>
+                            <div
+                              key={option.value}
+                              className="group relative bg-cyan-50 border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={option.value}
+                                  checked={!!(Array.isArray(currentAnswer?.answer) && currentAnswer.answer.includes(option.value))}
+                                  onCheckedChange={(checked) => handleOptionCheckedChange(currentQuestion.id, option.value, checked)}
+                                  className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5 rounded"
+                                />
+                                <Label
+                                  htmlFor={option.value}
+                                  className="text-sm cursor-pointer text-gray-700 flex-1 font-normal"
+                                >
+                                  {option.label}
+                                </Label>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       )}
@@ -494,7 +517,7 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
                       <InputMask
                         mask="+7 (999) 999-99-99"
                         value={phone}
-                        onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                        onChange={e => setPhone(e.target.value)}
                       >
                         {(inputProps) => (
                           <Input
@@ -509,8 +532,8 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
                       <div className="flex items-center space-x-2 mt-4">
                         <Checkbox
                           id="checklist"
-                          checked={wantChecklist}
-                          onCheckedChange={(checked) => setWantChecklist(!!checked)}
+                          checked={!!wantChecklist}
+                          onCheckedChange={handleCheckedChange}
                           className="mt-1 text-green-600 border-2 border-green-300 w-5 h-5"
                         />
                         <Label htmlFor="checklist" className="cursor-pointer leading-relaxed text-gray-700">
@@ -547,7 +570,6 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
       </Dialog>
       <Dialog open={showThanks} onOpenChange={setShowThanks}>
         <DialogContent className="max-w-md p-8 text-center flex flex-col items-center justify-center">
-          <button onClick={() => setShowThanks(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"><X className="w-6 h-6" /></button>
           <h2 className="text-2xl font-bold mb-4 text-green-700">Спасибо за уделенное время!</h2>
           <p className="text-base text-gray-700 mb-4">Мы отправим Вам в WhatsApp наше предложение и бонусы!<br/>Хорошего дня!</p>
           {coupon && (
