@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-export function AIDocuments() {
+export function AIDocuments({ onQuizOpen }: { onQuizOpen?: () => void }) {
   const services = [
     {
       id: '1c',
@@ -141,7 +141,7 @@ export function AIDocuments() {
             Наша система на базе ИИ автоматически распознает, классифицирует и обрабатывает ваши документы, 
             значительно ускоряя процесс ведения учета и снижая вероятность ошибок.
           </p>
-          <button className="mt-6 inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+          <button className="mt-6 inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl" onClick={onQuizOpen}>
             Узнать подробнее
             <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

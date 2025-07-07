@@ -1,6 +1,9 @@
+'use client'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Shield, Clock, Lock, Users, CheckCircle } from "lucide-react"
 import { AIDocuments } from "@/components/ai-documents"
+import { QuizModal } from "@/components/quiz-modal"
+import { useState } from "react"
 
 const guarantees = [
   {
@@ -8,30 +11,37 @@ const guarantees = [
     title: "Возмещаем штрафы и пени",
     description: "Возмещаем штрафы и пени, возникшие по нашей вине при ведении учета",
     highlight: true,
+    bg: "bg-green-100 border-green-500",
+    iconBg: "bg-green-600 text-white",
   },
   {
     icon: Clock,
     title: "100% своевременная сдача",
     description: "Гарантируем 100% своевременную сдачу всех отчетов",
     highlight: false,
+    bg: "bg-blue-100 border-blue-500",
+    iconBg: "bg-blue-600 text-white",
   },
   {
     icon: Lock,
     title: "Строгая конфиденциальность",
     description: "Строгая конфиденциальность (подписываем NDA)",
     highlight: false,
+    bg: "bg-purple-100 border-purple-500",
+    iconBg: "bg-purple-600 text-white",
   },
   {
     icon: Users,
     title: "Персональный бухгалтер",
     description: "Персональный бухгалтер доступен в рабочие часы",
     highlight: false,
+    bg: "bg-red-100 border-red-500",
+    iconBg: "bg-red-600 text-white",
   },
 ]
 
-
-
 export function Guarantees() {
+  const [quizOpen, setQuizOpen] = useState(false)
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -93,15 +103,11 @@ export function Guarantees() {
             {guarantees.map((guarantee, index) => (
               <Card
                 key={index}
-                className={`text-center ${guarantee.highlight ? "border-2 border-green-500 bg-green-50" : ""}`}
+                className={`text-center border-2 ${guarantee.bg}`}
               >
                 <CardHeader>
                   <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-lg mx-auto mb-4 ${
-                      guarantee.highlight
-                        ? "bg-green-600 text-white"
-                        : "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                    }`}
+                    className={`flex h-12 w-12 items-center justify-center rounded-lg mx-auto mb-4 ${guarantee.iconBg}`}
                   >
                     <guarantee.icon className="h-6 w-6" />
                   </div>
@@ -117,7 +123,7 @@ export function Guarantees() {
 
         {/* AI Documents Section */}
         <div className="mb-16 -mx-4">
-          <AIDocuments />
+          <AIDocuments onQuizOpen={() => setQuizOpen(true)} />
         </div>
 
         {/* CTA */}
@@ -127,6 +133,8 @@ export function Guarantees() {
           </h3>
           <p className="text-xl mb-6">Расти спокойно.</p>
         </div>
+
+        <QuizModal open={quizOpen} onOpenChange={setQuizOpen} />
       </div>
     </section>
   )

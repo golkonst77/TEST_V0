@@ -264,7 +264,7 @@ async function sendWhatsAppDocument(phone: string, quiz_result: "ip" | "ooo" | "
   }
 }
 
-export function QuizModal() {
+export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange?: (open: boolean) => void } = {}) {
   const { isOpen, closeContactForm } = useContactForm()
   const { toast } = useToast()
   const [currentStep, setCurrentStep] = useState(0)
@@ -423,7 +423,7 @@ export function QuizModal() {
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={closeContactForm}>
+      <Dialog open={!!(open !== undefined ? open : isOpen)} onOpenChange={onOpenChange || closeContactForm}>
         <DialogContent className="max-w-4xl h-[90vh] max-h-[800px] p-0 overflow-hidden bg-white border-0 shadow-2xl">
           <div className="h-full flex flex-col">
             {/* Header */}
