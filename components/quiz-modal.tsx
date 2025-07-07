@@ -171,8 +171,8 @@ function QuizSidebar({
 
 // Добавим функцию отправки WhatsApp
 async function sendWhatsAppMessage(phone: string, message: string) {
-  // phone теперь только 10 цифр, добавляем +7
-  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(0, 10);
+  // phone теперь вся маска, извлекаем только цифры
+  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
   if (cleanPhone.length !== 11) return;
   await fetch('https://gate.whapi.cloud/messages/text', {
     method: 'POST',
@@ -209,8 +209,8 @@ const getBusinessType = (answers: QuizAnswer[]): "ip" | "ooo" | "both" => {
 async function sendWhatsAppDocument(phone: string, quiz_result: "ip" | "ooo" | "both", caption: string) {
   console.log('[QUIZ] Начинаем отправку PDF:', { phone, quiz_result, caption });
   
-  // phone теперь только 10 цифр, добавляем +7
-  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(0, 10);
+  // phone теперь вся маска, извлекаем только цифры
+  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
   if (cleanPhone.length !== 11) {
     console.log('[QUIZ] Неверный формат номера:', phone);
     return;
@@ -357,11 +357,7 @@ export function QuizModal() {
       
       // Отправляем PDF-файл с чек-листом
       if (wantChecklist) {
-        await sendWhatsAppDocument(
-          phone, 
-          businessType,
-          'Ваш подарок: Чек-лист с полезной информацией для вашего бизнеса'
-        )
+        await sendWhatsAppDocument(phone, businessType, `Ваш чек-лист. Спасибо за интерес к ПростоБюро!`)
       }
       
       setCoupon(fullCoupon)
@@ -468,7 +464,7 @@ export function QuizModal() {
                           {currentQuestion.options.map((option) => (
                             <div
                               key={option.value}
-                              className="group relative bg-white border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                              className="group relative bg-cyan-50 border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
                             >
                               <div className="flex items-center space-x-2">
                                 <input
@@ -495,7 +491,7 @@ export function QuizModal() {
                           {currentQuestion.options.map((option) => (
                             <div
                               key={option.value}
-                              className="group relative bg-white border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                              className="group relative bg-cyan-50 border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
                             >
                               <div className="flex items-center space-x-2">
                                 <Checkbox
@@ -540,7 +536,7 @@ export function QuizModal() {
                       <InputMask
                         mask="+7 (999) 999-99-99"
                         value={phone}
-                        onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                        onChange={e => setPhone(e.target.value)}
                       >
                         {(inputProps) => (
                           <Input

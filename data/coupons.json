@@ -151,5 +151,29 @@
     "discount": 10000,
     "createdAt": "2025-07-07T11:09:25.343Z",
     "used": false
+  },
+  {
+    "id": 20,
+    "code": "PROSTOBURO-ET97BO-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-07-07T11:32:40.671Z",
+    "used": false
+  },
+  {
+    "id": 21,
+    "code": "PROSTOBURO-5ZRGN6-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-07-07T11:33:12.873Z",
+    "used": false
+  },
+  {
+    "id": 22,
+    "code": "PROSTOBURO-WTOUC2-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-07-07T11:36:57.055Z",
+    "used": false
   }
 ]
