@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,15 +10,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Неверный формат номера' }, { status: 400 });
     }
 
-    // Читаем файл с сервера
-    const fullPath = path.join(process.cwd(), 'public', filePath);
+    // Загружаем файл с GitHub
+    const githubUrl = `https://raw.githubusercontent.com/golkonst77/TEST_V0/main/public/${filePath}`;
     
-    if (!fs.existsSync(fullPath)) {
-      return NextResponse.json({ error: 'Файл не найден' }, { status: 404 });
+    const fileResponse = await fetch(githubUrl);
+    
+    if (!fileResponse.ok) {
+      console.error('GitHub file not found:', githubUrl);
+      return NextResponse.json({ error: 'Файл не найден на GitHub' }, { status: 404 });
     }
 
-    const fileBuffer = fs.readFileSync(fullPath);
-    const base64File = fileBuffer.toString('base64');
+    const fileBuffer = await fileResponse.arrayBuffer();
+    const base64File = Buffer.from(fileBuffer).toString('base64');
 
     // Отправляем файл через WHAPI
     const response = await fetch('https://gate.whapi.cloud/messages/document', {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
         to: cleanPhone,
         document: {
           data: base64File,
-          filename: path.basename(filePath),
+          filename: filePath.split('/').pop(),
           mimetype: 'application/pdf'
         },
         caption: caption,
