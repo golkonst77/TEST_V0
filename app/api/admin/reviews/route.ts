@@ -50,6 +50,10 @@ export async function GET() {
         featured,
         avgRating
       }
+    }, {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      }
     })
   } catch (error) {
     console.error('Error in admin reviews API:', error)

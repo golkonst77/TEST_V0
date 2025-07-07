@@ -104,7 +104,7 @@ export function Hero() {
 
   return (
     <section 
-      className="relative min-h-screen flex items-center justify-center"
+      className="relative h-[85vh] flex items-center justify-center"
       style={{
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
         backgroundSize: 'cover',
@@ -113,9 +113,18 @@ export function Hero() {
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-white/0 z-10" />
-      <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-20">
+      <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-12">
         <div className="relative z-10 w-full flex">
-          <div className="max-w-xl md:max-w-lg lg:max-w-xl xl:max-w-2xl text-left">
+          <div 
+            className="max-w-xl md:max-w-lg lg:max-w-xl xl:max-w-2xl text-left"
+            style={{
+              marginLeft: `${layout.marginLeft}px`,
+              marginTop: `${layout.marginTop}px`,
+              marginBottom: `${layout.marginBottom}px`,
+              paddingLeft: `${layout.paddingX}px`,
+              paddingRight: `${layout.paddingX}px`
+            }}
+          >
             {/* Badge */}
             {badge.show && (
               <div className="mb-6">

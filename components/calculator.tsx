@@ -192,12 +192,12 @@ export function Calculator() {
     <section className="py-20 relative z-10">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <div className="flex justify-center mb-4">
-            <div className="bg-white/80 backdrop-blur-sm rounded-full p-4 shadow-lg">
-              <CalculatorIcon className="h-12 w-12 text-blue-600" />
+          <div className="flex justify-center mb-6">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-4 shadow-2xl ring-4 ring-blue-200">
+              <CalculatorIcon className="h-12 w-12 text-white" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
             Калькулятор стоимости услуг
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -206,157 +206,176 @@ export function Calculator() {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0 ring-1 ring-white/20">
-            <CardHeader>
-              <CardTitle className="text-2xl">Параметры вашего бизнеса</CardTitle>
-              <CardDescription>Заполните информацию о вашей компании для расчета стоимости</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="companyType">Тип компании</Label>
-                  <Select
-                    value={state.companyType}
-                    onValueChange={(value) => setState((prev) => ({ ...prev, companyType: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите тип компании" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ip">ИП</SelectItem>
-                      <SelectItem value="ooo">ООО</SelectItem>
-                      <SelectItem value="ao">АО</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="taxSystem">Система налогообложения</Label>
-                  <Select
-                    value={state.taxSystem}
-                    onValueChange={(value) => setState((prev) => ({ ...prev, taxSystem: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите налоговую систему" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="usn">УСН</SelectItem>
-                      <SelectItem value="osn">ОСН</SelectItem>
-                      <SelectItem value="envd">ЕНВД</SelectItem>
-                      <SelectItem value="patent">Патент</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="employees">Количество сотрудников</Label>
-                  <Input
-                    id="employees"
-                    type="number"
-                    placeholder="0"
-                    value={state.employees || ""}
-                    onChange={(e) => setState((prev) => ({ ...prev, employees: Number.parseInt(e.target.value) || 0 }))}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="documents">Количество документов в месяц</Label>
-                  <Input
-                    id="documents"
-                    type="number"
-                    placeholder="0"
-                    value={state.documents || ""}
-                    onChange={(e) => setState((prev) => ({ ...prev, documents: Number.parseInt(e.target.value) || 0 }))}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <Label>Необходимые услуги</Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="accounting"
-                      checked={state.services.includes("accounting")}
-                      onCheckedChange={(checked) => handleServiceChange("accounting", checked as boolean)}
-                    />
-                    <Label htmlFor="accounting" className="text-sm font-normal">
-                      Бухгалтерский учет (от {servicePrices.accounting.price.toLocaleString()} руб/мес)
-                    </Label>
+          <Card className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/60 to-purple-50/70 backdrop-blur-xl shadow-2xl border-0 ring-2 ring-white/50 hover:shadow-3xl transition-all duration-300">
+            {/* Внутренний декоративный фон */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+              <div className="absolute -top-10 -left-10 w-1/2 h-1/2 bg-gradient-to-br from-blue-200/40 via-purple-200/30 to-pink-200/30 rounded-full blur-2xl opacity-60"></div>
+              <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-gradient-to-tr from-pink-200/40 via-purple-100/30 to-blue-100/30 rounded-full blur-2xl opacity-50"></div>
+              <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-white/30 rounded-full blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
+            </div>
+            <div className="relative z-10">
+              <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
+                <CardTitle className="text-2xl font-bold">Параметры вашего бизнеса</CardTitle>
+                <CardDescription className="text-blue-100">Заполните информацию о вашей компании для расчета стоимости</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6 p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="companyType" className="text-sm font-semibold text-gray-700">Тип компании</Label>
+                    <Select
+                      value={state.companyType}
+                      onValueChange={(value) => setState((prev) => ({ ...prev, companyType: value }))}
+                    >
+                      <SelectTrigger className="border-blue-200 hover:border-blue-300 shadow-md hover:shadow-lg transition-all duration-200 ring-2 ring-blue-100 focus:ring-blue-300 focus:ring-4 bg-transparent">
+                        <SelectValue placeholder="Выберите тип компании" />
+                      </SelectTrigger>
+                      <SelectContent className="shadow-2xl border-blue-200 rounded-lg bg-transparent">
+                        <SelectItem value="ip" className="hover:bg-blue-50 focus:bg-blue-50">ИП</SelectItem>
+                        <SelectItem value="ooo" className="hover:bg-blue-50 focus:bg-blue-50">ООО</SelectItem>
+                        <SelectItem value="ao" className="hover:bg-blue-50 focus:bg-blue-50">АО</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="payroll"
-                      checked={state.services.includes("payroll")}
-                      onCheckedChange={(checked) => handleServiceChange("payroll", checked as boolean)}
-                    />
-                    <Label htmlFor="payroll" className="text-sm font-normal">
-                      Зарплата и кадры (от {servicePrices.payroll.price.toLocaleString()} руб/мес)
-                    </Label>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="taxSystem" className="text-sm font-semibold text-gray-700">Система налогообложения</Label>
+                    <Select
+                      value={state.taxSystem}
+                      onValueChange={(value) => setState((prev) => ({ ...prev, taxSystem: value }))}
+                    >
+                      <SelectTrigger className="border-purple-200 hover:border-purple-300 shadow-md hover:shadow-lg transition-all duration-200 ring-2 ring-purple-100 focus:ring-purple-300 focus:ring-4 bg-transparent">
+                        <SelectValue placeholder="Выберите налоговую систему" />
+                      </SelectTrigger>
+                      <SelectContent className="shadow-2xl border-purple-200 rounded-lg bg-transparent">
+                        <SelectItem value="usn" className="hover:bg-purple-50 focus:bg-purple-50">УСН</SelectItem>
+                        <SelectItem value="osn" className="hover:bg-purple-50 focus:bg-purple-50">ОСН</SelectItem>
+                        <SelectItem value="envd" className="hover:bg-purple-50 focus:bg-purple-50">ЕНВД</SelectItem>
+                        <SelectItem value="patent" className="hover:bg-purple-50 focus:bg-purple-50">Патент</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="legal"
-                      checked={state.services.includes("legal")}
-                      onCheckedChange={(checked) => handleServiceChange("legal", checked as boolean)}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="employees" className="text-sm font-semibold text-gray-700">Количество сотрудников</Label>
+                    <Input
+                      id="employees"
+                      type="number"
+                      placeholder="0"
+                      value={state.employees || ""}
+                      onChange={(e) => setState((prev) => ({ ...prev, employees: Number.parseInt(e.target.value) || 0 }))}
+                      className="border-green-200 hover:border-green-300 shadow-md hover:shadow-lg transition-all duration-200 ring-2 ring-green-100 focus:ring-green-300 focus:ring-4 bg-transparent"
                     />
-                    <Label htmlFor="legal" className="text-sm font-normal">
-                      Юридическое сопровождение (от {servicePrices.legal.price.toLocaleString()} руб/мес)
-                    </Label>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="terminal"
-                      checked={state.services.includes("terminal")}
-                      onCheckedChange={(checked) => handleServiceChange("terminal", checked as boolean)}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="documents" className="text-sm font-semibold text-gray-700">Количество документов в месяц</Label>
+                    <Input
+                      id="documents"
+                      type="number"
+                      placeholder="0"
+                      value={state.documents || ""}
+                      onChange={(e) => setState((prev) => ({ ...prev, documents: Number.parseInt(e.target.value) || 0 }))}
+                      className="border-orange-200 hover:border-orange-300 shadow-md hover:shadow-lg transition-all duration-200 ring-2 ring-orange-100 focus:ring-orange-300 focus:ring-4 bg-transparent"
                     />
-                    <Label htmlFor="terminal" className="text-sm font-normal">
-                      Кассовый терминал (от {servicePrices.terminal.price.toLocaleString()} руб)
-                    </Label>
                   </div>
                 </div>
-              </div>
 
-              {/* Блок с итоговой стоимостью - показываем всегда */}
-              <div className={`bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border-2 border-blue-100 ${totalPrice > 0 ? 'animate-pulse-glow' : ''}`}>
-                <style jsx>{`
-                  @keyframes pulse-glow {
-                    0%, 100% {
-                      background: linear-gradient(to right, rgb(239 246 255), rgb(250 245 255));
-                      border-color: rgb(147 197 253);
-                      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+                <div className="space-y-4">
+                  <Label className="text-sm font-semibold text-gray-700">Необходимые услуги</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
+                      <Checkbox
+                        id="accounting"
+                        checked={state.services.includes("accounting")}
+                        onCheckedChange={(checked) => handleServiceChange("accounting", checked as boolean)}
+                        className="data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                      />
+                      <Label htmlFor="accounting" className="text-sm font-normal text-gray-700 flex-1">
+                        Бухгалтерский учет (от {servicePrices.accounting.price.toLocaleString()} руб/мес)
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-purple-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
+                      <Checkbox
+                        id="payroll"
+                        checked={state.services.includes("payroll")}
+                        onCheckedChange={(checked) => handleServiceChange("payroll", checked as boolean)}
+                        className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                      />
+                      <Label htmlFor="payroll" className="text-sm font-normal text-gray-700 flex-1">
+                        Зарплата и кадры (от {servicePrices.payroll.price.toLocaleString()} руб/мес)
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-green-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
+                      <Checkbox
+                        id="legal"
+                        checked={state.services.includes("legal")}
+                        onCheckedChange={(checked) => handleServiceChange("legal", checked as boolean)}
+                        className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                      />
+                      <Label htmlFor="legal" className="text-sm font-normal text-gray-700 flex-1">
+                        Юридическое сопровождение (от {servicePrices.legal.price.toLocaleString()} руб/мес)
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-orange-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
+                      <Checkbox
+                        id="terminal"
+                        checked={state.services.includes("terminal")}
+                        onCheckedChange={(checked) => handleServiceChange("terminal", checked as boolean)}
+                        className="data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                      />
+                      <Label htmlFor="terminal" className="text-sm font-normal text-gray-700 flex-1">
+                        Кассовый терминал (от {servicePrices.terminal.price.toLocaleString()} руб)
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Блок с итоговой стоимостью - показываем всегда */}
+                <div className={`bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-8 rounded-xl border-2 border-gradient-to-r border-blue-300 shadow-xl hover:shadow-2xl transition-all duration-300 ${totalPrice > 0 ? 'animate-pulse-glow ring-4 ring-blue-200' : ''}`}>
+                  <style jsx>{`
+                    @keyframes pulse-glow {
+                      0%, 100% {
+                        background: linear-gradient(to bottom right, rgb(219 234 254), rgb(237 233 254), rgb(252 231 243));
+                        border-color: rgb(147 197 253);
+                        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(59, 130, 246, 0.05);
+                      }
+                      50% {
+                        background: linear-gradient(to bottom right, rgb(191 219 254), rgb(221 214 254), rgb(251 207 232));
+                        border-color: rgb(99 102 241);
+                        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 30px 10px rgba(59, 130, 246, 0.2);
+                      }
                     }
-                    50% {
-                      background: linear-gradient(to right, rgb(219 234 254), rgb(237 233 254));
-                      border-color: rgb(99 102 241);
-                      box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.3);
+                    .animate-pulse-glow {
+                      animation: pulse-glow 2s ease-in-out infinite;
                     }
-                  }
-                  .animate-pulse-glow {
-                    animation: pulse-glow 2s ease-in-out infinite;
-                  }
-                `}</style>
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Стоимость вашего тарифа</h3>
-                  <div className="text-4xl font-bold text-blue-600 mb-4">
-                    {totalPrice > 0 ? `${totalPrice.toLocaleString()} руб/мес` : "Выберите услуги"}
+                  `}</style>
+                  <div className="text-center">
+                    <div className="mb-4 mx-auto w-fit p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg">
+                      <CalculatorIcon className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+                      Стоимость вашего тарифа
+                    </h3>
+                    <div className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+                      {totalPrice > 0 ? `${totalPrice.toLocaleString()} руб/мес` : "Выберите услуги"}
+                    </div>
+                    {totalPrice > 0 && (
+                      <p className="text-gray-600 mb-8 text-lg">
+                        Точная стоимость рассчитывается индивидуально после консультации
+                      </p>
+                    )}
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold py-4 px-8 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1"
+                      onClick={openContactForm}
+                    >
+                      {totalPrice > 0 ? "Получить точный расчет" : "Получить консультацию"}
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
                   </div>
-                  {totalPrice > 0 && (
-                    <p className="text-gray-600 mb-6">
-                      Точная стоимость рассчитывается индивидуально после консультации
-                    </p>
-                  )}
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                    onClick={openContactForm}
-                  >
-                    {totalPrice > 0 ? "Получить точный расчет" : "Получить консультацию"}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
                 </div>
-              </div>
-            </CardContent>
+              </CardContent>
+            </div>
           </Card>
         </div>
       </div>

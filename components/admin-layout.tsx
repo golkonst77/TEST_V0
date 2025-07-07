@@ -23,7 +23,8 @@ import {
   Palette,
   Mail,
   Send,
-  MessageSquare
+  MessageSquare,
+  Video
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -114,6 +115,12 @@ const menuItems: MenuItem[] = [
     href: "/admin/reviews",
     icon: MessageSquare,
     color: "text-emerald-600"
+  },
+  {
+    title: "Видеоотзывы",
+    href: "/admin/video-reviews",
+    icon: Video,
+    color: "text-purple-600"
   },
   {
     title: "Медиафайлы",

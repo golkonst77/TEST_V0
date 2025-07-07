@@ -3,9 +3,13 @@ import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 
 export async function POST(request: NextRequest) {
+  console.log('=== VIDEO UPLOAD API CALLED ===')
   try {
+    console.log('Parsing form data...')
     const formData = await request.formData()
+    console.log('Form data parsed, getting video file...')
     const file = formData.get('video') as File
+    console.log('File from form data:', file ? `${file.name} (${file.size} bytes, ${file.type})` : 'null')
     
     if (!file) {
       return NextResponse.json({ error: 'Файл не найден' }, { status: 400 })

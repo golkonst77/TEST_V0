@@ -1,241 +1,144 @@
 import { NextRequest } from "next/server"
-import * as cheerio from "cheerio"
+import { spawn } from "child_process"
+import path from "path"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(req: NextRequest) {
-  const url = "https://yandex.ru/maps/org/prosto_byuro/180493814174/reviews/"
+  console.log('🔍 Начинаю загрузку отзывов с Яндекс.Карт через Python-парсер...')
+  
+  const companyId = 180493814174 // ID компании ПростоБюро
   
   try {
-    console.log('🔍 Начинаю загрузку отзывов с Яндекс.Карт...')
+    // Запускаем Python-скрипт
+    const scriptPath = path.join(process.cwd(), 'scripts', 'yandex_parser.py')
     
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 секунд timeout
+    console.log(`📝 Запускаю Python-скрипт: ${scriptPath}`)
+    console.log(`🏢 ID компании: ${companyId}`)
     
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      },
-      signal: controller.signal
+    const pythonProcess = spawn('python', ['-X', 'utf8', scriptPath, companyId.toString()], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      env: { 
+        ...process.env, 
+        PYTHONIOENCODING: 'utf-8',
+        PYTHONUTF8: '1',
+        PYTHONLEGACYWINDOWSSTDIO: 'utf-8'
+      }
     })
     
-    clearTimeout(timeoutId)
+    let stdoutBuffers: Buffer[] = []
+    let stderrBuffers: Buffer[] = []
     
-    if (!response.ok) {
-      console.error(`❌ HTTP error! status: ${response.status}`)
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
+    pythonProcess.stdout.on('data', (data) => {
+      stdoutBuffers.push(Buffer.isBuffer(data) ? data : Buffer.from(data))
+    })
     
-    const html = await response.text()
-    console.log(`✅ Получен HTML размером ${html.length} символов`)
+    pythonProcess.stderr.on('data', (data) => {
+      stderrBuffers.push(Buffer.isBuffer(data) ? data : Buffer.from(data))
+    })
     
-    const $ = cheerio.load(html)
-    
-    // Пробуем разные селекторы для отзывов
-    const selectors = [
-      '.business-review-view__review',
-      '.business-reviews-card-view__review',
-      '.review-item',
-      '[data-testid="review"]',
-      '.review'
-    ]
-    
-    let reviews: any[] = []
-    
-    for (const selector of selectors) {
-      const elements = $(selector)
-      if (elements.length > 0) {
-        console.log(`✅ Найдено ${elements.length} отзывов с селектором: ${selector}`)
+    // Ждем завершения
+    return new Promise((resolve) => {
+      pythonProcess.on('close', (code) => {
+        const stdoutBuffer = Buffer.concat(stdoutBuffers)
+        // Принудительно декодируем как UTF-8
+        const stdout = stdoutBuffer.toString('utf8')
+        const stderr = Buffer.concat(stderrBuffers).toString('utf8')
+        console.log(`📊 Python-скрипт завершен с кодом: ${code}`)
+        // Логируем сырые данные
+        console.log('🐍 [RAW BUFFER]', stdoutBuffer)
+        console.log('🐍 [AS STRING]', stdout)
         
-        reviews = elements.map((_, el) => {
-          const $el = $(el)
-          
-          // Различные селекторы для имени автора
-          const nameSelectors = [
-            '.business-review-view__author',
-            '.review-author',
-            '.author-name',
-            '.reviewer-name',
-            '[data-testid="reviewer-name"]'
-          ]
-          
-          let name = "Гость"
-          for (const ns of nameSelectors) {
-            const nameText = $el.find(ns).text().trim()
-            if (nameText) {
-              name = nameText
-              break
+        if (code !== 0) {
+          console.error(`❌ Ошибка Python-скрипта: ${stderr}`)
+          resolve(Response.json({
+            reviews: [],
+            source: "yandex-maps-python",
+            error: stderr || "Python script failed",
+            debug_stdout: stdout,
+            debug_stderr: stderr,
+            totalPages: 0
+          }, {
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8'
             }
-          }
-          
-          // Различные селекторы для текста отзыва
-          const textSelectors = [
-            '.business-review-view__body-text',
-            '.review-text',
-            '.review-body',
-            '.review-content',
-            '[data-testid="review-text"]'
-          ]
-          
-          let text = ""
-          for (const ts of textSelectors) {
-            const textContent = $el.find(ts).text().trim()
-            if (textContent) {
-              text = textContent
-              break
-            }
-          }
-          
-          // Различные селекторы для даты
-          const dateSelectors = [
-            '.business-review-view__date',
-            '.review-date',
-            '.date',
-            '[data-testid="review-date"]'
-          ]
-          
-          let date = ""
-          for (const ds of dateSelectors) {
-            const dateText = $el.find(ds).text().trim()
-            if (dateText) {
-              date = dateText
-              break
-            }
-          }
-          
-          // Различные селекторы для рейтинга
-          const ratingSelectors = [
-            '.business-rating-badge-view__rating',
-            '.rating',
-            '.stars',
-            '[data-testid="rating"]'
-          ]
-          
-          let rating = 5
-          for (const rs of ratingSelectors) {
-            const ratingText = $el.find(rs).text().trim()
-            if (ratingText) {
-              const ratingNum = parseInt(ratingText)
-              if (!isNaN(ratingNum) && ratingNum >= 1 && ratingNum <= 5) {
-                rating = ratingNum
-                break
-              }
-            }
-          }
-          
-          // Попытка найти рейтинг по количеству звезд
-          if (rating === 5) {
-            const stars = $el.find('.star, .rating-star, [class*="star"]')
-            if (stars.length > 0) {
-              rating = Math.min(stars.length, 5)
-            }
-          }
-          
-          return {
-            name,
-            text,
-            date,
-            rating
-          }
-        }).get()
-        
-        break
-      }
-    }
-    
-    if (reviews.length === 0) {
-      console.log('⚠️ Не найдено отзывов с известными селекторами')
-      console.log('📋 Структура страницы:')
-      console.log($('body').find('*').length, 'элементов на странице')
-      
-      // Возвращаем фиктивные отзывы для демонстрации
-      reviews = [
-        {
-          name: "Анна П.",
-          text: "Отличная работа! Рекомендую всем.",
-          date: "2024-01-15",
-          rating: 5
-        },
-        {
-          name: "Михаил С.",
-          text: "Профессиональный подход, все в срок.",
-          date: "2024-01-10",
-          rating: 5
-        },
-        {
-          name: "Елена К.",
-          text: "Спасибо за качественную работу!",
-          date: "2024-01-05",
-          rating: 4
+          }))
+          return
         }
-      ]
-      
-      console.log('📝 Возвращаю демонстрационные отзывы')
-    }
-    
-    console.log(`✅ Обработано ${reviews.length} отзывов`)
-    
-    return new Response(JSON.stringify({ 
-      reviews,
-      source: 'yandex-maps',
-      timestamp: new Date().toISOString()
-    }), { 
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
+        
+        try {
+          // Ищем JSON в выводе
+          const jsonMatch = stdout.match(/\{[\s\S]*\}/)
+          if (!jsonMatch) {
+            console.error('❌ Не найден JSON в выводе Python-скрипта')
+            resolve(Response.json({
+              reviews: [],
+              source: "yandex-maps-python",
+              error: "No JSON found in Python output",
+              totalPages: 0
+            }, {
+              headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+              }
+            }))
+            return
+          }
+          
+          const result = JSON.parse(jsonMatch[0])
+          console.log(`✅ Python-парсер вернул ${result.total_reviews || 0} отзывов`)
+          
+          if (result.success) {
+            resolve(Response.json({
+              reviews: result.reviews || [],
+              source: result.source || "yandex-maps-python",
+              company_info: result.company_info,
+              totalPages: Math.ceil((result.total_reviews || 0) / 10)
+            }, {
+              headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+              }
+            }))
+          } else {
+            console.error(`❌ Python-парсер вернул ошибку: ${result.error}`)
+            resolve(Response.json({
+              reviews: [],
+              source: result.source || "yandex-maps-python",
+              error: result.error,
+              totalPages: 0
+            }, {
+              headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+              }
+            }))
+          }
+          
+        } catch (parseError) {
+          console.error(`❌ Ошибка парсинга JSON: ${parseError}`)
+          console.error(`📄 Вывод Python: ${stdout}`)
+          resolve(Response.json({
+            reviews: [],
+            source: "yandex-maps-python",
+            error: "Failed to parse Python output",
+            totalPages: 0
+          }, {
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          }))
+        }
+      })
     })
     
   } catch (error) {
-    console.error('❌ Ошибка загрузки отзывов:', error)
-    
-    // Возвращаем фиктивные отзывы в случае ошибки
-    const fallbackReviews = [
-      {
-        name: "Анна П.",
-        text: "Отличная работа! Рекомендую всем.",
-        date: "2024-01-15",
-        rating: 5
-      },
-      {
-        name: "Михаил С.",
-        text: "Профессиональный подход, все в срок.",
-        date: "2024-01-10",
-        rating: 5
-      },
-      {
-        name: "Елена К.",
-        text: "Спасибо за качественную работу!",
-        date: "2024-01-05",
-        rating: 4
-      }
-    ]
-    
-    return new Response(JSON.stringify({ 
-      reviews: fallbackReviews,
-      source: 'fallback',
+    console.error(`❌ Ошибка запуска Python-скрипта: ${error}`)
+    return Response.json({
+      reviews: [],
+      source: "yandex-maps-python",
       error: error instanceof Error ? error.message : "Unknown error",
-      timestamp: new Date().toISOString()
-    }), { 
-      status: 200,
+      totalPages: 0
+    }, {
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
+        'Content-Type': 'application/json; charset=utf-8'
       }
     })
   }

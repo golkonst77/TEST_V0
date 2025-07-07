@@ -46,31 +46,111 @@ const fallbackReviews = [
     created_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(), // 3 недели назад
     published_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString()
   },
+  {
+    id: "4",
+    name: "Дмитрий Антонов",
+    company: "ИП Антонов Д.В.",
+    rating: 5,
+    text: "Отзывчивые сотрудники, всегда на связи. Ведут учет моего ИП уже второй год. Очень доволен сервисом.",
+    source: "manual",
+    created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+    published_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "5",
+    name: "Ольга Васильева",
+    company: 'ООО "Медтехника"',
+    rating: 5,
+    text: "Доступные цены, качественный сервис. Помогли с открытием ООО и постановкой на учет. Все четко и быстро.",
+    source: "manual",
+    created_at: new Date(Date.now() - 38 * 24 * 60 * 60 * 1000).toISOString(),
+    published_at: new Date(Date.now() - 38 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "6",
+    name: "Игорь Михайлов",
+    company: "ИП Михайлов И.С.",
+    rating: 5,
+    text: "Пользуюсь услугами уже год. Все отчеты сдаются вовремя, никаких штрафов. Экономлю время и нервы.",
+    source: "manual",
+    created_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+    published_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "7",
+    name: "Светлана Николаева",
+    company: 'ООО "Эко-Строй"',
+    rating: 4,
+    text: "Грамотные консультации, разъяснили все непонятные моменты. Очень довольна сотрудничеством. Всем рекомендую!",
+    source: "manual",
+    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    published_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "8",
+    name: "Александр Романов",
+    company: "ИП Романов А.П.",
+    rating: 5,
+    text: "Быстрое оформление документов, адекватные цены. Советую всем начинающим предпринимателям.",
+    source: "manual",
+    created_at: new Date(Date.now() - 52 * 24 * 60 * 60 * 1000).toISOString(),
+    published_at: new Date(Date.now() - 52 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "9",
+    name: "Татьяна Левина",
+    company: 'ООО "Автосервис+"',
+    rating: 5,
+    text: "Профессиональная команда, индивидуальный подход к каждому клиенту. Рекомендую всем знакомым!",
+    source: "manual",
+    created_at: new Date(Date.now() - 42 * 24 * 60 * 60 * 1000).toISOString(),
+    published_at: new Date(Date.now() - 42 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "10",
+    name: "Сергей Кузнецов",
+    company: "ИП Кузнецов С.М.",
+    rating: 4,
+    text: "Оперативно решают все вопросы. Хорошая поддержка клиентов, всегда идут навстречу. Спасибо за работу!",
+    source: "manual",
+    created_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
+    published_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "11",
+    name: "Марина Жукова",
+    company: 'ООО "Здоровое питание"',
+    rating: 5,
+    text: "Удобный сервис, понятные объяснения сложных вопросов. Работают быстро и качественно. Довольна результатом!",
+    source: "manual",
+    created_at: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+    published_at: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "12",
+    name: "Владимир Титов",
+    company: "ИП Титов В.Н.",
+    rating: 5,
+    text: "Доверяю им свой бизнес уже третий год. Профессионалы своего дела, всегда помогут и подскажут.",
+    source: "manual",
+    created_at: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+    published_at: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString()
+  }
 ]
 
 export function Reviews() {
   const [reviews, setReviews] = useState<Review[]>([])
+  const [videoReviews, setVideoReviews] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [averageRating, setAverageRating] = useState(5.0)
   const [totalReviews, setTotalReviews] = useState(15)
-  const [videoFile, setVideoFile] = useState<File | null>(null)
-  const [videoUrl, setVideoUrl] = useState<string | null>(null)
-  const [videoUploading, setVideoUploading] = useState(false)
 
 
   useEffect(() => {
     fetchReviews()
+    fetchVideoReviews()
   }, [])
-
-  // Очистка URL объекта при размонтировании компонента
-  useEffect(() => {
-    return () => {
-      if (videoUrl) {
-        URL.revokeObjectURL(videoUrl)
-      }
-    }
-  }, [videoUrl])
 
 
 
@@ -79,66 +159,39 @@ export function Reviews() {
       setLoading(true)
       console.log('🔍 Начинаю загрузку отзывов...')
       
-      // Сначала пробуем загрузить отзывы из базы данных
-      const dbResponse = await fetch("/api/reviews?published=true&limit=6")
-      const dbData = await dbResponse.json()
+      // Используем новый агрегатор отзывов
+      console.log('🔍 Загружаю отзывы через агрегатор...')
+      const aggregatorResponse = await fetch("/api/reviews-aggregator")
+      const aggregatorData = await aggregatorResponse.json()
       
-      console.log('📊 Ответ от базы данных:', dbData)
+      console.log('📊 Ответ от агрегатора:', aggregatorData)
       
-      if (dbResponse.ok && dbData.reviews && dbData.reviews.length > 0) {
-        console.log(`✅ Найдено ${dbData.reviews.length} отзывов из базы данных`)
-        setReviews(dbData.reviews)
+      if (aggregatorResponse.ok && aggregatorData.success && aggregatorData.reviews.length > 0) {
+        console.log(`✅ Агрегатор собрал ${aggregatorData.reviews.length} отзывов из ${aggregatorData.sources.length} источников`)
         
-        // Вычисляем среднюю оценку
-        const avgRating = dbData.reviews.reduce((sum: number, review: Review) => sum + review.rating, 0) / dbData.reviews.length
-        setAverageRating(Math.round(avgRating * 10) / 10)
-        setTotalReviews(dbData.reviews.length)
+        setReviews(aggregatorData.reviews)
+        setAverageRating(aggregatorData.summary.averageRating)
+        setTotalReviews(aggregatorData.summary.totalReviews)
         
-        setLoading(false)
-        setError("")
-        return
-      }
-
-      console.log('⚠️ Отзывы из БД не найдены, пробуем Яндекс.Карты...')
-      
-      // Если отзывов из БД нет, пробуем Яндекс.Карты
-      const yandexResponse = await fetch("/api/yandex-reviews")
-      const yandexData = await yandexResponse.json()
-      
-      console.log('📊 Ответ от Яндекс.Карт:', yandexData)
-      
-      if (yandexResponse.ok && yandexData.reviews && yandexData.reviews.length > 0) {
-        console.log(`✅ Найдено ${yandexData.reviews.length} отзывов с Яндекс.Карт`)
+        // Показываем информацию об источниках
+        const sourcesInfo = aggregatorData.sources
+          .filter((s: any) => s.status === 'success')
+          .map((s: any) => `${s.name}: ${s.count}`)
+          .join(', ')
         
-        // Преобразуем формат отзывов Яндекса к нашему формату
-        const formattedReviews = yandexData.reviews.map((review: any, index: number) => ({
-          id: `yandex-${index}`,
-          name: review.name || "Гость",
-          company: null,
-          rating: Number(review.rating) || 5,
-          text: review.text || "",
-          source: "yandex",
-          created_at: new Date().toISOString(),
-          published_at: new Date().toISOString()
-        })).slice(0, 6) // Берем только первые 6 отзывов
-        
-        setReviews(formattedReviews)
-        
-        // Вычисляем среднюю оценку
-        const avgRating = formattedReviews.reduce((sum: number, review: Review) => sum + review.rating, 0) / formattedReviews.length
-        setAverageRating(Math.round(avgRating * 10) / 10)
-        setTotalReviews(yandexData.reviews.length)
+        if (sourcesInfo) {
+          setError(`✅ Источники отзывов: ${sourcesInfo}`)
+        }
         
         setLoading(false)
-        setError("")
         return
       }
-
-      console.log('⚠️ Отзывы с Яндекс.Карт не найдены, используем fallback...')
       
-      // Если ничего не загрузилось, используем fallback отзывы
+      console.log('⚠️ Агрегатор не смог найти отзывы, используем fallback...')
+      
+      // Если агрегатор не смог найти отзывы, используем fallback
       setReviews(fallbackReviews)
-      setError("Показаны примеры отзывов. Подключите базу данных для отображения реальных отзывов.")
+      setError(`❌ Не удалось загрузить реальные отзывы. Показаны примеры. ${aggregatorData.error || 'Попробуйте добавить отзывы через админку.'}`)
       setLoading(false)
       
     } catch (err) {
@@ -146,6 +199,25 @@ export function Reviews() {
       setReviews(fallbackReviews)
       setError("Не удалось загрузить отзывы, показаны примеры.")
       setLoading(false)
+    }
+  }
+
+  const fetchVideoReviews = async () => {
+    try {
+      console.log('🎬 Начинаю загрузку видеоотзывов...')
+      
+      const response = await fetch("/api/video-reviews?random=true&limit=3")
+      const data = await response.json()
+      
+      console.log('📊 Ответ видеоотзывов:', data)
+      
+      if (response.ok && data.reviews && data.reviews.length > 0) {
+        console.log(`✅ Найдено ${data.reviews.length} видеоотзывов`)
+        setVideoReviews(data.reviews)
+      }
+      
+    } catch (err) {
+      console.error('❌ Ошибка загрузки видеоотзывов:', err)
     }
   }
 
@@ -162,59 +234,15 @@ export function Reviews() {
     return `${Math.ceil(diffDays / 365)} г. назад`
   }
 
-  const handleVideoUpload = async (file: File) => {
-    try {
-      setVideoUploading(true)
-      setError('')
-      
-      // Проверяем размер файла на клиенте
-      const maxSize = 100 * 1024 * 1024 // 100MB
-      if (file.size > maxSize) {
-        setError('Файл слишком большой. Максимальный размер: 100MB')
-        return
-      }
-
-      // Проверяем тип файла
-      const allowedTypes = ['video/mp4', 'video/webm', 'video/mov', 'video/avi']
-      if (!allowedTypes.includes(file.type)) {
-        setError('Неподдерживаемый формат. Используйте MP4, WebM, MOV или AVI')
-        return
-      }
-      
-      // Создаем FormData для загрузки файла
-      const formData = new FormData()
-      formData.append('video', file)
-      
-      // Отправляем файл на сервер
-      const response = await fetch('/api/upload/video', {
-        method: 'POST',
-        body: formData,
-      })
-      
-      const result = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(result.error || 'Ошибка загрузки видео')
-      }
-      
-      // Устанавливаем URL загруженного видео
-      setVideoUrl(result.videoUrl)
-      setVideoFile(file)
-      
-      console.log('Видео успешно загружено:', result.fileName, 'Размер:', (file.size / 1024 / 1024).toFixed(2) + 'MB')
-      
-    } catch (error) {
-      console.error('Ошибка загрузки видео:', error)
-      setError(error instanceof Error ? error.message : 'Не удалось загрузить видео')
-    } finally {
-      setVideoUploading(false)
-    }
-  }
-
-  const removeVideo = () => {
-    setVideoUrl(null)
-    setVideoFile(null)
-    setError('')
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${
+          i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+        }`}
+      />
+    ))
   }
 
   return (
@@ -417,36 +445,35 @@ export function Reviews() {
                   position: "relative"
                 }}
               >
-                {videoUrl ? (
-                  /* Отображение загруженного видео */
+                {videoReviews.length > 0 ? (
+                  /* Отображение видеоотзыва из базы данных */
                   <div className="w-full h-full relative">
                     <video 
-                      src={videoUrl}
+                      src={videoReviews[0].video_url}
                       controls
                       className="w-full h-full object-cover rounded-lg"
                       style={{ maxHeight: '600px' }}
+                      preload="metadata"
                     >
                       Ваш браузер не поддерживает воспроизведение видео.
                     </video>
                     
-                    {/* Кнопка удаления видео */}
-                    <button
-                      onClick={removeVideo}
-                      className="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-lg"
-                      title="Удалить видео"
-                    >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
-                      </svg>
-                    </button>
-                    
-                    {/* Информация о файле */}
-                    <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white px-3 py-2 rounded-lg text-sm">
-                      {videoFile?.name} ({(videoFile?.size ? videoFile.size / 1024 / 1024 : 0).toFixed(1)}MB)
+                    {/* Информация о клиенте */}
+                    <div className="absolute bottom-4 left-4 right-4 bg-black/70 text-white p-4 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-semibold">{videoReviews[0].name}</h5>
+                        <div className="flex items-center">
+                          {renderStars(videoReviews[0].rating)}
+                        </div>
+                      </div>
+                      {videoReviews[0].company && (
+                        <p className="text-sm text-gray-300 mb-2">{videoReviews[0].company}</p>
+                      )}
+                      <p className="text-sm text-gray-200 line-clamp-2">{videoReviews[0].text}</p>
                     </div>
                   </div>
                 ) : (
-                  /* Форма загрузки видео */
+                  /* Заглушка если нет видеоотзывов */
                   <div className="text-center p-8">
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -454,57 +481,14 @@ export function Reviews() {
                       </svg>
                     </div>
                     <h5 className="text-lg font-medium text-gray-900 mb-2">
-                      Загрузите видеоотзыв
+                      Видеоотзывы клиентов
                     </h5>
                     <p className="text-gray-600 text-sm mb-4">
-                      Здесь будет отображаться видеоотзыв клиента о работе ПростоБюро
+                      Здесь будут отображаться видеоотзывы наших клиентов
                     </p>
                     <p className="text-xs text-gray-500 mb-4">
-                      Поддерживаемые форматы: MP4, WebM, MOV, AVI<br/>
-                      Максимальный размер: 100MB
+                      Видеоотзывы пока не добавлены
                     </p>
-                    
-                    {error && (
-                      <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <p className="text-sm text-red-600">{error}</p>
-                      </div>
-                    )}
-                    
-                    <div className="mt-4">
-                      <label className={`inline-flex items-center px-4 py-2 rounded-lg cursor-pointer transition-colors ${
-                        videoUploading 
-                          ? 'bg-gray-400 cursor-not-allowed' 
-                          : 'bg-blue-600 hover:bg-blue-700'
-                      } text-white`}>
-                        {videoUploading ? (
-                          <>
-                            <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            Загрузка...
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M3 17a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/>
-                            </svg>
-                            Загрузить видео
-                          </>
-                        )}
-                        <input 
-                          type="file" 
-                          accept="video/*" 
-                          className="hidden"
-                          disabled={videoUploading}
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              handleVideoUpload(file);
-                            }
-                            // Сбрасываем значение input для возможности повторной загрузки того же файла
-                            e.target.value = '';
-                          }}
-                        />
-                      </label>
-                    </div>
                   </div>
                 )}
               </div>

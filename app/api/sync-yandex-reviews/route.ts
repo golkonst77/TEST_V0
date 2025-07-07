@@ -31,6 +31,11 @@ export async function POST() {
       return NextResponse.json({
         success: false,
         message: 'Отзывы с Яндекса не найдены'
+      }, { 
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8'
+        }
       })
     }
     
@@ -47,7 +52,7 @@ export async function POST() {
     // 3. Фильтруем новые отзывы (избегаем дубликатов)
     const newReviews = yandexData.reviews.filter((yandexReview: any) => {
       const isDuplicate = existingReviews?.some(dbReview => 
-        dbReview.name === yandexReview.name && 
+        dbReview.name === yandexReview.author && 
         dbReview.text === yandexReview.text
       )
       return !isDuplicate
@@ -61,12 +66,17 @@ export async function POST() {
         message: 'Все отзывы с Яндекса уже импортированы',
         imported: 0,
         total: yandexData.reviews.length
+      }, { 
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8'
+        }
       })
     }
     
     // 4. Форматируем отзывы для БД
     const reviewsToInsert = newReviews.map((review: any) => ({
-      name: review.name || 'Гость',
+      name: review.author || 'Гость',
       rating: Math.min(Math.max(parseInt(review.rating) || 5, 1), 5), // Убеждаемся что рейтинг 1-5
       text: review.text || 'Отзыв без текста',
       source: 'yandex',
@@ -109,6 +119,11 @@ export async function POST() {
         yandexReviews,
         publishedReviews
       }
+    }, { 
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      }
     })
     
   } catch (error) {
@@ -116,6 +131,11 @@ export async function POST() {
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Неизвестная ошибка'
-    }, { status: 500 })
+    }, { 
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
   }
 } 

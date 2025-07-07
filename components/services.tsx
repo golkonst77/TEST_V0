@@ -70,7 +70,7 @@ export function Services() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const { openContactForm } = useContactForm()
   return (
-    <section className="pt-20 pb-32 bg-white mb-20">
+    <section className="pt-8 pb-16 bg-white">
       <div className="w-full px-0">
         <div className="flex justify-center w-full mb-4">
           <div className="px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-lg font-semibold text-gray-900">

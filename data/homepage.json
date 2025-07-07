@@ -45,7 +45,7 @@
   "layout": {
     "alignment": "left",
     "maxWidth": "max-w-4xl",
-    "marginLeft": 100,
+    "marginLeft": 0,
     "marginTop": 0,
     "marginBottom": 0,
     "paddingX": 60
