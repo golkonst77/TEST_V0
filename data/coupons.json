@@ -23,5 +23,37 @@
     "discount": 10000,
     "createdAt": "2025-07-04T07:02:27.934Z",
     "used": false
+  },
+  {
+    "id": 4,
+    "code": "PROSTOBURO-M71KVQ-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T07:35:09.891Z",
+    "used": false
+  },
+  {
+    "id": 5,
+    "code": "PROSTOBURO-M7BUQ5-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T07:36:15.490Z",
+    "used": false
+  },
+  {
+    "id": 6,
+    "code": "PROSTOBURO-1JPO3G-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T07:41:35.924Z",
+    "used": false
+  },
+  {
+    "id": 7,
+    "code": "PROSTOBURO-PJKCCG-10000",
+    "phone": "+79106000612",
+    "discount": 10000,
+    "createdAt": "2025-07-07T07:45:03.475Z",
+    "used": false
   }
 ]

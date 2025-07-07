@@ -76,6 +76,43 @@ const questions = [
 
 const bonuses = ["Бесплатная консультация", "Скидка 50% на обслуживание первый месяц"]
 
+// Добавим функцию отправки WhatsApp
+async function sendWhatsAppMessage(phone: string, message: string) {
+  // Приводим номер к формату 79XXXXXXXXX
+  const cleanPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
+  if (cleanPhone.length !== 11) return;
+  await fetch('https://gate.whapi.cloud/messages/text', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer QlZ00L1DXVAv17SfAoTtarbseCNIKaIo',
+    },
+    body: JSON.stringify({
+      to: cleanPhone,
+      body: message,
+    }),
+  });
+}
+
+// Добавим функцию отправки PDF-файла
+async function sendWhatsAppDocument(phone: string, filePath: string, caption: string) {
+  // Приводим номер к формату 79XXXXXXXXX
+  const cleanPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
+  if (cleanPhone.length !== 11) return;
+  
+  await fetch('/api/send-whatsapp-document', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      phone: cleanPhone,
+      filePath: filePath,
+      caption: caption,
+    }),
+  });
+}
+
 function QuizSidebar({
   canProceed,
   handleNext,
@@ -235,6 +272,12 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
       
       const result = await response.json()
       console.log('Купон сохранен:', result)
+
+      // Отправляем WhatsApp-сообщение клиенту
+      await sendWhatsAppMessage(phone, `Спасибо за прохождение квиза! Ваш купон: ${fullCoupon}. Мы свяжемся с вами скоро.`)
+      
+      // Отправляем PDF-файл с чек-листом
+      await sendWhatsAppDocument(phone, 'CHEK_LIST/Kak-izbezhat-blokirovki-scheta.pdf', 'Ваш подарок: Чек-лист "Как избежать блокировки счета"')
       
       setCoupon(fullCoupon)
       setShowThanks(true)
@@ -339,7 +382,7 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
                                   } else {
                                     handleAnswer(
                                       currentQuestion.id,
-                                      currentAnswers.filter((a) => a !== option.value)
+                                      currentAnswers.filter((a: string) => a !== option.value)
                                     );
                                   }
                                 }}
