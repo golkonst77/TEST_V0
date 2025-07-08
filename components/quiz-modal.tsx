@@ -11,6 +11,7 @@ import { useContactForm } from "@/hooks/use-contact-form"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowRight, ArrowLeft, Gift, Phone, X } from "lucide-react"
 import InputMask from 'react-input-mask'
+import { sendYandexMetric, YANDEX_METRICS_EVENTS } from "@/utils/yandex-metrics"
 
 // CSS анимация для мигающей карточки скидки
 const discountCardAnimation = `
@@ -359,6 +360,14 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
       if (wantChecklist) {
         await sendWhatsAppDocument(phone, businessType, `Ваш чек-лист. Спасибо за интерес к ПростоБюро!`)
       }
+      
+      // Отправляем событие в Яндекс.Метрику
+      sendYandexMetric(YANDEX_METRICS_EVENTS.QUIZ_COMPLETED, {
+        discount: discount,
+        business_type: businessType,
+        phone: phone.trim(),
+        coupon: fullCoupon
+      })
       
       setCoupon(fullCoupon)
       setShowThanks(true)

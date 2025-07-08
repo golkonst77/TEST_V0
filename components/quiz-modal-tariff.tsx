@@ -10,6 +10,7 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowRight, ArrowLeft, X } from "lucide-react"
 import InputMask from 'react-input-mask'
+import { sendYandexMetric, YANDEX_METRICS_EVENTS } from "@/utils/yandex-metrics"
 
 interface QuizAnswer {
   questionId: number
@@ -370,6 +371,14 @@ export function QuizModalTariff({ open, onOpenChange }: { open: boolean, onOpenC
           'Ваш подарок: Чек-лист с полезной информацией для вашего бизнеса'
         )
       }
+      
+      // Отправляем событие в Яндекс.Метрику
+      sendYandexMetric(YANDEX_METRICS_EVENTS.QUIZ_TARIFF_COMPLETED, {
+        discount: discount,
+        business_type: businessType,
+        phone: phone.trim(),
+        coupon: fullCoupon
+      })
       
       setCoupon(fullCoupon)
       setShowThanks(true)
