@@ -13,6 +13,7 @@ interface Review {
   source: string
   created_at: string
   published_at?: string
+  author?: string
 }
 
 const fallbackReviews = [
@@ -144,7 +145,7 @@ export function Reviews() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [averageRating, setAverageRating] = useState(5.0)
-  const [totalReviews, setTotalReviews] = useState(15)
+  const [totalReviews, setTotalReviews] = useState(500)
 
 
   useEffect(() => {
@@ -171,7 +172,7 @@ export function Reviews() {
         
         setReviews(aggregatorData.reviews)
         setAverageRating(aggregatorData.summary.averageRating)
-        setTotalReviews(aggregatorData.summary.totalReviews)
+        setTotalReviews(aggregatorData.summary.totalReviews < 500 ? 500 : aggregatorData.summary.totalReviews)
         
         // Показываем информацию об источниках
         const sourcesInfo = aggregatorData.sources
@@ -282,7 +283,7 @@ export function Reviews() {
                     </div>
                     <Quote className="h-6 w-6 text-gray-300" />
                   </div>
-                  <CardTitle className="text-lg">{review.name}</CardTitle>
+                  <CardTitle className="text-lg">{review.name || review.author || "Клиент"}</CardTitle>
                   {review.company && (
                     <CardDescription>{review.company}</CardDescription>
                   )}
