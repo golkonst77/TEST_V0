@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
 import { DollarSign, AlertTriangle, CheckCircle, MessageCircle, Shield } from "lucide-react"
+import AnimatedContent from './AnimatedContent'
 
 interface HeroConfig {
   badge: {
@@ -104,7 +105,7 @@ export function Hero() {
 
   return (
     <section 
-      className="relative h-[85vh] flex items-center justify-center"
+      className="relative min-h-screen flex items-center justify-center px-4 md:px-8"
       style={{
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
         backgroundSize: 'cover',
@@ -113,24 +114,15 @@ export function Hero() {
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-white/0 z-10" />
-      <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-12">
-        <div className="relative z-10 w-full flex">
-          <div 
-            className="max-w-xl md:max-w-lg lg:max-w-xl xl:max-w-2xl text-left"
-            style={{
-              marginLeft: `${layout.marginLeft}px`,
-              marginTop: `${layout.marginTop}px`,
-              marginBottom: `${layout.marginBottom}px`,
-              paddingLeft: `${layout.paddingX}px`,
-              paddingRight: `${layout.paddingX}px`
-            }}
-          >
+      <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-8 md:py-12">
+        <div className="relative z-10 w-full flex justify-start">
+          <div className="max-w-4xl w-full text-left px-4">
             {/* Badge */}
             {badge.show && (
-              <div className="mb-6">
+              <div className="mb-4 md:mb-6">
                 <Badge 
                   variant="secondary" 
-                  className="px-4 py-2 text-sm font-medium bg-blue-700 text-white border-blue-700 shadow-md"
+                  className="px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium bg-blue-700 text-white border-blue-700 shadow-md"
                 >
                   {badge.text}
                 </Badge>
@@ -138,23 +130,23 @@ export function Hero() {
             )}
 
             {/* Title */}
-            <h1 className="text-xl md:text-3xl lg:text-4xl font-bold mb-6 leading-tight text-white">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 md:mb-6 leading-tight text-white text-left">
               {title.text}{" "}
               <span className="text-blue-400">{title.highlightText}</span>
             </h1>
 
             {/* Description */}
-            <p className="text-base md:text-lg mb-8 leading-relaxed text-gray-800 font-medium">
+            <p className="text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed text-gray-800 font-medium max-w-2xl text-left">
               {description}
             </p>
 
             {/* CTA Button */}
             {button.show && (
-              <div className="mb-12">
+              <div className="mb-8 md:mb-12 text-left">
                 <Button 
                   size="lg" 
                   onClick={handleCruiseClick}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition-all duration-200"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-base md:text-lg px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-lg hover:scale-105 transition-all duration-200 text-left"
                 >
                   {button.text}
                 </Button>
@@ -162,31 +154,35 @@ export function Hero() {
             )}
 
             {/* Features */}
-            <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 ${layout.alignment === 'left' ? 'max-w-5xl' : 'max-w-5xl mx-auto'}`}>
-              {features.filter(feature => feature.show).map((feature) => {
-                const IconComponent = iconMap[feature.icon as keyof typeof iconMap]
-                
-                const colorClasses = {
-                  blue: "bg-blue-100 text-blue-800 border-blue-300",
-                  green: "bg-green-100 text-green-800 border-green-300", 
-                  orange: "bg-orange-100 text-orange-800 border-orange-300",
-                }
-
-                return (
-                  <div
-                    key={feature.id}
-                    className={`p-6 rounded-xl border bg-white shadow-sm ${
-                      colorClasses[feature.color as keyof typeof colorClasses] || colorClasses.blue
-                    }`}
-                  >
-                    <div className="flex items-center justify-center mb-4">
-                      {IconComponent && <IconComponent className="h-8 w-8" />}
+            <div className="w-full mt-8 md:mt-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-6xl text-left">
+                {features.filter(feature => feature.show).map((feature, idx) => {
+                  const bgVariants = [
+                    'bg-[#FFF8F0]', // самая светлая
+                    'bg-[#F5E6D6]', // средняя
+                    'bg-[#E9D8C3]', // тёмная
+                  ]
+                  const cardBg = bgVariants[idx % 3]
+                  return (
+                    <div
+                      key={feature.id}
+                      className={`${cardBg} rounded-xl shadow-md p-4 md:p-6 w-full flex flex-col justify-start text-left`}
+                    >
+                      <div>
+                        <AnimatedContent direction="vertical" distance={40} duration={0.7} ease="power3.out" threshold={0.2} animateOpacity={true} initialOpacity={0}>
+                          <div
+                            className="w-full bg-white rounded-lg py-2 mb-3 text-sm md:text-lg font-bold text-gray-900 flex items-center justify-center min-h-[40px]"
+                            style={{ boxShadow: '8px 8px 0 #000' }}
+                          >
+                            {feature.title}
+                          </div>
+                        </AnimatedContent>
+                        <div className="text-gray-700 text-xs md:text-sm mb-2 text-left">{feature.description}</div>
+                      </div>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 text-gray-900">{feature.title}</h3>
-                    <p className="text-sm text-gray-700 font-medium">{feature.description}</p>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -196,3 +192,4 @@ export function Hero() {
 }
 
 export default Hero
+

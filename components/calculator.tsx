@@ -189,24 +189,24 @@ export function Calculator() {
   }
 
   return (
-    <section className="py-20 relative z-10">
+    <section className="py-12 md:py-20 relative z-10">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <div className="flex justify-center mb-6">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-4 shadow-2xl ring-4 ring-blue-200">
-              <CalculatorIcon className="h-12 w-12 text-white" />
+        <div className="text-left mb-8 md:mb-16">
+          <div className="flex justify-start mb-4 md:mb-6">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-3 md:p-4 shadow-2xl ring-2 md:ring-4 ring-blue-200">
+              <CalculatorIcon className="h-8 w-8 md:h-12 md:w-12 text-white" />
             </div>
           </div>
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 px-4 text-left">
             Калькулятор стоимости услуг
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4 leading-relaxed">
             Рассчитайте стоимость бухгалтерских услуг для вашего бизнеса
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <Card className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/60 to-purple-50/70 backdrop-blur-xl shadow-2xl border-0 ring-2 ring-white/50 hover:shadow-3xl transition-all duration-300">
+        <div className="max-w-4xl mx-auto px-4">
+          <Card className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/60 to-purple-50/70 backdrop-blur-xl shadow-2xl border-0 ring-2 ring-white/50 hover:shadow-3xl transition-all duration-300 rounded-xl">
             {/* Внутренний декоративный фон */}
             <div className="absolute inset-0 z-0 pointer-events-none">
               <div className="absolute -top-10 -left-10 w-1/2 h-1/2 bg-gradient-to-br from-blue-200/40 via-purple-200/30 to-pink-200/30 rounded-full blur-2xl opacity-60"></div>
@@ -215,10 +215,10 @@ export function Calculator() {
             </div>
             <div className="relative z-10">
               <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
-                <CardTitle className="text-2xl font-bold">Параметры вашего бизнеса</CardTitle>
-                <CardDescription className="text-blue-100">Заполните информацию о вашей компании для расчета стоимости</CardDescription>
+                <CardTitle className="text-xl md:text-2xl font-bold">Параметры вашего бизнеса</CardTitle>
+                <CardDescription className="text-blue-100 text-sm md:text-base">Заполните информацию о вашей компании для расчета стоимости</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6 p-8">
+              <CardContent className="space-y-6 p-4 md:p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="companyType" className="text-sm font-semibold text-gray-700">Тип компании</Label>
@@ -282,8 +282,8 @@ export function Calculator() {
 
                 <div className="space-y-4">
                   <Label className="text-sm font-semibold text-gray-700">Необходимые услуги</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
                       <Checkbox
                         id="accounting"
                         checked={state.services.includes("accounting")}
@@ -294,7 +294,7 @@ export function Calculator() {
                         Бухгалтерский учет (от {servicePrices.accounting.price.toLocaleString()} руб/мес)
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-purple-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
+                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-purple-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
                       <Checkbox
                         id="payroll"
                         checked={state.services.includes("payroll")}
@@ -305,7 +305,7 @@ export function Calculator() {
                         Зарплата и кадры (от {servicePrices.payroll.price.toLocaleString()} руб/мес)
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-green-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
+                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-green-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
                       <Checkbox
                         id="legal"
                         checked={state.services.includes("legal")}
@@ -316,7 +316,7 @@ export function Calculator() {
                         Юридическое сопровождение (от {servicePrices.legal.price.toLocaleString()} руб/мес)
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-orange-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
+                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-orange-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
                       <Checkbox
                         id="terminal"
                         checked={state.services.includes("terminal")}
@@ -331,7 +331,7 @@ export function Calculator() {
                 </div>
 
                 {/* Блок с итоговой стоимостью - показываем всегда */}
-                <div className={`bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-8 rounded-xl border-2 border-gradient-to-r border-blue-300 shadow-xl hover:shadow-2xl transition-all duration-300 ${totalPrice > 0 ? 'animate-pulse-glow ring-4 ring-blue-200' : ''}`}>
+                <div className={`bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-4 md:p-8 rounded-xl border-2 border-gradient-to-r border-blue-300 shadow-xl hover:shadow-2xl transition-all duration-300 ${totalPrice > 0 ? 'animate-pulse-glow ring-4 ring-blue-200' : ''}`}>
                   <style jsx>{`
                     @keyframes pulse-glow {
                       0%, 100% {
@@ -350,27 +350,27 @@ export function Calculator() {
                     }
                   `}</style>
                   <div className="text-center">
-                    <div className="mb-4 mx-auto w-fit p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg">
-                      <CalculatorIcon className="h-8 w-8 text-white" />
+                    <div className="mb-4 mx-auto w-fit p-2 md:p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg">
+                      <CalculatorIcon className="h-6 w-6 md:h-8 md:w-8 text-white" />
                     </div>
-                    <h3 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+                    <h3 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
                       Стоимость вашего тарифа
                     </h3>
-                    <div className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+                    <div className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
                       {totalPrice > 0 ? `${totalPrice.toLocaleString()} руб/мес` : "Выберите услуги"}
                     </div>
                     {totalPrice > 0 && (
-                      <p className="text-gray-600 mb-8 text-lg">
+                      <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-lg">
                         Точная стоимость рассчитывается индивидуально после консультации
                       </p>
                     )}
                     <Button
                       size="lg"
-                      className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold py-4 px-8 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1"
+                      className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold py-3 md:py-4 px-6 md:px-8 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 text-sm md:text-base"
                       onClick={openContactForm}
                     >
                       {totalPrice > 0 ? "Получить точный расчет" : "Получить консультацию"}
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                      <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                     </Button>
                   </div>
                 </div>

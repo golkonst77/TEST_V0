@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест мобильной адаптации</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .test-section {
+            background: white;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .test-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .test-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .test-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        @media (min-width: 768px) {
+            .test-button {
+                font-size: 16px;
+                padding: 0.75rem 1.5rem;
+            }
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+        }
+        p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        @media (min-width: 768px) {
+            p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-section">
+            <h1>Тест мобильной адаптации</h1>
+            <p>Этот файл поможет проверить, как сайт выглядит на мобильных устройствах.</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>Тестовая сетка</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>Карточка 1</h3>
+                    <p>Это тестовая карточка для проверки адаптивности.</p>
+                    <button class="test-button">Кнопка</button>
+                </div>
+                <div class="test-card">
+                    <h3>Карточка 2</h3>
+                    <p>Это тестовая карточка для проверки адаптивности.</p>
+                    <button class="test-button">Кнопка</button>
+                </div>
+                <div class="test-card">
+                    <h3>Карточка 3</h3>
+                    <p>Это тестовая карточка для проверки адаптивности.</p>
+                    <button class="test-button">Кнопка</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Проверка отступов</h2>
+            <p>Проверьте, что отступы корректны на мобильных устройствах.</p>
+            <button class="test-button">Тестовая кнопка</button>
+        </div>
+    </div>
+</body>
+</html> 

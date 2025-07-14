@@ -72,36 +72,36 @@ export function Services() {
   return (
     <section className="pt-8 pb-16 bg-white">
       <div className="w-full px-0">
-        <div className="flex justify-center w-full mb-4">
-          <div className="px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-lg font-semibold text-gray-900">
+        <div className="flex justify-start w-full mb-4">
+          <div className="px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-lg font-semibold text-gray-900 text-left">
             Мы приручили налогового зверя. И научим его работать на вас.
           </div>
         </div>
-        <div className="text-center mb-0">
-          <p className="text-xl text-gray-600 mt-0 mb-0">
+        <div className="text-left mb-0">
+          <p className="text-xl text-gray-600 mt-0 mb-0 text-left">
             Налоги могут быть не только головной болью, но и инструментом для оптимизации. Мы знаем все его повадки и слабые места.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 mt-0 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-8 px-4 sm:px-6 lg:px-8">
           {services.map((service, index) => (
             <Card
               key={index}
-              className="flex flex-col justify-between items-stretch w-full shadow-2xl border-0 bg-white transition-all duration-300 hover:shadow-blue-400"
+              className="flex flex-col justify-between items-start w-full shadow-lg border-0 bg-white transition-all duration-300 hover:shadow-xl hover:shadow-blue-400 rounded-xl overflow-hidden text-left"
             >
-              <CardHeader className="flex flex-col items-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white mb-4 shadow-lg">
-                  <service.icon className="h-7 w-7" />
+              <CardHeader className="flex flex-col items-start p-6">
+                <div className="flex h-16 w-16 items-center justify-start rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white mb-4 shadow-lg">
+                  <service.icon className="h-8 w-8" />
                 </div>
-                <CardTitle className="text-xl text-center font-bold">{service.title}</CardTitle>
-                <CardDescription className="text-gray-600 text-center">{service.description}</CardDescription>
+                <CardTitle className="text-xl md:text-2xl text-left font-bold mb-3">{service.title}</CardTitle>
+                <CardDescription className="text-gray-600 text-left text-base leading-relaxed">{service.description}</CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col flex-grow justify-between">
-                <ul className="space-y-2 mb-4">
+              <CardContent className="flex flex-col flex-grow justify-between p-6 text-left">
+                <ul className="space-y-3 mb-6 text-left">
                   {service.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center text-sm text-gray-600">
-                      <div className="h-1.5 w-1.5 rounded-full bg-blue-600 mr-2" />
-                      {feature}
+                    <li key={idx} className="flex items-start text-sm md:text-base text-gray-600 text-left">
+                      <div className="h-2 w-2 rounded-full bg-blue-600 mr-3 mt-2 flex-shrink-0" />
+                      <span className="leading-relaxed">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -109,28 +109,28 @@ export function Services() {
                 <Dialog open={openIndex === index} onOpenChange={open => setOpenIndex(open ? index : null)}>
                   <DialogTrigger asChild>
                     <Button
-                      className="w-full bg-blue-600 text-white rounded-xl shadow-lg font-semibold py-3 mt-auto hover:bg-blue-700 transition-colors text-base"
+                      className="w-full bg-blue-600 text-white rounded-xl shadow-lg font-semibold py-4 mt-auto hover:bg-blue-700 transition-colors text-base md:text-lg text-left"
                     >
                       Подробнее
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl rounded-3xl bg-white/90 backdrop-blur-lg shadow-2xl p-8 sm:p-10 border-0 animate-fade-in flex flex-col">
+                  <DialogContent className="max-w-2xl rounded-3xl bg-white/90 backdrop-blur-lg shadow-2xl p-8 sm:p-10 border-0 animate-fade-in flex flex-col text-left">
                     <DialogHeader>
-                      <div className="flex items-center gap-4 mb-2">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+                      <div className="flex items-start gap-4 mb-2">
+                        <div className="flex h-12 w-12 items-center justify-start rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
                           {service.icon && <service.icon className="h-7 w-7" />}
                         </div>
-                        <DialogTitle className="text-2xl font-extrabold text-gray-900 leading-tight">
+                        <DialogTitle className="text-2xl font-extrabold text-gray-900 leading-tight text-left">
                           {serviceDetails[index].title}
                         </DialogTitle>
                       </div>
                     </DialogHeader>
-                    <div className="text-lg text-gray-800 leading-relaxed whitespace-pre-line mt-2 flex-1 overflow-y-auto max-h-[50vh] sm:max-h-[60vh]">
+                    <div className="text-lg text-gray-800 leading-relaxed whitespace-pre-line mt-2 flex-1 overflow-y-auto max-h-[50vh] sm:max-h-[60vh] text-left">
                       {serviceDetails[index].text}
                     </div>
                     <Button
-                      className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold text-lg py-4 mt-8 shadow-xl transition-all"
+                      className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold text-lg py-4 mt-8 shadow-xl transition-all text-left"
                       onClick={openContactForm}
                     >
                       Получить консультацию

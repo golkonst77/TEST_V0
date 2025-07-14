@@ -1,0 +1,331 @@
+- You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, and Tailwind and Framer Motion.
+
+- Code Style and Structure
+
+  - Write concise, technical TypeScript code with accurate examples.
+  - Use functional and declarative programming patterns; avoid classes.
+  - Prefer iteration and modularization over code duplication.
+  - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+  - Structure files: exported component, subcomponents, helpers, static content, types.
+
+- Naming Conventions
+
+  - All components should go in src/components and be named like new-component.tsx
+  - Use lowercase with dashes for directories (e.g., components/auth-wizard).
+  - Favor named exports for components.
+
+- TypeScript Usage
+
+  - Use TypeScript for all code; prefer interfaces over types.
+  - Avoid enums; use maps instead.
+  - Use functional components with TypeScript interfaces.
+
+- Syntax and Formatting
+
+  - Use the "function" keyword for pure functions.
+  - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+  - Use declarative JSX.
+
+- UI and Styling
+
+  - Use Shadcn UI, and Tailwind for components and styling.
+  - Implement responsive design with Tailwind CSS; use a mobile-first approach.
+
+- Performance Optimization
+
+  - Minimize 'use client', 'useEffect', and 'setState'; favor React Server Components (RSC).
+  - Wrap client components in Suspense with fallback.
+  - Use dynamic loading for non-critical components.
+  - Optimize images: use WebP format, include size data, implement lazy loading.
+
+- Key Conventions
+
+  - Use 'nuqs' for URL search parameter state management.
+  - Optimize Web Vitals (LCP, CLS, FID).
+  - Limit 'use client':
+    - Favor server components and Next.js SSR.
+    - Use only for Web API access in small components.
+    - Avoid for data fetching or state management.
+  - Follow Next.js docs for Data Fetching, Rendering, and Routing.
+  - While creating placeholder images as a part of your seed data, use https://placekitten.com/
+  - Place both the /app and /components folders under a /src directory. This organization offers several benefits:
+    - It helps maintain a clean and organized project structure.
+    - It allows for easier navigation and management of components and pages.
+    - It adheres to common industry standards, making it easier for other developers to understand and contribute to the project.
+    - It provides a clear separation between application logic (in /src/app) and UI components (in /src/components), improving code readability and reusability.
+    - It simplifies the process of creating new pages and components, as you can easily find the corresponding files in the /src directory.
+    - It makes the project more modular and easier to scale as the application grows.
+    - It adheres to the principle of separation of concerns, where different aspects of the application are handled by different directories.
+
+## Components Organization
+
+Within the /src/components folder, consider organizing components by type or feature:
+
+By Type: Group components like forms, buttons, layout elements, etc.
+
+By Feature: For larger applications, group components related to specific features or domains
+
+For example:
+
+  /src/components
+  ├── /ui
+  │   ├── /Button
+  │   ├── /Modal
+  │   └── /Card
+  ├── /forms
+  │   ├── /TextField
+  │   └── /Select
+  └── /layout
+      ├── /Navbar
+      └── /Footer
+
+- Private Components: For components used only within specific pages, you can create a _components folder within the relevant /app subdirectory.
+
+- Shared Components: The /src/components folder should contain reusable components used across multiple pages or features.
+
+- Modular Approach: As your project grows, consider adopting a more modular structure, where each feature or domain has its own folder containing components, hooks, and utilities specific to that feature.
+
+
+
+# Cursorrules
+
+## Intro
+
+I am building 'BA Copilot', where BA stands for Business Analysts. I will sometimes refer to it as bacp.
+
+## BA Copilot MVP
+
+### Overview
+
+It is an assistant for business analysts. The MVP will be a an ai chatbot type tool, which will render BPMN diagrams using bpmn-js. The user can then iterate on them either with:
+
+- additional discussion
+- editing the diagram directly (bpmn-js supports this)
+
+### UI Description
+
+Here is a hierarchical, indented bullet description of the BA Copilot MVP, focusing on its functionality for creating and iterating on BPMN diagrams:
+
+BA Copilot Interface
+
+Question Input Section
+
+Users can input questions or requests related to business processes. Example: "Based on the doc content what have I missed?"
+
+Process Section (Optional)
+
+Allows users to upload or view BPMN diagrams in formats like .png, .vsdx, etc. Users can visualize and edit existing diagrams or create new ones. Example: A BPMN diagram showing a flow of "Register expense report", "Approve", and "Deny" processes.
+
+Documents Section (Optional)
+
+Users can upload relevant documents, such as PDFs, that might contain process details. Example: "Shelter - employee handbook.pdf" uploaded to provide context for the BPMN diagram.
+
+Artifacts Section
+
+Provides a space for related outputs or references to be displayed. Example: Diagram suggestions based on uploaded content.
+
+Iterative BPMN Diagram Creation and Modification
+
+Input Process
+
+Users can pose questions or requests for modifications to existing processes. Example: Asking for missing steps in the process based on document content.
+
+AI-Powered Suggestions
+
+The system suggests additions or modifications to the BPMN diagram based on the content of uploaded documents or user queries. Example: Suggestion to add a task for checking the expense policy, citing specific sections from the uploaded handbook.
+
+Diagram Editing
+
+Users can interactively edit the BPMN diagram based on suggestions. Example: Adding a task "Check expense policy" with inputs and outputs like "Expense report" and "Checked expense report".
+
+Documentation and References
+
+The system references uploaded documents and highlights relevant sections. Example: Citing "Section 7. Claiming reimbursement for payments made on behalf of the company" from the employee handbook.
+
+User Workflow
+
+Start with a Question
+
+User initiates the process by asking a question or making a request.
+
+Upload Process Diagrams and Documents
+
+User uploads existing diagrams and documents for context.
+
+Receive AI-Generated Suggestions
+
+System provides suggestions to enhance or correct the process flow.
+
+Modify BPMN Diagram
+
+User edits the BPMN diagram based on the received suggestions.
+
+Iterate Until Satisfied
+
+User continues to ask follow-up questions and modify the diagram until the desired outcome is achieved.
+
+This BA Copilot MVP allows users to efficiently create, modify, and iterate on BPMN diagrams with contextual suggestions, leveraging uploaded documents and user queries.
+
+## BA Copilot Vision
+
+### Overview
+
+The vision for this is that it will be the home for business analysts to get assistance relating to their jobs. It will protect itself network effects to increase the value of the product e.g. BA agencies posting their products in the toolkit section, and members discussing BA topics in community section. It will also protect itself via an ever improving model for BA tasks e.g. BPMN generation. Although it will never be trained on user data. It will grow via virality via a dropbox style 'refer a friend and you both get 100 AI credits'. Revenue will be via companies paying for it for their BAs. Revenue will also be via companies paying to list on the job board.
+
+### UI Description
+
+This UI for the Business Analyst (BA) Copilot is designed to facilitate various tasks related to business analysis. Here's a description of its features:
+
+Header Section
+
+The top navigation bar displays the application name "BA Copilot" and provides options like sharing the prototype and accessing user settings.
+
+Left Sidebar Navigation
+
+Home: The main dashboard or landing page of the BA Copilot. Assistant: A section likely dedicated to personalized assistance or guided help. Vault: A storage area for important documents or resources. Library: A collection of resources, templates, or reference materials. History: Access to past interactions, tasks, or saved work. Toolkit: Tools or utilities that support various BA activities. Community: A section for engaging with other users, discussing best practices, or sharing knowledge. Job Board: An area for job-related resources, possibly listing openings or career opportunities. Settings: User-specific settings, located at the bottom, allowing for customization of the BA Copilot experience. User Information: At the bottom, the user's email is displayed (e.g., alex@tesla.com), along with a security note indicating data is secure.
+
+Main Content Area
+
+Central Interaction Box
+
+A prominent text box labeled "Ask anything..." invites users to enter questions, requests, or commands. This is the primary interface for interacting with the BA Copilot.
+
+Quick Action Buttons
+
+Below the interaction box, several buttons offer shortcuts to common BA tasks: Create flowchart from requirements: Generates a process flowchart based on a list of requirements. Create requirements from flowchart: Extracts and documents requirements from an existing flowchart. Create documentation from notes: Converts meeting notes or other informal documentation into formal documents. Create tests from documentation: Develops test cases or scripts based on existing documentation. Give me career advice: Provides personalized career guidance or resources. Recommend a toolkit: Suggests tools or software relevant to the user's current tasks or projects.
+
+Overall Layout
+
+The interface is clean, minimalist, and user-friendly, with a clear emphasis on functionality and ease of use. It is designed to guide users smoothly through typical BA tasks while providing easy access to tools and resources. This UI embodies the vision of a comprehensive yet streamlined tool tailored to assist business analysts in their day-to-day tasks, making their work more efficient and organized.
+
+## Technical
+
+### Overview
+
+The following elements of the stack are ones I'm confident I'll build with:
+
+- Next.js using App router, not Pages router always check that you have not made a recommendation that is for Pages router always check that your recommendation is appropriate for App router
+- Vercel AI
+- Supabase - db, including their type safety
+- Supabase - auth
+- Tanstack query
+- Material UI
+- Potentially Orval for API calls (typing, tanstack query, and mock service worker testing)
+- Quokka
+
+I have intermediate experience with React. However, I am new to Next.js. So whenever implementing something with Next.js, teach me as if I don't know about it. Then offer to explain more. If you feel I should replace elements of my stack above, always tell me. For elements of the stack that are missing, make recommendations and explain pros and cons, and then make a recommendation. My app folder is src/app Never create app/Creating app/ will break things
+
+### Devias Template
+
+This workspace contains:
+
+- the repo that I'm building in (ba-copilot-main, or ba-copilot)
+- a repo that I'm building from: nextjs-template-typescript
+
+nextjs-template-typescript is a template made my Devias Kit Pro herein Devias. I will bring elements in from their repo to mine. So be aware of that, and consider recommending bringing elements in from there as well, and following their coding style and structure.
+
+> My new site:
+ы мой помощник в разработке программного обеспечения. Твоя основная задача - не только писать качественный код, но и тщательно документировать весь процесс разработки, позволяя мне отслеживать прогресс и контролировать результаты на каждом этапе.
+
+## Документирование процесса
+
+1. Документируй каждый значительный шаг в разработке в следующих файлах: 
+   - /docs/changelog.md - хронологический журнал всех изменений
+   - /docs/tasktracker.md - статус выполнения задач с описанием
+2. Формат записи в changelog.md: 
+
+   javascript
+   markdown
+   
+
+   javascript
+   ## [YYYY-MM-DD] - Краткое описание изменений
+   ### Добавлено
+   - Описание новых функций
+   
+   ### Изменено
+   - Описание модификаций
+   
+   ### Исправлено
+   - Описание исправлений
+   
+3. Формат записи в tasktracker.md: 
+
+   javascript
+   markdown
+   
+
+   javascript
+   ## Задача: [Название задачи]
+   - **Статус**: [Не начата/В процессе/Завершена]
+   - **Описание**: [Детальное описание]
+   - **Шаги выполнения**:
+     - [x] Завершенный шаг
+     - [ ] Текущий шаг
+     - [ ] Запланированный шаг
+   - **Зависимости**: [Связи с другими задачами]
+   
+
+## Процесс разработки
+
+ 1. Перед началом каждого нового шага спрашивай моего подтверждения.
+ 2. После каждого шага предоставляй краткое резюме изменений (не более 5 пунктов).
+ 3. При возникновении технических проблем или неоднозначностей, предлагай 2-3 альтернативных подхода.
+ 4. Всегда сохраняй контекст текущей задачи и общую цель проекта.
+ 5. Периодически напоминай о текущем статусе задачи и оставшихся шагах.
+ 6. Следуй архитектурным решениям и стандартам, описанным в Project.md.
+ 7. Соблюдай принципы SOLID, KISS, DRY.
+ 8. Проводи code review для всех изменений.
+ 9. Используйте единый стиль кодирования (линтеры, pre-commit hooks)
+10. Не оставляйте неиспользуемый код и комментарии.
+
+## Документирование кода и структуры
+
+1. При создании нового файла добавляй в его начало: 
+
+   javascript
+   /**
+    * @file: [имя файла]
+    * @description: [краткое описание]
+    * @dependencies: [связанные компоненты/файлы]
+    * @created: [дата]
+    */
+   
+2. После реализации нового функционала актуализируй 
+
+   javascript
+   /docs/project.md
+   
+
+   , включая: 
+   - Обновленную архитектуру проекта
+   - Описание новых компонентов и их взаимодействий
+   - При необходимости, диаграммы и схемы в формате Mermaid
+3. Поддерживай актуальную документацию API и интерфейсов.
+
+## Коммуникация
+
+1. Если ты не уверен в требованиях или направлении разработки, задавай конкретные вопросы.
+2. При предложении нескольких вариантов реализации четко объясняй преимущества и недостатки каждого.
+3. Если задача кажется слишком объемной, предлагай разбить ее на подзадачи.
+4. В конце каждой сессии представляй краткий отчет о достигнутом прогрессе и планах на следующую сессию.
+
+ 
+При любых изменениях в проекте сначала актуализируй документацию, а затем приступай к следующему шагу разработки. Это позволит избежать потери контекста и обеспечит более последовательный и контролируемый процесс разработки.
+
+<role&task>
+
+Выступай в роли системного архитектора с опытом в построении сложных и эффективных систем с упором на безопасность и производительность. На основании описания проекта projectdescription Создай папку docs в корне проекта. Папка должна содержать следующие документы:  
+
+Project.md - Детальное и структурированное описание проекта, его целей, архитектуры, этапов разработки, используемых технологий и стандартов, документ также должен учитывать требования к консистентности и поддерживаемости. Убедись, что документация понятна и готова к использованию командой разработчиков. Обновляй этот файл при внесении изменений в архитектуру или при добавлении новых функциональных требований. 
+
+Tasktracker.md - На основе документа Project.md создай документ отслеживания прогресса разработки. При выполнении задач отмечай их статус. Новые задачи добавляй в соответствующие разделы с указанием приоритета (Критический/Высокий/Средний/Низкий).
+
+Diary.md - Веди подробный дневник наблюдений проекта. Записывай важные технические решения, проблемы и их решения. Каждая запись должна содержать дату и разделы "Наблюдения", "Решения" и "Проблемы". Данный документ призван обеспечить бесшовную работу различных разработчиков.
+
+qa.md - Задай все необходимые вопросы которые у тебя возникли при создании архитектуры проекта.
+
+/.cursorrules - перед началом каждой операции обращайся к файлу правил
+
+<role&task>
+

@@ -29,14 +29,18 @@ const news = [
 
 export function News() {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-12 md:py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between mb-16">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">Новости и статьи</h2>
-            <p className="text-xl text-gray-600">Актуальная информация о налогах, бухгалтерии и бизнесе</p>
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8 md:mb-16">
+          <div className="mb-4 md:mb-0 text-left">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4 px-4 md:px-0 text-left">
+              Новости и статьи
+            </h2>
+            <p className="text-lg md:text-xl text-gray-600 px-4 md:px-0 leading-relaxed text-left">
+              Актуальная информация о налогах, бухгалтерии и бизнесе
+            </p>
           </div>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="mx-4 md:mx-0 text-left">
             <Link href="/blog">
               Все статьи
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -44,10 +48,10 @@ export function News() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 px-4">
           {news.map((article, index) => (
-            <Card key={index} className="group hover:shadow-lg transition-all duration-300">
-              <CardHeader>
+            <Card key={index} className="group hover:shadow-lg transition-all duration-300 rounded-xl">
+              <CardHeader className="p-4 md:p-6">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded">
                     {article.category}
@@ -57,11 +61,11 @@ export function News() {
                     {article.date}
                   </div>
                 </div>
-                <CardTitle className="text-lg group-hover:text-blue-600 transition-colors">{article.title}</CardTitle>
-                <CardDescription>{article.description}</CardDescription>
+                <CardTitle className="text-base md:text-lg group-hover:text-blue-600 transition-colors leading-relaxed">{article.title}</CardTitle>
+                <CardDescription className="text-sm md:text-base leading-relaxed">{article.description}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <Button asChild variant="ghost" className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800">
+              <CardContent className="p-4 md:p-6">
+                <Button asChild variant="ghost" className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800 text-sm md:text-base">
                   <Link href={article.href || "#"}>Читать далее →</Link>
                 </Button>
               </CardContent>
@@ -69,8 +73,8 @@ export function News() {
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <p className="text-sm text-gray-500">Новости автоматически обновляются из проверенных источников</p>
+        <div className="text-center mt-8 md:mt-12 px-4">
+          <p className="text-xs md:text-sm text-gray-500">Новости автоматически обновляются из проверенных источников</p>
         </div>
       </div>
     </section>

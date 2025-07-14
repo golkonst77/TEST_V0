@@ -273,14 +273,14 @@ export const Header = () => {
 
   return (
     <header className={`${headerConfig.layout.sticky ? 'sticky top-0' : ''} z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60`}>
-      <div className="container flex items-center justify-between" style={{ height: headerConfig.layout.height }}>
+      <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
         {/* Logo */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center">
           <Logo />
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:block">
+        <nav className="hidden lg:block">
           <ul className="flex items-center gap-6 text-sm">
             {headerConfig.menuItems.map(renderMenuItem)}
           </ul>
@@ -288,14 +288,15 @@ export const Header = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2"
+          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Открыть меню"
         >
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
 
         {/* Right side widgets */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden lg:flex items-center space-x-4">
           {headerConfig.phone.show && (
             <div className="flex items-center space-x-2 text-sm">
               <Phone className="h-4 w-4" />
@@ -321,35 +322,41 @@ export const Header = () => {
           {headerConfig.ctaButton.show && (
             <Button
               onClick={handleCruiseClick}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-4 md:px-6 py-2 md:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm md:text-base"
             >
               {headerConfig.ctaButton.text}
             </Button>
           )}
           
           {/* Кнопка входа в ЛК */}
-          <Button variant="outline" className="ml-2" onClick={() => setAuthOpen(true)}>
+          <Button 
+            variant="outline" 
+            className="ml-2 px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors text-sm md:text-base" 
+            onClick={() => setAuthOpen(true)}
+          >
             Личный кабинет
           </Button>
         </div>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white border-b shadow-lg md:hidden">
-            <div className="container py-4 space-y-4">
+          <div className="absolute top-full left-0 right-0 bg-white border-b shadow-lg lg:hidden z-50 max-h-[80vh] overflow-y-auto">
+            <div className="container mx-auto px-4 py-6 space-y-6">
+              {/* Mobile Menu Items */}
+              <div className="space-y-4">
               {headerConfig.menuItems.map((item) => (
                 item.show && (
                   <div key={item.id}>
                     {item.type === "dropdown" && item.children ? (
                       <div>
-                        <div className="font-medium text-gray-900 mb-2">{item.title}</div>
-                        <div className="pl-4 space-y-2">
+                          <div className="font-semibold text-gray-900 mb-3 text-lg">{item.title}</div>
+                          <div className="pl-4 space-y-3">
                           {item.children.map((child) => (
                             child.show && (
                               <Link
                                 key={child.id}
                                 href={child.href}
-                                className="block text-gray-600 hover:text-blue-600"
+                                  className="block text-gray-600 hover:text-blue-600 py-2 text-base"
                                 onClick={() => setMobileMenuOpen(false)}
                               >
                                 {child.title}
@@ -361,7 +368,7 @@ export const Header = () => {
                     ) : (
                       <Link
                         href={item.href}
-                        className="block text-gray-900 hover:text-blue-600"
+                          className="block text-gray-900 hover:text-blue-600 py-3 text-lg font-medium border-b border-gray-100"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {item.title}
@@ -370,18 +377,60 @@ export const Header = () => {
                   </div>
                 )
               ))}
+              </div>
               
+              {/* Mobile Contact Info */}
+              {headerConfig.phone.show && (
+                <div className="pt-4 border-t border-gray-200">
+                  <div className="flex items-center space-x-3 text-lg">
+                    <Phone className="h-5 w-5 text-blue-600" />
+                    <span className="font-medium">{headerConfig.phone.number}</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Mobile Social Links */}
+              {headerConfig.social.show && (
+                <div className="flex items-center space-x-4 pt-4">
+                  <Link href={headerConfig.social.telegram || "#"} className="p-3 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors" aria-label="Telegram">
+                    <MessageCircle className="h-5 w-5 text-blue-600" />
+                  </Link>
+                  <Link href={headerConfig.social.vk || "#"} className="p-3 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors" aria-label="VK">
+                    <svg className="h-5 w-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1.01-1.49-.9-1.49.4v1.608c0 .432-.138.69-1.276.69-1.966 0-4.644-1.193-6.36-3.428C4.304 11.13 3.568 8.28 3.568 7.648c0-.414.138-.69.966-.69h1.744c.69 0 .966.276 1.241 1.172.69 2.07 1.863 3.428 2.346 3.428.276 0 .414-.138.414-.9V9.936c-.069-1.241-.725-1.345-.725-1.793 0-.345.276-.69.725-.69h2.76c.588 0 .795.276.795.966v2.898c0 .588.276.795.414.795.276 0 .588-.207 1.172-.795 1.241-1.379 2.139-3.566 2.139-3.566.138-.345.414-.69 1.103-.69h1.744c.828 0 1.01.414.828.966-.414 1.24-2.484 4.062-2.484 4.062-.276.414-.207.588 0 .966.207.276 1.103 1.103 1.655 1.793.552.69.966 1.379.69 1.793z" />
+                    </svg>
+                  </Link>
+                </div>
+              )}
+              
+              {/* Mobile CTA Button */}
               {headerConfig.ctaButton.show && (
+                <div className="pt-4">
                 <Button
                   onClick={() => {
                     handleCruiseClick()
                     setMobileMenuOpen(false)
                   }}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 text-lg rounded-xl"
                 >
                   {headerConfig.ctaButton.text}
                 </Button>
+                </div>
               )}
+              
+              {/* Mobile Auth Button */}
+              <div className="pt-4">
+                <Button 
+                  variant="outline" 
+                  className="w-full py-4 text-lg font-medium" 
+                  onClick={() => {
+                    setAuthOpen(true)
+                    setMobileMenuOpen(false)
+                  }}
+                >
+                  Личный кабинет
+                </Button>
+              </div>
             </div>
           </div>
         )}
