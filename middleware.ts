@@ -96,7 +96,7 @@ export function middleware(request: NextRequest) {
         </body>
       </html>
       `,
-      { 
+      {
         status: 404,
         headers: {
           'Content-Type': 'text/html; charset=utf-8'

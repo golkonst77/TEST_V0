@@ -64,19 +64,19 @@ export function FAQ() {
   return (
     <section className="py-16 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto px-4">
-        <div className="text-left mb-8 md:mb-12">
-          <div className="inline-flex items-start justify-start w-12 h-12 md:w-16 md:h-16 bg-blue-100 rounded-full mb-4 md:mb-6">
+        <div className="text-center mb-8 md:mb-12">
+          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-blue-100 rounded-full mb-4 md:mb-6">
             <Car className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
           </div>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4 px-4 text-left">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
             Приборная Панель: Ответы на главные вопросы
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl px-4 leading-relaxed text-left">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Прояснили самые важные моменты, чтобы ваше решение было уверенным
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
           <div className="space-y-3 md:space-y-4">
             {faqData.map((item, index) => (
               <Card 
@@ -116,7 +116,7 @@ export function FAQ() {
         </div>
 
         {/* CTA секция */}
-        <div className="mt-12 md:mt-16 text-center px-4">
+        <div className="mt-12 md:mt-16 text-center">
           <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 max-w-3xl mx-auto border border-gray-100">
             <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
               Остались вопросы?

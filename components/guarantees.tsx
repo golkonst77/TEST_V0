@@ -45,12 +45,12 @@ export function Guarantees() {
   return (
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-left mb-12 md:mb-16">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4 px-4 text-left">
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
             Укрощение бюрократического зверя
           </h2>
-          <div className="flex flex-col items-start gap-2 mb-8">
-            <p className="text-lg md:text-xl text-gray-600 max-w-3xl px-4 leading-relaxed text-left">
+          <div className="flex flex-col items-center gap-2 mb-8">
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl leading-relaxed text-center">
               Переводим с языка чиновников на язык бизнеса. Избавляем от бумажного хаоса, чтобы вы могли творить
             </p>
             <div className="flex flex-col items-start gap-2 mt-4 px-4">
@@ -133,7 +133,7 @@ export function Guarantees() {
           <h3 className="text-xl md:text-2xl font-bold mb-4 leading-tight">
             Ты — создаешь бизнес. Мы — следим, чтобы налоги не съели твою прибыль.
           </h3>
-          <p className="text-lg md:text-xl mb-6">Расти спокойно.</p>
+          <p className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 font-bold">Расти спокойно.</p>
         </div>
 
         <QuizModal open={quizOpen} onOpenChange={setQuizOpen} />

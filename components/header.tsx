@@ -19,6 +19,8 @@ interface SiteSettings {
   phone: string
   telegram: string
   vk: string
+  email: string
+  address: string
 }
 
 interface MenuItem {
@@ -219,17 +221,90 @@ export const Header = () => {
 
   const fetchHeaderConfig = async () => {
     try {
-      console.log("Header: Fetching header config...")
-      const response = await fetch("/api/admin/header")
+      console.log("Header: Fetching settings...")
+      const response = await fetch("/api/settings")
       if (response.ok) {
-        const data = await response.json()
-        console.log("Header: Loaded header config:", data)
-        setHeaderConfig(data.header)
+        const settings = await response.json()
+        console.log("Header: Loaded settings:", settings)
+        
+        // Преобразуем данные из settings в формат header
+        const config: HeaderConfig = {
+          logo: {
+            text: settings.siteName || "ПростоБюро",
+            show: true,
+            type: "text",
+            imageUrl: "",
+          },
+          phone: {
+            number: settings.phone || "+7 953 330-17-77",
+            show: true,
+          },
+          social: {
+            telegram: settings.telegram || "https://t.me/prostoburo",
+            vk: settings.vk || "https://m.vk.com/buh_urist?from=groups",
+            show: true,
+          },
+          ctaButton: {
+            text: "Получить скидку",
+            show: true,
+          },
+          menuItems: [
+            {
+              id: "services",
+              title: "Услуги",
+              href: "/services",
+              show: true,
+              type: "link"
+            },
+            {
+              id: "pricing",
+              title: "Тарифы",
+              href: "/pricing",
+              show: true,
+              type: "link"
+            },
+            {
+              id: "calculator",
+              title: "Калькулятор",
+              href: "/calculator",
+              show: true,
+              type: "link"
+            },
+            {
+              id: "about",
+              title: "О компании",
+              href: "/about",
+              show: true,
+              type: "link"
+            },
+            {
+              id: "blog",
+              title: "Блог",
+              href: "/blog",
+              show: true,
+              type: "link"
+            },
+            {
+              id: "contacts",
+              title: "Контакты",
+              href: "#contacts",
+              show: true,
+              type: "link"
+            },
+          ],
+          layout: {
+            sticky: true,
+            background: "white",
+            height: 64,
+          },
+        }
+        
+        setHeaderConfig(config)
       } else {
-        console.error("Header: Failed to fetch header config")
+        console.error("Header: Failed to fetch settings")
       }
     } catch (error) {
-      console.error("Header: Error fetching header config:", error)
+      console.error("Header: Error fetching settings:", error)
     }
   }
 

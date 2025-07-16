@@ -27,7 +27,7 @@ export function Logo({ siteName = "ПростоБюро", className = "" }: Logo
   const fetchLogoConfig = async () => {
     try {
       console.log("Logo: Fetching logo config...")
-      const response = await fetch("/api/admin/header", {
+      const response = await fetch("/api/settings", {
         cache: 'no-store', // Отключаем кэширование
         headers: {
           'Cache-Control': 'no-cache'

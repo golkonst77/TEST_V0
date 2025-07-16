@@ -17,31 +17,31 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     console.log("PUT request body:", body)
 
-    // Валидация обязательных полей
-    if (!body.siteName || !body.phone || !body.email) {
-      return NextResponse.json({ error: "Заполните все обязательные поля" }, { status: 400 })
-    }
-
-    // Маппинг полей для Supabase
-    const supabaseBody = {
-      id: 1,
-      sitename: body.siteName,
-      sitedescription: body.siteDescription,
+    // Маппинг полей для интерфейса SiteSettings
+    const settingsToUpdate = {
+      siteName: body.siteName,
+      siteDescription: body.siteDescription,
       phone: body.phone,
       email: body.email,
       address: body.address,
       telegram: body.telegram,
       vk: body.vk,
-      maintenancemode: body.maintenanceMode,
-      analyticsenabled: body.analyticsEnabled,
+      maintenanceMode: body.maintenanceMode,
+      analyticsEnabled: body.analyticsEnabled,
       quiz_mode: body.quiz_mode,
       quiz_url: body.quiz_url,
-      working_hours: body.working_hours,
+      working_hours: body.working_hours
     }
 
+    console.log("Settings to update:", settingsToUpdate)
+
     // Обновляем настройки
-    const updatedSettings = await updateSettings(supabaseBody)
+    const updatedSettings = await updateSettings(settingsToUpdate)
     console.log("Settings saved successfully:", updatedSettings)
+
+    if (!updatedSettings) {
+      return NextResponse.json({ error: "Не удалось сохранить настройки в базе данных" }, { status: 500 })
+    }
 
     return NextResponse.json({
       success: true,

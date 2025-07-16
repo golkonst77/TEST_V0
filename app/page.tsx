@@ -7,25 +7,24 @@ import { Calculator } from "@/components/calculator"
 import { Reviews } from "@/components/reviews"
 import { News } from "@/components/news"
 import { Contacts } from "@/components/contacts"
-import Head from "next/head"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Главная | ПростоБюро",
+}
 
 export default function HomePage() {
   return (
-    <>
-      <Head>
-        <title>Главная | ПростоБюро</title>
-      </Head>
-      <main id="home-page" className="min-h-screen">
-        <Hero />
-        <Services />
-        <Guarantees />
-        <PricingSection />
-        <FAQ />
-        <Calculator />
-        <Reviews />
-        <News />
-        <Contacts />
-      </main>
-    </>
+    <main id="home-page" className="min-h-screen">
+      <Hero />
+      <Services />
+      <Guarantees />
+      <PricingSection />
+      <FAQ />
+      <Calculator />
+      <Reviews />
+      <News />
+      <Contacts />
+    </main>
   )
 }

@@ -90,14 +90,87 @@ export default function HeaderEditor() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await fetch("/api/admin/header")
+        const response = await fetch("/api/admin/settings")
         if (response.ok) {
-          const data = await response.json()
-          console.log("HeaderEditor: Fetched config:", data)
-          setConfig(data.header || defaultConfig)
+          const settings = await response.json()
+          console.log("HeaderEditor: Fetched settings:", settings)
+          
+          // Преобразуем данные из settings в формат header
+          const headerConfig: HeaderConfig = {
+            logo: {
+              text: settings.siteName || "ПростоБюро",
+              show: true,
+              type: "text",
+              imageUrl: "",
+            },
+            phone: {
+              number: settings.phone || "+7 953 330-17-77",
+              show: true,
+            },
+            social: {
+              telegram: settings.telegram || "https://t.me/prostoburo",
+              vk: settings.vk || "https://m.vk.com/buh_urist?from=groups",
+              show: true,
+            },
+            ctaButton: {
+              text: "Получить скидку",
+              show: true,
+            },
+            menuItems: [
+              {
+                id: "services",
+                title: "Услуги",
+                href: "/services",
+                show: true,
+                type: "link"
+              },
+              {
+                id: "pricing",
+                title: "Тарифы",
+                href: "/pricing",
+                show: true,
+                type: "link"
+              },
+              {
+                id: "calculator",
+                title: "Калькулятор",
+                href: "/calculator",
+                show: true,
+                type: "link"
+              },
+              {
+                id: "about",
+                title: "О компании",
+                href: "/about",
+                show: true,
+                type: "link"
+              },
+              {
+                id: "blog",
+                title: "Блог",
+                href: "/blog",
+                show: true,
+                type: "link"
+              },
+              {
+                id: "contacts",
+                title: "Контакты",
+                href: "#contacts",
+                show: true,
+                type: "link"
+              },
+            ],
+            layout: {
+              sticky: true,
+              background: "white",
+              height: 64,
+            },
+          }
+          
+          setConfig(headerConfig)
         }
       } catch (error) {
-        console.error("Error fetching config:", error)
+        console.error("Error fetching settings:", error)
         setConfig(defaultConfig)
       } finally {
         setLoading(false)
@@ -107,28 +180,36 @@ export default function HeaderEditor() {
     fetchConfig()
   }, [])
 
-  const handleSave = async () => {
+  const saveConfig = async () => {
     setSaving(true)
     try {
-      console.log("HeaderEditor: Saving config:", config)
-      const response = await fetch("/api/admin/header", {
+      // Преобразуем header config в формат settings
+      const settingsData = {
+        siteName: config.logo.text,
+        phone: config.phone.number,
+        telegram: config.social.telegram,
+        vk: config.social.vk,
+        // Остальные поля оставляем как есть
+      }
+
+      const response = await fetch("/api/admin/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ header: config }),
+        body: JSON.stringify(settingsData),
       })
 
       if (response.ok) {
-        const result = await response.json()
-        console.log("HeaderEditor: Save result:", result)
-        toast.success("Настройки шапки сохранены!")
+        console.log("Header configuration saved successfully")
+        // Показываем уведомление об успехе
       } else {
-        toast.error("Ошибка при сохранении настроек")
+        console.error("Failed to save header configuration")
+        // Показываем уведомление об ошибке
       }
     } catch (error) {
-      console.error("Error saving config:", error)
-      toast.error("Ошибка при сохранении настроек")
+      console.error("Error saving header configuration:", error)
+      // Показываем уведомление об ошибке
     } finally {
       setSaving(false)
     }
@@ -204,7 +285,7 @@ export default function HeaderEditor() {
         
         // Автосохранение после загрузки
         setTimeout(() => {
-          handleSave()
+          saveConfig()
         }, 500)
       } else {
         const errorData = await response.json()
@@ -246,7 +327,7 @@ export default function HeaderEditor() {
               Просмотр
             </a>
           </Button>
-          <Button onClick={handleSave} disabled={saving} size="sm">
+          <Button onClick={saveConfig} disabled={saving} size="sm">
             <Save className="h-4 w-4 mr-2" />
             {saving ? "Сохранение..." : "Сохранить"}
           </Button>
@@ -264,7 +345,7 @@ export default function HeaderEditor() {
           <TabsContent value="content" className="space-y-4">
             <Card className="border border-gray-200">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">Логотип и контакты</CardTitle>
+                <CardTitle className="text-base">Логотип</CardTitle>
                 <CardDescription className="text-sm">Основные элементы шапки</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -346,74 +427,6 @@ export default function HeaderEditor() {
                         </div>
                       </div>
                     )}
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="phone-show" className="text-sm">Показывать телефон</Label>
-                  <Switch
-                    id="phone-show"
-                    checked={config.phone.show}
-                    onCheckedChange={(checked) => updateConfig("phone.show", checked)}
-                  />
-                </div>
-                {config.phone.show && (
-                  <div>
-                    <Label htmlFor="phone-number" className="text-sm">Номер телефона</Label>
-                    <Input
-                      id="phone-number"
-                      value={config.phone.number}
-                      onChange={(e) => updateConfig("phone.number", e.target.value)}
-                      className="h-8 text-sm mt-1"
-                    />
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="social-show" className="text-sm">Показывать соцсети</Label>
-                  <Switch
-                    id="social-show"
-                    checked={config.social.show}
-                    onCheckedChange={(checked) => updateConfig("social.show", checked)}
-                  />
-                </div>
-                {config.social.show && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="telegram" className="text-sm">Telegram</Label>
-                      <Input
-                        id="telegram"
-                        value={config.social.telegram}
-                        onChange={(e) => updateConfig("social.telegram", e.target.value)}
-                        className="h-8 text-sm mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="vk" className="text-sm">ВКонтакте</Label>
-                      <Input
-                        id="vk"
-                        value={config.social.vk}
-                        onChange={(e) => updateConfig("social.vk", e.target.value)}
-                        className="h-8 text-sm mt-1"
-                      />
-                    </div>
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="cta-show" className="text-sm">Показывать кнопку CTA</Label>
-                  <Switch
-                    id="cta-show"
-                    checked={config.ctaButton.show}
-                    onCheckedChange={(checked) => updateConfig("ctaButton.show", checked)}
-                  />
-                </div>
-                {config.ctaButton.show && (
-                  <div>
-                    <Label htmlFor="cta-text" className="text-sm">Текст кнопки</Label>
-                    <Input
-                      id="cta-text"
-                      value={config.ctaButton.text}
-                      onChange={(e) => updateConfig("ctaButton.text", e.target.value)}
-                      className="h-8 text-sm mt-1"
-                    />
                   </div>
                 )}
               </CardContent>

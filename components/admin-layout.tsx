@@ -39,115 +39,6 @@ interface AdminLayoutProps {
   actions?: React.ReactNode
 }
 
-interface MenuItem {
-  title: string
-  href: string
-  icon: any
-  color: string
-  children?: MenuItem[]
-}
-
-const menuItems: MenuItem[] = [
-  {
-    title: "Главная",
-    href: "/admin",
-    icon: Crown,
-    color: "text-purple-600"
-  },
-  {
-    title: "Главная страница",
-    href: "/admin/homepage",
-    icon: Home,
-    color: "text-blue-600"
-  },
-  {
-    title: "Шапка сайта",
-    href: "/admin/header",
-    icon: Palette,
-    color: "text-indigo-600"
-  },
-  {
-    title: "Калькулятор",
-    href: "/admin/calculator",
-    icon: Calculator,
-    color: "text-green-600"
-  },
-  {
-    title: "Тарифы",
-    href: "/admin/pricing",
-    icon: DollarSign,
-    color: "text-amber-600"
-  },
-  {
-    title: "Купоны",
-    href: "/admin/coupons",
-    icon: Gift,
-    color: "text-pink-600"
-  },
-  {
-    title: "Чек-листы",
-    href: "/admin/checklists",
-    icon: FileText,
-    color: "text-cyan-600"
-  },
-  {
-    title: "Рассылка",
-    href: "/admin/newsletter",
-    icon: Mail,
-    color: "text-blue-600",
-    children: [
-      {
-        title: "Подписчики",
-        href: "/admin/newsletter",
-        icon: Users,
-        color: "text-blue-600"
-      },
-      {
-        title: "Кампании",
-        href: "/admin/newsletter/campaigns",
-        icon: Send,
-        color: "text-purple-600"
-      }
-    ]
-  },
-  {
-    title: "Отзывы",
-    href: "/admin/reviews",
-    icon: MessageSquare,
-    color: "text-emerald-600"
-  },
-  {
-    title: "Видеоотзывы",
-    href: "/admin/video-reviews",
-    icon: Video,
-    color: "text-purple-600"
-  },
-  {
-    title: "Медиафайлы",
-    href: "/admin/media",
-    icon: ImageIcon,
-    color: "text-orange-600"
-  },
-  {
-    title: "Контент",
-    href: "/admin/content",
-    icon: FileText,
-    color: "text-red-600"
-  },
-  {
-    title: "Пользователи",
-    href: "/admin/users",
-    icon: Users,
-    color: "text-teal-600"
-  },
-  {
-    title: "Настройки",
-    href: "/admin/settings",
-    icon: Settings,
-    color: "text-gray-600"
-  }
-]
-
 export function AdminLayout({ 
   children, 
   title = "Админ панель", 
@@ -160,6 +51,68 @@ export function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
+
+  const navigation = [
+    {
+      name: 'Главная',
+      href: '/admin',
+      icon: Crown,
+      current: pathname === '/admin'
+    },
+    {
+      name: 'Контент сайта',
+      icon: FileText,
+      current: ['/admin/homepage', '/admin/header', '/admin/content', '/admin/media', '/admin/contacts'].includes(pathname),
+      children: [
+        { name: 'Главная страница', href: '/admin/homepage', current: pathname === '/admin/homepage' },
+        { name: 'Шапка сайта', href: '/admin/header', current: pathname === '/admin/header' },
+        { name: 'Контактная информация', href: '/admin/contacts', current: pathname === '/admin/contacts' },
+        { name: 'Контент', href: '/admin/content', current: pathname === '/admin/content' },
+        { name: 'Медиафайлы', href: '/admin/media', current: pathname === '/admin/media' }
+      ]
+    },
+    {
+      name: 'Коммерция',
+      icon: DollarSign,
+      current: ['/admin/calculator', '/admin/pricing', '/admin/coupons'].includes(pathname),
+      children: [
+        { name: 'Калькулятор', href: '/admin/calculator', current: pathname === '/admin/calculator' },
+        { name: 'Тарифы', href: '/admin/pricing', current: pathname === '/admin/pricing' },
+        { name: 'Купоны', href: '/admin/coupons', current: pathname === '/admin/coupons' }
+      ]
+    },
+    {
+      name: 'Интерактив',
+      icon: MessageSquare,
+      current: ['/admin/checklists', '/admin/reviews', '/admin/video-reviews'].includes(pathname),
+      children: [
+        { name: 'Чек-листы', href: '/admin/checklists', current: pathname === '/admin/checklists' },
+        { name: 'Отзывы', href: '/admin/reviews', current: pathname === '/admin/reviews' },
+        { name: 'Видеоотзывы', href: '/admin/video-reviews', current: pathname === '/admin/video-reviews' }
+      ]
+    },
+    {
+      name: 'Маркетинг',
+      icon: Mail,
+      current: pathname.startsWith('/admin/newsletter'),
+      children: [
+        { name: 'Подписчики', href: '/admin/newsletter', current: pathname === '/admin/newsletter' },
+        { name: 'Кампании', href: '/admin/newsletter/campaigns', current: pathname === '/admin/newsletter/campaigns' }
+      ]
+    },
+    {
+      name: 'Пользователи',
+      href: '/admin/users',
+      icon: Users,
+      current: pathname === '/admin/users'
+    },
+    {
+      name: 'Настройки',
+      href: '/admin/settings',
+      icon: Settings,
+      current: pathname === '/admin/settings'
+    }
+  ]
 
   useEffect(() => {
     setMounted(true)
@@ -214,15 +167,15 @@ export function AdminLayout({
 
           {/* Навигационное меню */}
           <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-            {menuItems.map((item) => {
-              const isActive = pathname === item.href
+            {navigation.map((item) => {
+              const isActive = item.current
               const hasChildren = item.children && item.children.length > 0
-              const isParentActive = hasChildren && item.children.some(child => pathname === child.href)
+              const isParentActive = hasChildren && item.children.some(child => child.current)
               const Icon = item.icon
               
               if (hasChildren) {
                 return (
-                  <div key={item.href} className="space-y-1">
+                  <div key={item.name} className="space-y-1">
                     <div className={cn(
                       "flex items-center space-x-2 px-3 py-2 text-sm rounded-md transition-colors",
                       isParentActive 
@@ -230,16 +183,15 @@ export function AdminLayout({
                         : "text-gray-700 hover:bg-gray-100"
                     )}>
                       <Icon className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">{item.title}</span>
+                      <span className="truncate">{item.name}</span>
                     </div>
                     <div className="ml-6 space-y-1">
                       {item.children.map((child) => {
-                        const isChildActive = pathname === child.href
-                        const ChildIcon = child.icon
+                        const isChildActive = child.current
                         
                         return (
                           <Link
-                            key={child.href}
+                            key={child.name}
                             href={child.href}
                             onClick={() => setSidebarOpen(false)}
                             className={cn(
@@ -249,8 +201,8 @@ export function AdminLayout({
                                 : "text-gray-600 hover:bg-gray-100"
                             )}
                           >
-                            <ChildIcon className="h-3 w-3 flex-shrink-0" />
-                            <span className="truncate">{child.title}</span>
+                            <div className="h-3 w-3 flex-shrink-0 rounded-full bg-gray-300" />
+                            <span className="truncate">{child.name}</span>
                           </Link>
                         )
                       })}
@@ -261,7 +213,7 @@ export function AdminLayout({
               
               return (
                 <Link
-                  key={item.href}
+                  key={item.name}
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
@@ -272,7 +224,7 @@ export function AdminLayout({
                   )}
                 >
                   <Icon className="h-4 w-4 flex-shrink-0" />
-                  <span className="truncate">{item.title}</span>
+                  <span className="truncate">{item.name}</span>
                 </Link>
               )
             })}
@@ -293,7 +245,7 @@ export function AdminLayout({
               Выйти
             </Button>
             
-            <Link href="/" target="_blank">
+            <Link href="/" target="_blank" className="block">
               <Button
                 variant="ghost"
                 size="sm"

@@ -191,16 +191,16 @@ export function Calculator() {
   return (
     <section className="py-12 md:py-20 relative z-10">
       <div className="container mx-auto px-4">
-        <div className="text-left mb-8 md:mb-16">
-          <div className="flex justify-start mb-4 md:mb-6">
+        <div className="text-center mb-8 md:mb-16">
+          <div className="flex justify-center mb-4 md:mb-6">
             <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-3 md:p-4 shadow-2xl ring-2 md:ring-4 ring-blue-200">
               <CalculatorIcon className="h-8 w-8 md:h-12 md:w-12 text-white" />
             </div>
           </div>
-          <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 px-4 text-left">
+          <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
             Калькулятор стоимости услуг
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4 leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed text-center">
             Рассчитайте стоимость бухгалтерских услуг для вашего бизнеса
           </p>
         </div>

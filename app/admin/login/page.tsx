@@ -10,10 +10,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Lock } from "lucide-react"
-import { ADMIN_CREDENTIALS } from "@/app/api/admin/auth/login/route"
 
 export default function AdminLoginPage() {
-  const [username, setUsername] = useState("")
+  const [username, setUsername] = useState("admin")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
@@ -82,7 +81,7 @@ export default function AdminLoginPage() {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Введите логин"
+                  placeholder="admin"
                 />
               </div>
 
@@ -95,7 +94,7 @@ export default function AdminLoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    placeholder="Введите пароль"
+                    placeholder="prostoburo2024"
                   />
                   <Button
                     type="button"
@@ -122,17 +121,7 @@ export default function AdminLoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 font-medium mb-2">Тестовые данные для входа:</p>
-              <div className="text-sm text-gray-500 space-y-1">
-                <p>
-                  <strong>Логин:</strong> {ADMIN_CREDENTIALS.username}
-                </p>
-                <p>
-                  <strong>Пароль:</strong> {ADMIN_CREDENTIALS.password}
-                </p>
-              </div>
-            </div>
+
           </CardContent>
         </Card>
 

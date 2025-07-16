@@ -72,13 +72,13 @@ export function Services() {
   return (
     <section className="pt-8 pb-16 bg-white">
       <div className="w-full px-0">
-        <div className="flex justify-start w-full mb-4">
-          <div className="px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-lg font-semibold text-gray-900 text-left">
+        <div className="flex justify-center w-full mb-4">
+          <div className="px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-lg font-semibold text-gray-900 text-center">
             Мы приручили налогового зверя. И научим его работать на вас.
           </div>
         </div>
-        <div className="text-left mb-0">
-          <p className="text-xl text-gray-600 mt-0 mb-0 text-left">
+        <div className="text-center mb-0">
+          <p className="text-xl text-gray-600 mt-0 mb-0 text-center">
             Налоги могут быть не только головной болью, но и инструментом для оптимизации. Мы знаем все его повадки и слабые места.
           </p>
         </div>
@@ -90,7 +90,7 @@ export function Services() {
               className="flex flex-col justify-between items-start w-full shadow-lg border-0 bg-white transition-all duration-300 hover:shadow-xl hover:shadow-blue-400 rounded-xl overflow-hidden text-left"
             >
               <CardHeader className="flex flex-col items-start p-6">
-                <div className="flex h-16 w-16 items-center justify-start rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white mb-4 shadow-lg">
+                <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white mb-4 shadow-lg">
                   <service.icon className="h-8 w-8" />
                 </div>
                 <CardTitle className="text-xl md:text-2xl text-left font-bold mb-3">{service.title}</CardTitle>
@@ -118,7 +118,7 @@ export function Services() {
                   <DialogContent className="max-w-2xl rounded-3xl bg-white/90 backdrop-blur-lg shadow-2xl p-8 sm:p-10 border-0 animate-fade-in flex flex-col text-left">
                     <DialogHeader>
                       <div className="flex items-start gap-4 mb-2">
-                        <div className="flex h-12 w-12 items-center justify-start rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
                           {service.icon && <service.icon className="h-7 w-7" />}
                         </div>
                         <DialogTitle className="text-2xl font-extrabold text-gray-900 leading-tight text-left">

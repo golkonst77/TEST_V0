@@ -1,10 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { writeFile, mkdir } from "fs/promises"
+import { join } from "path"
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,50 +30,38 @@ export async function POST(request: NextRequest) {
     const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_")
     const fileName = `${timestamp}_${originalName}`
 
-    // Определяем bucket в зависимости от типа файла
-    const bucket = file.type.startsWith("image/") ? "images" : "checklists"
-
-    // Загружаем файл в Supabase Storage
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, buffer, {
-        contentType: file.type,
-        cacheControl: "3600",
-        upsert: false
-      })
-
-    if (error) {
-      console.error("Ошибка загрузки в Storage:", error)
-      return NextResponse.json({ error: "Ошибка загрузки файла" }, { status: 500 })
-    }
-
-    // Получаем публичный URL файла для проверки
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(fileName)
-
-    // Проверяем доступность файла
+    // Путь к папке uploads
+    const uploadsDir = join(process.cwd(), "public", "uploads")
+    
+    // Создаем папку uploads, если её нет
     try {
-      const fileCheck = await fetch(publicUrl, { method: 'HEAD' })
-      if (!fileCheck.ok) {
-        // Если файл недоступен, удаляем его из Storage
-        await supabase.storage.from(bucket).remove([fileName])
-        return NextResponse.json({ error: "Ошибка загрузки файла" }, { status: 500 })
-      }
+      await mkdir(uploadsDir, { recursive: true })
     } catch (error) {
-      // Если произошла ошибка, удаляем файл из Storage
-      await supabase.storage.from(bucket).remove([fileName])
-      return NextResponse.json({ error: "Ошибка загрузки файла" }, { status: 500 })
+      console.error("Ошибка создания папки uploads:", error)
     }
 
-    return NextResponse.json({
-      success: true,
-      url: fileName, // Возвращаем только имя файла для сохранения в БД
-      fileName: fileName,
-      originalName: file.name,
-      size: file.size,
-      type: file.type,
-    })
+    // Путь к файлу
+    const filePath = join(uploadsDir, fileName)
+
+    try {
+      // Сохраняем файл локально
+      await writeFile(filePath, buffer)
+      
+      // Возвращаем URL для доступа к файлу
+      const fileUrl = `/uploads/${fileName}`
+
+      return NextResponse.json({
+        success: true,
+        url: fileUrl,
+        fileName: fileName,
+        originalName: file.name,
+        size: file.size,
+        type: file.type,
+      })
+    } catch (error) {
+      console.error("Ошибка сохранения файла:", error)
+      return NextResponse.json({ error: "Ошибка сохранения файла" }, { status: 500 })
+    }
   } catch (error) {
     console.error("Ошибка загрузки файла:", error)
     return NextResponse.json({ error: "Ошибка сервера" }, { status: 500 })

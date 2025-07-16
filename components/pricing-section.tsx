@@ -130,12 +130,12 @@ export function PricingSection() {
       `}</style>
       
       <div className="container mx-auto px-4">
-        <div className="text-left mb-6">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4 px-4 text-left">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
             Выберите ваш режим «Круиз-контроля»
           </h2>
-          <div className="flex justify-start w-full mb-6 px-4">
-            <div className="px-4 md:px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-sm md:text-base font-medium text-gray-900 text-left">
+          <div className="flex justify-center w-full mb-6">
+            <div className="px-4 md:px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-sm md:text-base font-medium text-gray-900 text-center">
               От базовой поддержки до полного автопилота для вашего бизнеса 🚗
             </div>
           </div>
@@ -297,9 +297,7 @@ export function PricingSection() {
               </div>
             </div>
           </div>
-          <div className="text-left text-xs md:text-sm font-bold text-white mt-4 ml-2 px-2">
-            * НЕ ВЗИМАЕТСЯ при заключении договора бухгалтерского обслуживания на 6 месяцев.
-          </div>
+
         </div>
 
         {/* CTA */}

@@ -79,11 +79,11 @@ export function Contacts() {
     <section id="contacts" className="py-12 md:py-20 bg-gray-600 text-white">
       <div className="container mx-auto px-4">
         {/* Заголовок */}
-        <div className="text-left mb-8 md:mb-16">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 px-4 text-left">
+        <div className="text-center mb-8 md:mb-16">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
             Свяжитесь с нами
           </h2>
-          <p className="text-lg md:text-xl text-gray-200 max-w-2xl px-4 leading-relaxed text-left">
+          <p className="text-lg md:text-xl text-gray-200 max-w-2xl leading-relaxed text-center">
             Готовы обсудить ваш вопрос? Мы всегда на связи и готовы помочь
           </p>
         </div>
@@ -210,7 +210,7 @@ export function Contacts() {
         <div className="mt-12 md:mt-16 pt-6 md:pt-8 border-t border-gray-700">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-center px-4">
             <div>
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-full flex items-center justify-start mx-auto mb-3 md:mb-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <Phone className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <h3 className="font-semibold mb-2 text-sm md:text-base">Быстрый ответ</h3>
@@ -219,7 +219,7 @@ export function Contacts() {
               </p>
             </div>
             <div>
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded-full flex items-center justify-start mx-auto mb-3 md:mb-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <MessageCircle className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <h3 className="font-semibold mb-2 text-sm md:text-base">Удобное общение</h3>
@@ -228,7 +228,7 @@ export function Contacts() {
               </p>
             </div>
             <div>
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-600 rounded-full flex items-center justify-start mx-auto mb-3 md:mb-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <Clock className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <h3 className="font-semibold mb-2 text-sm md:text-base">Гибкий график</h3>

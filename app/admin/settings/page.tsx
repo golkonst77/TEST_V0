@@ -15,20 +15,10 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState({
     siteName: "",
     siteDescription: "",
-    phone: "",
-    email: "",
-    address: "",
-    telegram: "",
-    vk: "",
     maintenanceMode: false,
     analyticsEnabled: true,
     quiz_mode: "custom",
-    quiz_url: "",
-    working_hours: {
-      monday_friday: "9:00 - 18:00",
-      saturday: "10:00 - 15:00",
-      sunday: "Выходной"
-    }
+    quiz_url: ""
   })
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -46,20 +36,10 @@ export default function AdminSettingsPage() {
         setSettings({
           siteName: data.sitename || "",
           siteDescription: data.sitedescription || "",
-          phone: data.phone || "",
-          email: data.email || "",
-          address: data.address || "",
-          telegram: data.telegram || "",
-          vk: data.vk || "",
           maintenanceMode: data.maintenancemode ?? false,
           analyticsEnabled: data.analyticsenabled ?? true,
           quiz_mode: data.quiz_mode || "custom",
-          quiz_url: data.quiz_url || "",
-          working_hours: data.working_hours || {
-            monday_friday: "9:00 - 18:00",
-            saturday: "10:00 - 15:00",
-            sunday: "Выходной"
-          }
+          quiz_url: data.quiz_url || ""
         })
         setMessage("Настройки загружены")
       } else {
@@ -161,141 +141,6 @@ export default function AdminSettingsPage() {
                 rows={2}
                 className="text-sm mt-1"
               />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Контактная информация */}
-        <Card className="border border-gray-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Контактная информация</CardTitle>
-            <CardDescription className="text-sm">Телефон, email и адрес компании</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="phone" className="text-sm">Телефон</Label>
-                <Input
-                  id="phone"
-                  value={settings.phone}
-                  onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
-                  placeholder="+7 953 777 77 77"
-                  className="h-8 text-sm mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="email" className="text-sm">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={settings.email}
-                  onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-                  placeholder="golkonst@gmail.com"
-                  className="h-8 text-sm mt-1"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="address" className="text-sm">Адрес</Label>
-              <Input
-                id="address"
-                value={settings.address}
-                onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-                placeholder="Калуга"
-                className="h-8 text-sm mt-1"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Время работы */}
-        <Card className="border border-gray-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Время работы</CardTitle>
-            <CardDescription className="text-sm">Рабочие часы для отображения в контактах</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="monday-friday" className="text-sm">Понедельник - Пятница</Label>
-              <Input
-                id="monday-friday"
-                value={settings.working_hours.monday_friday}
-                onChange={(e) => setSettings({ 
-                  ...settings, 
-                  working_hours: { 
-                    ...settings.working_hours, 
-                    monday_friday: e.target.value 
-                  } 
-                })}
-                placeholder="9:00 - 18:00"
-                className="h-8 text-sm mt-1"
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="saturday" className="text-sm">Суббота</Label>
-                <Input
-                  id="saturday"
-                  value={settings.working_hours.saturday}
-                  onChange={(e) => setSettings({ 
-                    ...settings, 
-                    working_hours: { 
-                      ...settings.working_hours, 
-                      saturday: e.target.value 
-                    } 
-                  })}
-                  placeholder="10:00 - 15:00"
-                  className="h-8 text-sm mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="sunday" className="text-sm">Воскресенье</Label>
-                <Input
-                  id="sunday"
-                  value={settings.working_hours.sunday}
-                  onChange={(e) => setSettings({ 
-                    ...settings, 
-                    working_hours: { 
-                      ...settings.working_hours, 
-                      sunday: e.target.value 
-                    } 
-                  })}
-                  placeholder="Выходной"
-                  className="h-8 text-sm mt-1"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Социальные сети */}
-        <Card className="border border-gray-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Социальные сети</CardTitle>
-            <CardDescription className="text-sm">Ссылки на профили в социальных сетях</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="telegram" className="text-sm">Telegram</Label>
-                <Input
-                  id="telegram"
-                  value={settings.telegram}
-                  onChange={(e) => setSettings({ ...settings, telegram: e.target.value })}
-                  placeholder="@prostoburo"
-                  className="h-8 text-sm mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="vk" className="text-sm">ВКонтакте</Label>
-                <Input
-                  id="vk"
-                  value={settings.vk}
-                  onChange={(e) => setSettings({ ...settings, vk: e.target.value })}
-                  placeholder="vk.com/buh_urist"
-                  className="h-8 text-sm mt-1"
-                />
-              </div>
             </div>
           </CardContent>
         </Card>
