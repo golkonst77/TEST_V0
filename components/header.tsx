@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Mail, Lock, User, FileText, Loader2 } from "lucide-react"
 import { Logo } from "./logo"
+import { ReCAPTCHAComponent } from "./recaptcha"
 
 interface SiteSettings {
   siteName: string
@@ -70,7 +71,7 @@ function AuthModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: bo
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState("")
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const fileRef = useRef<HTMLInputElement>(null)
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
 
   const validateEmail = (v: string) => /.+@.+\..+/.test(v);
   const validatePassword = (v: string) => v.length >= 6;
@@ -111,6 +112,7 @@ function AuthModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: bo
     if (!validatePassword(password)) newErrors.password = "Пароль должен быть не менее 6 символов"
     if (!name.trim()) newErrors.name = "Имя обязательно"
     if (!phone.trim()) newErrors.phone = "Телефон обязателен"
+    if (!recaptchaToken) newErrors.recaptcha = "Пожалуйста, подтвердите, что вы не робот"
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
@@ -118,24 +120,40 @@ function AuthModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: bo
       return
     }
 
-    const form = new FormData();
-    form.append("email", email);
-    form.append("password", password);
-    form.append("name", name);
-    form.append("phone", phone);
-    form.append("question", question);
-    form.append("action", "register");
-    
-    if (fileRef.current?.files) {
-      for (let i = 0; i < fileRef.current.files.length; i++) {
-        form.append("files", fileRef.current.files[i]);
+    try {
+      // Проверяем reCAPTCHA
+      const recaptchaResponse = await fetch('/api/verify-recaptcha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: recaptchaToken })
+      })
+
+      const recaptchaData = await recaptchaResponse.json()
+      
+      if (!recaptchaData.success || !recaptchaData.isHuman) {
+        setErrors({ recaptcha: 'Проверка reCAPTCHA не пройдена. Попробуйте еще раз.' })
+        setLoading(false)
+        return
       }
+
+      const form = new FormData();
+      form.append("email", email);
+      form.append("password", password);
+      form.append("name", name);
+      form.append("phone", phone);
+      form.append("question", question);
+      form.append("action", "register");
+      
+      await fetch("/api/user/profile", { method: "POST", body: form });
+      setLoading(false);
+      setMsg("");
+      onOpenChange(false);
+      window.location.href = "/lk";
+    } catch (error) {
+      console.error('Registration error:', error)
+      setErrors({ recaptcha: 'Ошибка при регистрации. Попробуйте еще раз.' })
+      setLoading(false)
     }
-    await fetch("/api/user/profile", { method: "POST", body: form });
-    setLoading(false);
-    setMsg("");
-    onOpenChange(false);
-    window.location.href = "/lk";
   };
 
   return (
@@ -166,7 +184,7 @@ function AuthModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: bo
               </form>
             </TabsContent>
             <TabsContent value="register">
-              <form onSubmit={register} encType="multipart/form-data" className="space-y-4">
+              <form onSubmit={register} className="space-y-4">
                 <div>
                   <Label htmlFor="reg-email" className="flex items-center gap-2"><Mail className="w-4 h-4" /> Email</Label>
                   <Input id="reg-email" type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@email.com" className={errors.email ? "border-red-500" : ""} />
@@ -192,8 +210,11 @@ function AuthModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: bo
                   <Textarea id="reg-question" value={question} onChange={e => setQuestion(e.target.value)} placeholder="Ваш вопрос (необязательно)" />
                 </div>
                 <div>
-                  <Label htmlFor="reg-files" className="flex items-center gap-2"><FileText className="w-4 h-4" /> Файлы</Label>
-                  <Input id="reg-files" type="file" multiple ref={fileRef} />
+                  <ReCAPTCHAComponent 
+                    onVerify={setRecaptchaToken} 
+                    className="flex justify-center"
+                  />
+                  {errors.recaptcha && <div className="text-xs text-red-500 mt-1 text-center">{errors.recaptcha}</div>}
                 </div>
                 <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold" disabled={loading}>
                   {loading ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null} Зарегистрироваться
