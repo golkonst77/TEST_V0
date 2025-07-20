@@ -5,7 +5,11 @@ export async function GET() {
   try {
     const settings = await getSettings()
     console.log("GET settings:", settings)
-    return NextResponse.json(settings)
+    return NextResponse.json(settings, {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    })
   } catch (error) {
     console.error("Error fetching settings:", error)
     return NextResponse.json({ error: "Ошибка получения настроек" }, { status: 500 })
@@ -47,6 +51,10 @@ export async function PUT(request: NextRequest) {
       success: true,
       message: "Настройки успешно сохранены",
       settings: updatedSettings,
+    }, {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
     })
   } catch (error) {
     console.error("Error saving settings:", error)

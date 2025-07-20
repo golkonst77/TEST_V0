@@ -6,12 +6,9 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ContactForm } from "@/components/contact-form"
 import { HiddenAdminAccess } from "@/components/hidden-admin-access"
-
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "sonner"
 import { YandexMetrica } from "@/components/yandex-metrica"
-import { MaintenanceWrapper } from "@/components/maintenance-wrapper"
-import Script from 'next/script'
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
@@ -32,43 +29,15 @@ export default function RootLayout({
   
   return (
     <html lang="ru">
-      <head>
-        <Script id="marquiz" strategy="afterInteractive">
-          {`
-            (function(w, d, s, o){
-              var j = d.createElement(s); j.async = true; j.src = '//script.marquiz.ru/v2.js';j.onload = function() {
-                if (document.readyState !== 'loading') Marquiz.init(o);
-                else document.addEventListener("DOMContentLoaded", function() {
-                  Marquiz.init(o);
-                });
-              };
-              d.head.insertBefore(j, d.head.firstElementChild);
-            })(window, document, 'script', {
-                host: '//quiz.marquiz.ru',
-                region: 'ru',
-                id: '685a59bddc273b0019e372cd',
-                autoOpen: false,
-                autoOpenFreq: 'once',
-                openOnExit: false,
-                disableOnMobile: false
-              }
-            );
-          `}
-        </Script>
-      </head>
       <body className={inter.className}>
         <YandexMetrica ymId={ymId} />
-        <MaintenanceWrapper>
-          <Header />
-
-          {children}
-          <Footer />
-          <ContactForm />
-          <HiddenAdminAccess />
-
-          <Toaster />
-          <SonnerToaster position="top-right" />
-        </MaintenanceWrapper>
+        <Header />
+        {children}
+        <Footer />
+        <ContactForm />
+        <HiddenAdminAccess />
+        <Toaster />
+        <SonnerToaster position="top-right" />
       </body>
     </html>
   )

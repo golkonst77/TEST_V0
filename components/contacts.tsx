@@ -40,14 +40,14 @@ export function Contacts() {
     {
       icon: Mail,
       title: 'Email',
-      value: settings?.email || 'golkonst@gmail.com',
-      href: `mailto:${settings?.email || 'golkonst@gmail.com'}`,
+      value: settings?.email || 'urist40@gmail.com',
+      href: `mailto:${settings?.email || 'urist40@gmail.com'}`,
       color: 'text-green-400'
     },
     {
       icon: MapPin,
       title: 'Адрес',
-      value: settings?.address || 'Калуга',
+      value: settings?.address || 'Калуга, Дзержинского 37, офис 20',
       href: '#map',
       color: 'text-red-400'
     },
@@ -67,7 +67,7 @@ export function Contacts() {
     },
     { 
       day: 'Суббота', 
-      time: settings?.working_hours?.saturday || '10:00 - 15:00' 
+      time: settings?.working_hours?.saturday || 'По согласованию' 
     },
     { 
       day: 'Воскресенье', 

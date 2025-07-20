@@ -19,7 +19,15 @@ export async function POST() {
     console.log('🔄 Начинаю синхронизацию отзывов с Яндекс.Карт...')
     
     // 1. Получаем отзывы с Яндекс.Карт
-    const yandexResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/yandex-reviews`)
+    // Добавляем таймаут для fetch (40 секунд)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 40000)
+    let yandexResponse
+    try {
+      yandexResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/yandex-reviews`, { signal: controller.signal })
+    } finally {
+      clearTimeout(timeout)
+    }
     
     if (!yandexResponse.ok) {
       throw new Error('Не удалось получить отзывы с Яндекс.Карт')
@@ -51,7 +59,7 @@ export async function POST() {
     
     // 3. Фильтруем новые отзывы (избегаем дубликатов)
     const newReviews = yandexData.reviews.filter((yandexReview: any) => {
-      const isDuplicate = existingReviews?.some(dbReview => 
+      const isDuplicate = existingReviews?.some((dbReview: any) => 
         dbReview.name === yandexReview.author && 
         dbReview.text === yandexReview.text
       )
@@ -105,8 +113,8 @@ export async function POST() {
       .select('source, is_published')
     
     const totalReviews = stats?.length || 0
-    const yandexReviews = stats?.filter(r => r.source === 'yandex').length || 0
-    const publishedReviews = stats?.filter(r => r.is_published).length || 0
+    const yandexReviews = stats?.filter((r: any) => r.source === 'yandex').length || 0
+    const publishedReviews = stats?.filter((r: any) => r.is_published).length || 0
     
     return NextResponse.json({
       success: true,

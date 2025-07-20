@@ -38,41 +38,42 @@ if (supabaseUrl && supabaseKey) {
 
 // Временное хранилище для разработки (когда Supabase не настроен)
 let localSettings: SiteSettings = {
-  siteName: "ПростоБюро",
-  siteDescription: "Профессиональная бухгалтерская компания",
-  phone: "+7 953 330-17-77",
-  email: "info@prostoburo.ru",
-  address: "г. Калуга",
-  telegram: "https://t.me/prostoburo",
-  vk: "https://vk.com/prostoburo",
+  siteName: "Просто Бюро",
+  siteDescription: "Бухгалтерские услуги",
+  phone: "+7953 777 77 77",
+  email: "urist40@gmail.com",
+  address: "Калуга, Дзержинского 37, офис 20",
+  telegram: "@prostoburo",
+  vk: "vk.com/buh_urist",
   maintenanceMode: false,
   analyticsEnabled: true,
   quiz_mode: "custom",
+  quiz_url: "#popup:marquiz_685a59bddc273b0019e372cd",
   working_hours: {
-    monday_friday: "09:00-18:00",
-    saturday: "10:00-16:00",
-    sunday: "выходной"
+    monday_friday: "9:00 - 18:00",
+    saturday: "По согласованию",
+    sunday: "Выходной"
   }
 }
 
 // Функция для маппинга данных из базы в интерфейс
 function mapDatabaseToSettings(dbData: any): SiteSettings {
   return {
-    siteName: dbData.sitename ?? dbData.site_name ?? "ПростоБюро",
-    siteDescription: dbData.sitedescription ?? dbData.site_description ?? "Профессиональные бухгалтерские услуги",
-    phone: dbData.phone ?? "+7 953 330-17-77",
-    email: dbData.email ?? "info@prostoburo.ru",
-    address: dbData.address ?? "г. Калуга",
-    telegram: dbData.telegram ?? "https://t.me/prostoburo",
-    vk: dbData.vk ?? "https://m.vk.com/buh_urist?from=groups",
+    siteName: dbData.sitename ?? dbData.site_name ?? "Просто Бюро",
+    siteDescription: dbData.sitedescription ?? dbData.site_description ?? "Бухгалтерские услуги",
+    phone: dbData.phone ?? "+7953 777 77 77",
+    email: dbData.email ?? "urist40@gmail.com",
+    address: dbData.address ?? "Калуга, Дзержинского 37, офис 20",
+    telegram: dbData.telegram ?? "@prostoburo",
+    vk: dbData.vk ?? "vk.com/buh_urist",
     maintenanceMode: dbData.maintenance_mode ?? dbData.maintenancemode ?? false,
     analyticsEnabled: dbData.analytics_enabled ?? dbData.analyticsenabled ?? true,
     quiz_mode: dbData.quiz_mode ?? "custom",
-    quiz_url: dbData.quiz_url ?? "",
-    working_hours: dbData.working_hours ?? {
-      monday_friday: "9:00 - 18:00",
-      saturday: "10:00 - 15:00",
-      sunday: "Выходной"
+    quiz_url: dbData.quiz_url ?? "#popup:marquiz_685a59bddc273b0019e372cd",
+    working_hours: {
+      monday_friday: dbData.working_hours?.monday_friday ?? "9:00 - 18:00",
+      saturday: dbData.working_hours?.saturday === "?? ????????????" ? "По согласованию" : (dbData.working_hours?.saturday ?? "По согласованию"),
+      sunday: dbData.working_hours?.sunday === "????????" ? "Выходной" : (dbData.working_hours?.sunday ?? "Выходной")
     }
   }
 }

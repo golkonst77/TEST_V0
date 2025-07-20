@@ -49,7 +49,20 @@ export function Reviews() {
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({})
   const [settings, setSettings] = useState<Settings>({})
   const [averageRating, setAverageRating] = useState(5.0)
-  const [totalReviews, setTotalReviews] = useState(0)
+  const [totalReviews, setTotalReviews] = useState(15)
+
+  // Функция для расчета динамического количества клиентов
+  const calculateDynamicClients = () => {
+    const startDate = new Date('2024-01-01') // Начальная дата
+    const currentDate = new Date()
+    const monthsDiff = (currentDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                      (currentDate.getMonth() - startDate.getMonth())
+    const baseClients = 500
+    const monthlyIncrease = 5
+    return baseClients + (monthsDiff * monthlyIncrease)
+  }
+
+  const dynamicClients = calculateDynamicClients()
 
   // Получение настроек из админки
   const fetchSettings = async () => {
@@ -58,15 +71,15 @@ export function Reviews() {
       if (response.ok) {
         const data = await response.json()
         setSettings({
-          address: data.address || 'г. Калуга',
-          phone: data.phone || '+7 953 330-17-77'
+          address: data.address || 'Калуга, Дзержинского 37, офис 20',
+          phone: data.phone || '+7953 777 77 77'
         })
       }
     } catch (error) {
       console.error('Ошибка получения настроек:', error)
       setSettings({
-        address: 'г. Калуга',
-        phone: '+7 953 330-17-77'
+        address: 'Калуга, Дзержинского 37, офис 20',
+        phone: '+7953 777 77 77'
       })
     }
   }
@@ -201,8 +214,8 @@ export function Reviews() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Отзывы наших клиентов
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Реальные отзывы от довольных клиентов о нашей работе
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Более {dynamicClients}+ довольных клиентов доверяют нам свою бухгалтерию
           </p>
         </div>
 
