@@ -98,10 +98,10 @@ export default function HeaderEditor() {
           // Преобразуем данные из settings в формат header
           const headerConfig: HeaderConfig = {
             logo: {
-              text: settings.siteName || "ПростоБюро",
-              show: true,
-              type: "text",
-              imageUrl: "",
+              text: settings.logoText || settings.siteName || "ПростоБюро",
+              show: settings.logoShow !== undefined ? settings.logoShow : true,
+              type: settings.logoType || "text",
+              imageUrl: settings.logoImageUrl || "",
             },
             phone: {
               number: settings.phone || "+7 953 330-17-77",
@@ -189,6 +189,10 @@ export default function HeaderEditor() {
         phone: config.phone.number,
         telegram: config.social.telegram,
         vk: config.social.vk,
+        logoType: config.logo.type,
+        logoImageUrl: config.logo.imageUrl,
+        logoText: config.logo.text,
+        logoShow: config.logo.show,
         // Остальные поля оставляем как есть
       }
 

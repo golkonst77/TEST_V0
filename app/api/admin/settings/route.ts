@@ -34,7 +34,11 @@ export async function PUT(request: NextRequest) {
       analyticsEnabled: body.analyticsEnabled,
       quiz_mode: body.quiz_mode,
       quiz_url: body.quiz_url,
-      working_hours: body.working_hours
+      working_hours: body.working_hours,
+      logoType: body.logoType,
+      logoImageUrl: body.logoImageUrl,
+      logoText: body.logoText,
+      logoShow: body.logoShow
     }
 
     console.log("Settings to update:", settingsToUpdate)

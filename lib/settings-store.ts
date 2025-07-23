@@ -19,6 +19,11 @@ export interface SiteSettings {
     saturday?: string
     sunday?: string
   }
+  // Логотип
+  logoType?: "text" | "image"
+  logoImageUrl?: string
+  logoText?: string
+  logoShow?: boolean
 }
 
 // Проверяем наличие переменных окружения
@@ -53,7 +58,11 @@ let localSettings: SiteSettings = {
     monday_friday: "9:00 - 18:00",
     saturday: "По согласованию",
     sunday: "Выходной"
-  }
+  },
+  logoType: "text",
+  logoImageUrl: "",
+  logoText: "ПростоБюро",
+  logoShow: true
 }
 
 // Функция для маппинга данных из базы в интерфейс
@@ -74,11 +83,15 @@ function mapDatabaseToSettings(dbData: any): SiteSettings {
       monday_friday: dbData.working_hours?.monday_friday ?? "9:00 - 18:00",
       saturday: dbData.working_hours?.saturday === "?? ????????????" ? "По согласованию" : (dbData.working_hours?.saturday ?? "По согласованию"),
       sunday: dbData.working_hours?.sunday === "????????" ? "Выходной" : (dbData.working_hours?.sunday ?? "Выходной")
-    }
+    },
+    logoType: dbData.logo_type ?? "text",
+    logoImageUrl: dbData.logo_image_url ?? "",
+    logoText: dbData.logo_text ?? dbData.sitename ?? "ПростоБюро",
+    logoShow: dbData.logo_show ?? true
   }
 }
 
-export async function getSettings(): Promise<SiteSettings | null> {
+export async function getSettings(): Promise<any> {
   if (!supabase) {
     console.warn("Supabase not configured - returning local settings")
     return localSettings
@@ -104,7 +117,19 @@ export async function getSettings(): Promise<SiteSettings | null> {
     }
     
     console.log("Settings fetched successfully:", data);
-    return mapDatabaseToSettings(data);
+    const settings = mapDatabaseToSettings(data);
+    // Возвращаем с header.logo для совместимости с компонентом Logo
+    return {
+      ...settings,
+      header: {
+        logo: {
+          show: settings.logoShow !== undefined ? settings.logoShow : true,
+          type: settings.logoType || "text",
+          imageUrl: settings.logoImageUrl || "",
+          text: settings.logoText || settings.siteName || "ПростоБюро"
+        }
+      }
+    }
   } catch (error) {
     console.error("Exception while fetching settings:", error);
     return localSettings;
@@ -136,7 +161,11 @@ export async function updateSettings(newSettings: Partial<SiteSettings>): Promis
       analytics_enabled: newSettings.analyticsEnabled,
       quiz_mode: newSettings.quiz_mode,
       quiz_url: newSettings.quiz_url,
-      working_hours: newSettings.working_hours
+      working_hours: newSettings.working_hours,
+      logo_type: newSettings.logoType,
+      logo_image_url: newSettings.logoImageUrl,
+      logo_text: newSettings.logoText,
+      logo_show: newSettings.logoShow
     }
     
     // Убираем undefined значения

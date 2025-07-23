@@ -345,7 +345,12 @@ export const Header = () => {
     const map = SECTION_MENU_MAP[item.id]
     if (!map) return null
     return (
-      <Link key={item.id} href={map.href} onClick={handleMenuClick(item)} className="hover:text-blue-600">
+      <Link
+        key={item.id}
+        href={map.href}
+        onClick={handleMenuClick(item)}
+        className="rounded-lg px-4 py-2 font-medium transition-colors hover:bg-blue-50 hover:text-blue-700 shadow-sm"
+      >
         {item.title}
       </Link>
     )
@@ -361,7 +366,7 @@ export const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:block">
-          <ul className="flex items-center gap-6 text-sm">
+          <ul className="flex items-center gap-2">
             {headerConfig.menuItems.map(renderMenuItem)}
           </ul>
         </nav>
@@ -376,7 +381,7 @@ export const Header = () => {
         </button>
 
         {/* Right side widgets */}
-        <div className="hidden lg:flex items-center space-x-4">
+        <div className="hidden lg:flex items-center space-x-6">
           {headerConfig.phone.show && (
             <div className="flex items-center space-x-2 text-sm">
               <Phone className="h-4 w-4" />
@@ -386,12 +391,15 @@ export const Header = () => {
 
           {/* Social links */}
           {headerConfig.social.show && (
-            <div className="flex items-center space-x-2">
-              <Link href={headerConfig.social.telegram || "#"} className="p-2 rounded-full hover:bg-gray-100" aria-label="Telegram">
-                <MessageCircle className="h-4 w-4" />
+            <div className="flex items-center gap-3">
+              <Link href={headerConfig.social.telegram || "#"} className="p-2 rounded-full hover:bg-blue-50 transition-colors" aria-label="Telegram">
+                <svg className="h-7 w-7 text-blue-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="12" fill="currentColor" fillOpacity="0.1"/>
+                  <path d="M17.472 7.768a.6.6 0 0 0-.64-.08l-9.6 4.2a.6.6 0 0 0 .04 1.12l2.56.72 1.04 3.12a.6.6 0 0 0 1.08.12l1.44-2.08 2.56 1.92a.6.6 0 0 0 .96-.32l1.6-7.2a.6.6 0 0 0-.44-.72ZM10.4 13.44l-.64-1.92 5.36-3.36-4.72 5.28Zm1.2 2.08-.8-2.4 1.12.8-.32 1.6Zm1.36-2.08-1.12-.8 4.16-4.64-3.04 5.44Z" fill="currentColor"/>
+                </svg>
               </Link>
-              <Link href={headerConfig.social.vk || "#"} className="p-2 rounded-full hover:bg-gray-100" aria-label="VK">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+              <Link href={headerConfig.social.vk || "#"} className="p-2 rounded-full hover:bg-blue-50 transition-colors" aria-label="VK">
+                <svg className="h-7 w-7 text-blue-700" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1.01-1.49-.9-1.49.4v1.608c0 .432-.138.69-1.276.69-1.966 0-4.644-1.193-6.36-3.428C4.304 11.13 3.568 8.28 3.568 7.648c0-.414.138-.69.966-.69h1.744c.69 0 .966.276 1.241 1.172.69 2.07 1.863 3.428 2.346 3.428.276 0 .414-.138.414-.9V9.936c-.069-1.241-.725-1.345-.725-1.793 0-.345.276-.69.725-.69h2.76c.588 0 .795.276.795.966v2.898c0 .588.276.795.414.795.276 0 .588-.207 1.172-.795 1.241-1.379 2.139-3.566 2.139-3.566.138-.345.414-.69 1.103-.69h1.744c.828 0 1.01.414.828.966-.414 1.24-2.484 4.062-2.484 4.062-.276.414-.207.588 0 .966.207.276 1.103 1.103 1.655 1.793.552.69.966 1.379.69 1.793z" />
                 </svg>
               </Link>
@@ -407,14 +415,13 @@ export const Header = () => {
               {headerConfig.ctaButton.text}
             </Button>
           )}
-          
-          {/* Кнопка входа в ЛК */}
+          {/* LK Button */}
           <Button 
             variant="outline" 
             className="ml-2 px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors text-sm md:text-base" 
             onClick={() => setAuthOpen(true)}
           >
-            Личный кабинет
+            ЛК
           </Button>
         </div>
 
@@ -473,9 +480,6 @@ export const Header = () => {
               {headerConfig.social.show && (
                 <div className="flex items-center space-x-4 pt-4">
                   <Link href={headerConfig.social.telegram || "#"} className="p-3 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors" aria-label="Telegram">
-                    <MessageCircle className="h-5 w-5 text-blue-600" />
-                  </Link>
-                  <Link href={headerConfig.social.vk || "#"} className="p-3 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors" aria-label="VK">
                     <svg className="h-5 w-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1.01-1.49-.9-1.49.4v1.608c0 .432-.138.69-1.276.69-1.966 0-4.644-1.193-6.36-3.428C4.304 11.13 3.568 8.28 3.568 7.648c0-.414.138-.69.966-.69h1.744c.69 0 .966.276 1.241 1.172.69 2.07 1.863 3.428 2.346 3.428.276 0 .414-.138.414-.9V9.936c-.069-1.241-.725-1.345-.725-1.793 0-.345.276-.69.725-.69h2.76c.588 0 .795.276.795.966v2.898c0 .588.276.795.414.795.276 0 .588-.207 1.172-.795 1.241-1.379 2.139-3.566 2.139-3.566.138-.345.414-.69 1.103-.69h1.744c.828 0 1.01.414.828.966-.414 1.24-2.484 4.062-2.484 4.062-.276.414-.207.588 0 .966.207.276 1.103 1.103 1.655 1.793.552.69.966 1.379.69 1.793z" />
                     </svg>

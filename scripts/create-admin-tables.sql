@@ -53,3 +53,12 @@ ON CONFLICT DO NOTHING;
 CREATE INDEX IF NOT EXISTS idx_calculator_services_active ON calculator_services(is_active);
 CREATE INDEX IF NOT EXISTS idx_calculator_multipliers_type ON calculator_multipliers(multiplier_type);
 CREATE INDEX IF NOT EXISTS idx_calculator_multipliers_active ON calculator_multipliers(is_active);
+
+ALTER TABLE settings
+ADD COLUMN logo_type VARCHAR(16) DEFAULT 'text';
+ALTER TABLE settings
+ADD COLUMN logo_image_url VARCHAR(255) DEFAULT '';
+ALTER TABLE settings
+ADD COLUMN logo_text VARCHAR(255) DEFAULT '';
+ALTER TABLE settings
+ADD COLUMN logo_show BOOLEAN DEFAULT true;

@@ -67,7 +67,7 @@ export function Logo({ siteName = "ПростоБюро", className = "" }: Logo
     <Link href="/" className={`flex items-center space-x-2 ${className}`}>
       {logoConfig.type === "image" && logoConfig.imageUrl ? (
         <>
-          <div className="relative h-8 w-8">
+          <div className="relative h-12 w-12">
             <Image
               src={imageUrl}
               alt={logoConfig.text || siteName}
@@ -87,8 +87,8 @@ export function Logo({ siteName = "ПростоБюро", className = "" }: Logo
         </>
       ) : (
         <>
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">ПБ</span>
+          <div className="h-12 w-12 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+            <span className="text-white font-bold text-lg">ПБ</span>
           </div>
           <span className="font-bold text-xl">{logoConfig.text || siteName}</span>
         </>
