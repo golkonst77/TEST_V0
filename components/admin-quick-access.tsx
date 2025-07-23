@@ -2,7 +2,7 @@
 
 import { useAdminAuth } from "@/hooks/use-admin-auth"
 import { Button } from "@/components/ui/button"
-import { Settings, Calculator, DollarSign } from "lucide-react"
+import { Settings, Calculator, DollarSign, Lock } from "lucide-react"
 import Link from "next/link"
 
 export function AdminQuickAccess() {
@@ -33,6 +33,12 @@ export function AdminQuickAccess() {
             <Link href="/admin/pricing">
               <DollarSign className="h-4 w-4 mr-1" />
               Тарифы
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="secondary">
+            <Link href="/admin/policy">
+              <Lock className="h-4 w-4 mr-1" />
+              Политика конфиденциальности
             </Link>
           </Button>
         </div>

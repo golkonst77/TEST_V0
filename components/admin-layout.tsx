@@ -24,7 +24,8 @@ import {
   Mail,
   Send,
   MessageSquare,
-  Video
+  Video,
+  Lock
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -99,6 +100,12 @@ export function AdminLayout({
         { name: 'Подписчики', href: '/admin/newsletter', current: pathname === '/admin/newsletter' },
         { name: 'Кампании', href: '/admin/newsletter/campaigns', current: pathname === '/admin/newsletter/campaigns' }
       ]
+    },
+    {
+      name: 'Политика конфиденциальности',
+      href: '/admin/policy',
+      icon: Lock,
+      current: pathname === '/admin/policy'
     },
     {
       name: 'Пользователи',
@@ -214,7 +221,7 @@ export function AdminLayout({
               return (
                 <Link
                   key={item.name}
-                  href={item.href}
+                  href={item.href || "#"}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
                     "flex items-center space-x-2 px-3 py-2 text-sm rounded-md transition-colors",
