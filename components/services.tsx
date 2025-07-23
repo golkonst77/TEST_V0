@@ -66,12 +66,15 @@ const serviceDetails = [
   },
 ]
 
-export function Services() {
+export function Services({ showTitle = false }: { showTitle?: boolean }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const { openContactForm } = useContactForm()
   return (
     <section className="pt-8 pb-16 bg-white">
-      <div className="w-full px-0">
+      <div className="max-w-7xl mx-auto w-full px-2 md:px-4 xl:px-8">
+        {showTitle && (
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-8 text-center">Наши услуги</h2>
+        )}
         <div className="flex justify-center w-full mb-4">
           <div className="px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-lg font-semibold text-gray-900 text-center">
             Мы приручили налогового зверя. И научим его работать на вас.
@@ -83,7 +86,7 @@ export function Services() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-8 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-12 mt-8">
           {services.map((service, index) => (
             <Card
               key={index}

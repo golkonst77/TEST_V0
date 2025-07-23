@@ -31,13 +31,13 @@ export default function RootLayout({
     <html lang="ru">
       <body className={inter.className}>
         <YandexMetrica ymId={ymId} />
-        <Header />
-        {children}
-        <Footer />
-        <ContactForm />
-        <HiddenAdminAccess />
-        <Toaster />
-        <SonnerToaster position="top-right" />
+          <Header />
+          {children}
+          <Footer />
+          <ContactForm />
+          <HiddenAdminAccess />
+          <Toaster />
+          <SonnerToaster position="top-right" />
       </body>
     </html>
   )

@@ -14,6 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Mail, Lock, User, FileText, Loader2 } from "lucide-react"
 import { Logo } from "./logo"
 import { ReCAPTCHAComponent } from "./recaptcha"
+import { useHomepageSections } from "@/hooks/use-homepage-sections"
+import { useRouter, usePathname } from "next/navigation"
 
 interface SiteSettings {
   siteName: string
@@ -229,26 +231,65 @@ function AuthModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: bo
   );
 }
 
+const SECTION_MENU_MAP: Record<string, { title: string; href: string; isAnchor?: boolean }> = {
+  about: { title: "О компании", href: "/about" },
+  services: { title: "Услуги", href: "/services" },
+  technologies: { title: "Технологии", href: "/#technologies", isAnchor: true },
+  pricing: { title: "Тарифы", href: "/pricing" },
+  faq: { title: "FAQ", href: "/faq" },
+  calculator: { title: "Калькулятор", href: "/calculator" },
+  reviews: { title: "Отзывы", href: "/#reviews", isAnchor: true },
+  news: { title: "Новости", href: "/blog" },
+  contacts: { title: "Контакты", href: "/#contacts", isAnchor: true },
+}
+
+const MENU_ORDER = [
+  'about',
+  'services',
+  'technologies',
+  'pricing',
+  'faq',
+  'calculator',
+  'reviews',
+  'news',
+  'contacts',
+]
+
 export const Header = () => {
   const { openContactForm } = useContactForm()
   const { handleCruiseClick, modalOpen, setModalOpen, quizUrl } = useCruiseClick()
   const [headerConfig, setHeaderConfig] = useState<HeaderConfig | null>(null)
   const [authOpen, setAuthOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { sectionsConfig, loading: sectionsLoading } = useHomepageSections()
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     fetchHeaderConfig()
-  }, [])
+  }, [JSON.stringify(sectionsConfig)])
 
   const fetchHeaderConfig = async () => {
     try {
-      console.log("Header: Fetching settings...")
       const response = await fetch("/api/settings")
       if (response.ok) {
         const settings = await response.json()
-        console.log("Header: Loaded settings:", settings)
-        
-        // Преобразуем данные из settings в формат header
+        // Формируем menuItems динамически по включённым секциям и нужному порядку
+        const menuItems = MENU_ORDER
+          .filter((key) => sectionsConfig[key] === "published")
+          .map((key) => {
+            const map = SECTION_MENU_MAP[key]
+            if (!map) return null
+            return {
+              id: key,
+              title: map.title,
+              href: map.href,
+              show: true,
+              type: "link"
+            }
+          })
+          .filter(Boolean) as MenuItem[]
+
         const config: HeaderConfig = {
           logo: {
             text: settings.siteName || "ПростоБюро",
@@ -269,60 +310,14 @@ export const Header = () => {
             text: "Получить скидку",
             show: true,
           },
-          menuItems: [
-            {
-              id: "services",
-              title: "Услуги",
-              href: "/services",
-              show: true,
-              type: "link"
-            },
-            {
-              id: "pricing",
-              title: "Тарифы",
-              href: "/pricing",
-              show: true,
-              type: "link"
-            },
-            {
-              id: "calculator",
-              title: "Калькулятор",
-              href: "/calculator",
-              show: true,
-              type: "link"
-            },
-            {
-              id: "about",
-              title: "О компании",
-              href: "/about",
-              show: true,
-              type: "link"
-            },
-            {
-              id: "blog",
-              title: "Блог",
-              href: "/blog",
-              show: true,
-              type: "link"
-            },
-            {
-              id: "contacts",
-              title: "Контакты",
-              href: "#contacts",
-              show: true,
-              type: "link"
-            },
-          ],
+          menuItems,
           layout: {
             sticky: true,
             background: "white",
             height: 64,
           },
         }
-        
         setHeaderConfig(config)
-      } else {
-        console.error("Header: Failed to fetch settings")
       }
     } catch (error) {
       console.error("Header: Error fetching settings:", error)
@@ -333,35 +328,24 @@ export const Header = () => {
     return null // Или показать загрузочный индикатор
   }
 
+  const handleMenuClick = (item: MenuItem) => (e: React.MouseEvent) => {
+    const map = SECTION_MENU_MAP[item.id]
+    if (map?.isAnchor) {
+      if (pathname !== "/") {
+        e.preventDefault()
+        router.push(map.href)
+      }
+      // если уже на главной, пусть работает обычный якорь
+    }
+    // для обычных страниц — стандартное поведение
+  }
+
   const renderMenuItem = (item: MenuItem) => {
     if (!item.show) return null
-
-    if (item.type === "dropdown" && item.children) {
-      return (
-        <div key={item.id} className="relative group">
-          <button className="flex items-center gap-1 hover:text-blue-600">
-            {item.title}
-            <ChevronDown className="h-4 w-4" />
-          </button>
-          <div className="absolute top-full left-0 mt-1 w-48 bg-white border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            {item.children.map((child) => (
-              child.show && (
-                <Link
-                  key={child.id}
-                  href={child.href}
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  {child.title}
-                </Link>
-              )
-            ))}
-          </div>
-        </div>
-      )
-    }
-
+    const map = SECTION_MENU_MAP[item.id]
+    if (!map) return null
     return (
-      <Link key={item.id} href={item.href} className="hover:text-blue-600">
+      <Link key={item.id} href={map.href} onClick={handleMenuClick(item)} className="hover:text-blue-600">
         {item.title}
       </Link>
     )
@@ -453,7 +437,7 @@ export const Header = () => {
                                 key={child.id}
                                 href={child.href}
                                   className="block text-gray-600 hover:text-blue-600 py-2 text-base"
-                                onClick={() => setMobileMenuOpen(false)}
+                                onClick={e => { handleMenuClick(child)(e); setMobileMenuOpen(false); }}
                               >
                                 {child.title}
                               </Link>
@@ -465,7 +449,7 @@ export const Header = () => {
                       <Link
                         href={item.href}
                           className="block text-gray-900 hover:text-blue-600 py-3 text-lg font-medium border-b border-gray-100"
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={e => { handleMenuClick(item)(e); setMobileMenuOpen(false); }}
                       >
                         {item.title}
                       </Link>

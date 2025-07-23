@@ -75,7 +75,7 @@ export default function AdminContentPage() {
         // Показываем уведомление о необходимости обновления страницы
         toast.info("Изменения применены. Обновите главную страницу, чтобы увидеть результат.", {
           duration: 4000
-        })
+          })
       } else {
         const errorData = await response.json()
         toast.error(errorData.error || "Ошибка изменения статуса")
@@ -171,7 +171,7 @@ export default function AdminContentPage() {
             >
               <Eye className="h-4 w-4 mr-2" />
               Обновить главную
-            </Button>
+          </Button>
           </div>
         </div>
 
@@ -224,36 +224,36 @@ export default function AdminContentPage() {
                   
                   <div className="flex items-center space-x-2">
                     {/* Кнопки перемещения */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                      <Button
+                        variant="ghost"
+                        size="sm"
                       onClick={() => moveSection(section.id, 'up')}
                       disabled={index === 0}
-                      className="h-7 w-7 p-0"
-                    >
+                        className="h-7 w-7 p-0"
+                      >
                       <ArrowUp className="h-3 w-3" />
-                    </Button>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
                       onClick={() => moveSection(section.id, 'down')}
                       disabled={index === sections.length - 1}
-                      className="h-7 w-7 p-0"
-                    >
+                        className="h-7 w-7 p-0"
+                      >
                       <ArrowDown className="h-3 w-3" />
-                    </Button>
-                    
+                      </Button>
+                      
                     {/* Кнопка предпросмотра */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                      <Button
+                        variant="ghost"
+                        size="sm"
                       onClick={() => previewSection(section.key)}
-                      className="h-7 w-7 p-0"
-                    >
+                        className="h-7 w-7 p-0"
+                      >
                       <Eye className="h-3 w-3" />
-                    </Button>
-                    
+                      </Button>
+                      
                     {/* Переключатель */}
                     <div className="flex items-center space-x-2">
                       <Switch

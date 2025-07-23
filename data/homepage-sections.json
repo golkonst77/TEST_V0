@@ -1,13 +1,13 @@
 {
   "hero": "published",
-  "about": "published",
+  "about": "draft",
   "services": "published",
   "calculator": "published",
   "pricing": "published",
   "reviews": "published",
   "guarantees": "published",
   "faq": "published",
-  "news": "published",
+  "news": "draft",
   "contacts": "published",
   "technologies": "published"
 }
