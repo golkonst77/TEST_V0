@@ -25,3 +25,40 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# logs
+*.log
+logs/
+
+# temp files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# local data
+uploads/
+temp/
+cache/
+
+# sensitive data
+.env.local
+.env.production
+.env.development
