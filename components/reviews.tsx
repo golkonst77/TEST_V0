@@ -50,6 +50,10 @@ export function Reviews() {
   const [settings, setSettings] = useState<Settings>({})
   const [averageRating, setAverageRating] = useState(5.0)
   const [totalReviews, setTotalReviews] = useState(15)
+  const [page, setPage] = useState(0)
+
+  const maxPages = Math.min(3, Math.ceil(reviews.length / 3) || 0)
+  const pagedReviews = reviews.slice(page * 3, page * 3 + 3)
 
   // Функция для расчета динамического количества клиентов
   const calculateDynamicClients = () => {
@@ -106,16 +110,45 @@ export function Reviews() {
   const fetchReviews = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/reviews-aggregator')
+      // Сначала пробуем локальный API
+      let response = await fetch('/api/local-reviews?limit=9')
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
-          setReviews(data.reviews || [])
-          setAverageRating(data.summary?.averageRating || 5.0)
-          setTotalReviews(data.summary?.totalReviews || 0)
-        } else {
-          setError(data.error || 'Ошибка загрузки отзывов')
+          const fetched = Array.isArray(data.reviews) ? data.reviews : []
+          setReviews(fetched)
+          // Пересчитать агрегаты локально
+          if (fetched.length > 0) {
+            const avg = fetched.reduce((s: number, r: any) => s + (r.rating || 5), 0) / fetched.length
+            setAverageRating(Number(avg.toFixed(1)))
+            setTotalReviews(fetched.length)
+          } else {
+            setAverageRating(5.0)
+            setTotalReviews(0)
+          }
+          setPage(0)
+          return
         }
+      }
+      
+      // Если локальный API не работает, пробуем Supabase
+      response = await fetch('/api/random-reviews?limit=9')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          const fetched = Array.isArray(data.reviews) ? data.reviews : []
+          setReviews(fetched)
+          // Пересчитать агрегаты локально
+          if (fetched.length > 0) {
+            const avg = fetched.reduce((s: number, r: any) => s + (r.rating || 5), 0) / fetched.length
+            setAverageRating(Number(avg.toFixed(1)))
+            setTotalReviews(fetched.length)
+          } else {
+            setAverageRating(5.0)
+            setTotalReviews(0)
+          }
+          setPage(0)
+        } else setError(data.error || 'Ошибка загрузки отзывов')
       } else {
         setError('Ошибка загрузки отзывов')
       }
@@ -219,9 +252,9 @@ export function Reviews() {
           </p>
         </div>
 
-        {/* Карточки отзывов */}
+        {/* Карточки отзывов (3 на страницу, до 3 страниц) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
-          {reviews.slice(0, 6).map((review) => (
+          {pagedReviews.map((review) => (
             <div key={review.id} className="bg-white rounded-lg shadow-lg p-6 md:p-8">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -242,6 +275,29 @@ export function Reviews() {
             </div>
           ))}
         </div>
+
+        {/* Пагинация */}
+        {maxPages > 0 && (
+          <div className="flex items-center justify-center gap-3 mb-12">
+            <button
+              className="px-4 py-2 rounded border bg-white disabled:opacity-50"
+              onClick={() => setPage(p => Math.max(0, p - 1))}
+              disabled={page === 0}
+            >
+              Предыдущие 3
+            </button>
+            <div className="text-sm text-gray-600">
+              Страница {Math.min(page + 1, maxPages)} из {maxPages}
+            </div>
+            <button
+              className="px-4 py-2 rounded border bg-white disabled:opacity-50"
+              onClick={() => setPage(p => Math.min(maxPages - 1, p + 1))}
+              disabled={page >= maxPages - 1}
+            >
+              Следующие 3
+            </button>
+          </div>
+        )}
 
         {/* Виджет Яндекс.Карт и видеоотзывы */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 px-4">

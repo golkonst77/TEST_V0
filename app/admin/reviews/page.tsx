@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MessageSquare, Plus, Star, Eye, Edit, Trash2, CheckCircle, XCircle } from "lucide-react"
 import { Review } from '@/types/review'
+import { ImportYandexReviews } from "@/components/admin/import-yandex-reviews"
+import { ImportYandexReviewsJSON } from "@/components/admin/import-yandex-reviews-json"
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
@@ -279,6 +281,28 @@ export default function ReviewsPage() {
           </Card>
         </div>
 
+        {/* Импорт отзывов из локального HTML */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Импорт из локального HTML (Яндекс.Карты)</CardTitle>
+            <CardDescription>Выберите HTML-файл из папки public и выполните импорт отзывов</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ImportYandexReviews />
+          </CardContent>
+        </Card>
+
+        {/* Импорт отзывов из JSON */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Импорт из JSON</CardTitle>
+            <CardDescription>Поддержка заранее сохраненного файла с отзывами</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ImportYandexReviewsJSON />
+          </CardContent>
+        </Card>
+
         {/* Reviews List */}
         <Card>
           <CardHeader>
@@ -301,6 +325,9 @@ export default function ReviewsPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-medium">{review.name}</h3>
+                          <div className="text-xs text-gray-400 ml-2">
+                            {review.created_at ? new Date(review.created_at).toLocaleDateString('ru-RU', { year: 'numeric', month: 'short', day: 'numeric' }) : ''}
+                          </div>
                           <div className="flex items-center gap-1">
                             {[...Array(5)].map((_, i) => (
                               <Star

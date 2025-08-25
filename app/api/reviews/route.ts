@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { name, company, email, phone, rating, text, source = 'manual', is_published = false, is_featured = false, admin_notes } = body
+    const { name, company, email, phone, rating, text, source = 'manual', is_published = false, is_featured = false, admin_notes, created_at } = body
 
     // Валидация обязательных полей
     if (!name || !rating || !text) {
@@ -93,7 +93,8 @@ export async function POST(request: NextRequest) {
       is_published,
       is_featured,
       admin_notes,
-      published_at: is_published ? new Date().toISOString() : null
+      published_at: is_published ? new Date().toISOString() : null,
+      created_at: created_at || new Date().toISOString()
     }
 
     const { data: review, error } = await supabase

@@ -7,16 +7,17 @@ export const dynamic = "force-dynamic"
 export async function GET(req: NextRequest) {
   console.log('🔍 Начинаю загрузку отзывов с Яндекс.Карт через Python-парсер...')
   
-  const companyId = 180493814174 // ID компании ПростоБюро
+  // const companyId = 180493814174 // ID компании ПростоБюро
+  const htmlPath = path.join(process.cwd(), 'public', 'Просто Бюро — Яндекс Карты.html')
   
   try {
     // Запускаем Python-скрипт
     const scriptPath = path.join(process.cwd(), 'scripts', 'yandex_parser.py')
     
     console.log(`📝 Запускаю Python-скрипт: ${scriptPath}`)
-    console.log(`🏢 ID компании: ${companyId}`)
+    console.log(`🏢 ID компании: ${htmlPath}`)
     
-    const pythonProcess = spawn('python', ['-X', 'utf8', scriptPath, companyId.toString()], {
+    const pythonProcess = spawn('python', ['-X', 'utf8', scriptPath, htmlPath], {
       stdio: ['pipe', 'pipe', 'pipe'],
       env: { 
         ...process.env, 

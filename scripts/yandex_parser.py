@@ -7,7 +7,11 @@
 
 import sys
 import json
-import requests
+import argparse
+try:
+    import requests  # optional; only needed for network scraping
+except Exception:
+    requests = None
 from bs4 import BeautifulSoup
 import re
 import time
@@ -31,6 +35,8 @@ def parse_yandex_reviews(company_id):
         dict: Результат парсинга с отзывами
     """
     try:
+        if requests is None:
+            raise RuntimeError("Python module 'requests' is not installed. Network scraping requires 'requests'. For local HTML import use parse_yandex_reviews_from_file.")
         print(f"Начинаю парсинг отзывов для компании ID: {company_id}")
         
         # URL для отзывов
@@ -104,7 +110,7 @@ def parse_yandex_reviews(company_id):
                 f.write(str(review_elements[0]))
             print("Сохранён HTML первого отзыва в yandex_review_sample.html")
         
-        for i, element in enumerate(review_elements[:5]):  # Ограничиваем первыми 5 для отладки
+        for i, element in enumerate(review_elements):  # Обрабатываем все найденные отзывы
             try:
                 print(f"\nАнализ отзыва {i+1}:")
                 print(f"   HTML: {str(element)[:200]}...")
@@ -237,19 +243,136 @@ def parse_yandex_reviews(company_id):
             'source': 'yandex-maps-requests'
         }
 
+def parse_yandex_reviews_from_html(html: str):
+    """
+    Парсит отзывы из HTML-строки (локальный HTML, содержимое передано через stdin)
+    """
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        # Новый селектор для отзывов
+        review_elements = soup.select('.business-review-view__body')
+        print(f"Найдено {len(review_elements)} отзывов по .business-review-view__body")
+        reviews = []
+        for i, element in enumerate(review_elements):
+            try:
+                # Текст отзыва
+                text_elem = element.select_one('.spoiler-view__text-container')
+                review_text = text_elem.get_text(strip=True) if text_elem else ''
+                # Автор (ищем вверх по DOM)
+                author = 'Гость'
+                parent = element.parent
+                if parent:
+                    author_elem = parent.select_one('.business-review-view__author-container')
+                    if author_elem:
+                        author = author_elem.get_text(strip=True)
+                # Дата (ищем в текущем или родителе)
+                review_date = ''
+                date_elem = element.select_one('.business-review-view__date')
+                if not date_elem and parent:
+                    date_elem = parent.select_one('.business-review-view__date')
+                if date_elem:
+                    review_date = date_elem.get_text(strip=True)
+                # Рейтинг (по умолчанию 5)
+                review_rating = 5
+                # Добавляем отзыв
+                if review_text and len(review_text) > 5:
+                    reviews.append({
+                        'id': f"yandex_{hash(review_text)}",
+                        'author': author,
+                        'rating': review_rating,
+                        'text': review_text,
+                        'date': review_date,
+                        'source': 'yandex-maps',
+                        'avatar': '',
+                        'response': ''
+                    })
+            except Exception as e:
+                print(f"Ошибка при парсинге отзыва {i+1}: {e}")
+                continue
+        print(f"\nУспешно получено данных:")
+        print(f"   - Количество отзывов: {len(reviews)}")
+        return {
+            'success': True,
+            'reviews': reviews,
+            'company_info': {},
+            'total_reviews': len(reviews),
+            'source': 'yandex-maps-local-html'
+        }
+    except Exception as e:
+        print(f"Ошибка при парсинге локального HTML: {str(e)}")
+        return {
+            'success': False,
+            'error': str(e),
+            'reviews': [],
+            'total_reviews': 0,
+            'source': 'yandex-maps-local-html'
+        }
+
+
+def parse_yandex_reviews_from_file(html_path):
+    """
+    Парсит отзывы из локального HTML-файла, скачанного с Яндекс.Карт
+    """
+    try:
+        print(f"Читаю локальный HTML-файл: {html_path}")
+        with open(html_path, 'r', encoding='utf-8') as f:
+            html = f.read()
+        return parse_yandex_reviews_from_html(html)
+    except Exception as e:
+        print(f"Ошибка при парсинге локального файла: {str(e)}")
+        return {
+            'success': False,
+            'error': str(e),
+            'reviews': [],
+            'total_reviews': 0,
+            'source': 'yandex-maps-local-html'
+        }
+
 def main():
     """Основная функция для запуска из командной строки"""
-    if len(sys.argv) != 2:
-        print("Использование: python yandex_parser.py <company_id>")
-        sys.exit(1)
-    
-    try:
-        company_id = int(sys.argv[1])
+    parser = argparse.ArgumentParser(description='Парсер отзывов Яндекс.Карты')
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument('--stdin', action='store_true', help='Читать HTML из STDIN')
+    group.add_argument('--html', type=str, help='Путь к локальному HTML-файлу')
+    group.add_argument('--company-id', type=int, help='ID компании в Яндекс.Картах')
+    parser.add_argument('--output', type=str, help='Путь для сохранения результата в JSON-файл')
+
+    # Backward compatibility: allow a single positional arg
+    parser.add_argument('positional', nargs='?', default=None,
+                        help='Совместимость: <company_id|html_file|->')
+
+    args = parser.parse_args()
+
+    result = None
+    # Resolve input source
+    if args.stdin or args.positional == '-' or args.positional == '--stdin':
+        data = sys.stdin.read()
+        result = parse_yandex_reviews_from_html(data)
+    elif args.html or (args.positional and isinstance(args.positional, str) and args.positional.lower().endswith('.html')):
+        html_path = args.html if args.html else args.positional
+        result = parse_yandex_reviews_from_file(html_path)
+    elif args.company_id is not None or (args.positional and args.positional.isdigit()):
+        company_id = args.company_id if args.company_id is not None else int(args.positional)
         result = parse_yandex_reviews(company_id)
-        print(json.dumps(result, ensure_ascii=False), flush=True)
-    except ValueError:
-        print("ID компании должен быть числом")
+    else:
+        print("Использование: python yandex_parser.py [--stdin | --html <file> | --company-id <id>] [--output <json>]")
         sys.exit(1)
+
+    # Write output
+    if args.output:
+        try:
+            with open(args.output, 'w', encoding='utf-8') as f:
+                json.dump(result, f, ensure_ascii=False, indent=2)
+            print(json.dumps({
+                'success': True,
+                'message': f'Результат сохранён в {args.output}',
+                'total_reviews': result.get('total_reviews', len(result.get('reviews', [])))
+            }, ensure_ascii=False), flush=True)
+        except Exception as e:
+            print(json.dumps({'success': False, 'error': str(e)}, ensure_ascii=False), flush=True)
+            sys.exit(1)
+    else:
+        print(json.dumps(result, ensure_ascii=False), flush=True)
 
 if __name__ == "__main__":
     main() 
