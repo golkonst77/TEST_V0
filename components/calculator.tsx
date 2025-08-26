@@ -189,8 +189,22 @@ export function Calculator() {
   }
 
   return (
-    <section className="py-12 md:py-20 relative z-10">
-      <div className="container mx-auto px-4">
+    <section className="py-12 md:py-20 relative z-10 min-h-screen overflow-hidden"
+      style={{
+        backgroundImage: 'url("/euro-currency-euro-cash-closeup-euro-bancnotes-background.jpg")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Тёмный overlay для читаемости */}
+      <div 
+        className="absolute inset-0 z-0" 
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
+      />
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-8 md:mb-16">
           <div className="flex justify-center mb-4 md:mb-6">
             <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-3 md:p-4 shadow-2xl ring-2 md:ring-4 ring-blue-200">
@@ -229,7 +243,7 @@ export function Calculator() {
                       <SelectTrigger className="border-blue-200 hover:border-blue-300 shadow-md hover:shadow-lg transition-all duration-200 ring-2 ring-blue-100 focus:ring-blue-300 focus:ring-4 bg-transparent">
                         <SelectValue placeholder="Выберите тип компании" />
                       </SelectTrigger>
-                      <SelectContent className="shadow-2xl border-blue-200 rounded-lg bg-transparent">
+                      <SelectContent className="shadow-2xl border-blue-200 rounded-lg bg-white z-50">
                         <SelectItem value="ip" className="hover:bg-blue-50 focus:bg-blue-50">ИП</SelectItem>
                         <SelectItem value="ooo" className="hover:bg-blue-50 focus:bg-blue-50">ООО</SelectItem>
                         <SelectItem value="ao" className="hover:bg-blue-50 focus:bg-blue-50">АО</SelectItem>
@@ -246,7 +260,7 @@ export function Calculator() {
                       <SelectTrigger className="border-purple-200 hover:border-purple-300 shadow-md hover:shadow-lg transition-all duration-200 ring-2 ring-purple-100 focus:ring-purple-300 focus:ring-4 bg-transparent">
                         <SelectValue placeholder="Выберите налоговую систему" />
                       </SelectTrigger>
-                      <SelectContent className="shadow-2xl border-purple-200 rounded-lg bg-transparent">
+                      <SelectContent className="shadow-2xl border-purple-200 rounded-lg bg-white z-50">
                         <SelectItem value="usn" className="hover:bg-purple-50 focus:bg-purple-50">УСН</SelectItem>
                         <SelectItem value="osn" className="hover:bg-purple-50 focus:bg-purple-50">ОСН</SelectItem>
                         <SelectItem value="envd" className="hover:bg-purple-50 focus:bg-purple-50">ЕНВД</SelectItem>

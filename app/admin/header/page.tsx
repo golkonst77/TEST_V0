@@ -369,7 +369,7 @@ export default function HeaderEditor() {
                         <SelectTrigger className="h-8 text-sm mt-1">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white z-50">
                           <SelectItem value="text">Текстовый</SelectItem>
                           <SelectItem value="image">Изображение</SelectItem>
                         </SelectContent>
@@ -518,7 +518,7 @@ export default function HeaderEditor() {
                     <SelectTrigger className="h-8 text-sm mt-1">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white z-50">
                       <SelectItem value="white">Белый</SelectItem>
                       <SelectItem value="transparent">Прозрачный</SelectItem>
                       <SelectItem value="colored">Цветной</SelectItem>
@@ -531,7 +531,7 @@ export default function HeaderEditor() {
                     <SelectTrigger className="h-8 text-sm mt-1">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white z-50">
                       <SelectItem value="56">Компактная (56px)</SelectItem>
                       <SelectItem value="64">Обычная (64px)</SelectItem>
                       <SelectItem value="72">Большая (72px)</SelectItem>

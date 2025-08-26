@@ -79,7 +79,7 @@ export function ImportYandexReviewsJSON() {
           <SelectTrigger className="w-[260px]">
             <SelectValue placeholder="Выберите JSON-файл" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white z-50">
             {files.length === 0 ? (
               <SelectItem value="" disabled>Нет JSON файлов в public/</SelectItem>
             ) : (

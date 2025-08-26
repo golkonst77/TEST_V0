@@ -83,7 +83,7 @@ export function Contacts() {
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
             Свяжитесь с нами
           </h2>
-          <p className="text-lg md:text-xl text-gray-200 max-w-2xl leading-relaxed text-center">
+          <p className="text-lg md:text-xl text-gray-200 max-w-2xl leading-relaxed mx-auto">
             Готовы обсудить ваш вопрос? Мы всегда на связи и готовы помочь
           </p>
         </div>

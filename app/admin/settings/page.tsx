@@ -158,7 +158,7 @@ export default function AdminSettingsPage() {
                 <SelectTrigger className="h-8 text-sm mt-1">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white z-50">
                   <SelectItem value="custom">Собственный</SelectItem>
                   <SelectItem value="external">Внешний сервис</SelectItem>
                   <SelectItem value="disabled">Отключен</SelectItem>

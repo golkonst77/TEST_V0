@@ -216,7 +216,7 @@ export function ChecklistManager() {
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white z-50">
                 <SelectItem value="ip">Только для ИП</SelectItem>
                 <SelectItem value="ooo">Только для ООО</SelectItem>
                 <SelectItem value="both">Для всех</SelectItem>
@@ -273,7 +273,7 @@ export function ChecklistManager() {
                         <SelectTrigger className="w-[140px]">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white z-50">
                           <SelectItem value="ip">Только для ИП</SelectItem>
                           <SelectItem value="ooo">Только для ООО</SelectItem>
                           <SelectItem value="both">Для всех</SelectItem>

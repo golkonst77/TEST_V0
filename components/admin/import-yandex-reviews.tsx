@@ -58,7 +58,7 @@ export function ImportYandexReviews() {
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Выберите HTML-файл" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white z-50">
             {files.map(f => (
               <SelectItem key={f} value={f}>{f}</SelectItem>
             ))}

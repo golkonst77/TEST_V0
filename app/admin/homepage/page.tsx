@@ -372,7 +372,7 @@ export default function HomepageEditor() {
                               <SelectTrigger className="h-7 text-sm mt-1">
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="bg-white z-50">
                                 <SelectItem value="red">Красный</SelectItem>
                                 <SelectItem value="orange">Оранжевый</SelectItem>
                                 <SelectItem value="green">Зеленый</SelectItem>
@@ -487,7 +487,7 @@ export default function HomepageEditor() {
                     <SelectTrigger className="h-8 text-sm mt-1">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white z-50">
                       <SelectItem value="left">Слева</SelectItem>
                       <SelectItem value="center">По центру</SelectItem>
                       <SelectItem value="right">Справа</SelectItem>
