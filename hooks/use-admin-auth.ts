@@ -15,15 +15,15 @@ export function useAdminAuth() {
   const router = useRouter()
 
   const checkAuth = async () => {
-    const token = localStorage.getItem("admin_token")
-
-    if (!token) {
-      setIsAuthenticated(false)
-      setIsLoading(false)
-      return
-    }
-
     try {
+      const token = localStorage.getItem("admin_token")
+
+      if (!token) {
+        setIsAuthenticated(false)
+        setIsLoading(false)
+        return
+      }
+
       const response = await fetch("/api/admin/auth/verify", {
         method: "POST",
         headers: {
@@ -47,7 +47,7 @@ export function useAdminAuth() {
       }
     } catch (error) {
       console.error("Auth check error:", error)
-      localStorage.removeItem("admin_token")
+      // При ошибке сети не удаляем токен, просто считаем не авторизованным
       setIsAuthenticated(false)
     } finally {
       setIsLoading(false)
@@ -62,16 +62,26 @@ export function useAdminAuth() {
   }
 
   useEffect(() => {
-    checkAuth()
+    try {
+      checkAuth()
+    } catch (error) {
+      console.error("Error in checkAuth effect:", error)
+      setIsLoading(false)
+      setIsAuthenticated(false)
+    }
   }, [])
 
   // Перенаправление на страницу входа, если не авторизован
   useEffect(() => {
-    if (!isLoading && !isAuthenticated && typeof window !== "undefined") {
-      const currentPath = window.location.pathname
-      if (currentPath.startsWith("/admin") && currentPath !== "/admin/login") {
-        router.push("/admin/login")
+    try {
+      if (!isLoading && !isAuthenticated && typeof window !== "undefined") {
+        const currentPath = window.location.pathname
+        if (currentPath.startsWith("/admin") && currentPath !== "/admin/login") {
+          router.push("/admin/login")
+        }
       }
+    } catch (error) {
+      console.error("Error in redirect effect:", error)
     }
   }, [isAuthenticated, isLoading, router])
 

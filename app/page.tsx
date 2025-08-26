@@ -49,7 +49,7 @@ export default function HomePage() {
   return (
     <main id="home-page" className="min-h-screen">
       {isSectionVisible('hero') && <Hero />}
-      {isSectionVisible('about') && <Guarantees />}
+      {isSectionVisible('guarantees') && <Guarantees />}
       {isSectionVisible('services') && <Services showTitle />}
       {isSectionVisible('technologies') && <Technologies />}
       <AIDocuments />

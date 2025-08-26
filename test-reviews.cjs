@@ -1,9 +1,9 @@
-// Простой тест подключения к Supabase
+// Тест для проверки отзывов в Supabase
 require('dotenv').config({ path: '.env.local' })
 
 const { createClient } = require('@supabase/supabase-js')
 
-async function testConnection() {
+async function testReviews() {
   try {
     const supabaseUrl = process.env.SUPABASE_URL
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -18,16 +18,19 @@ async function testConnection() {
     
     const supabase = createClient(supabaseUrl, supabaseKey)
     
-    // Тестируем подключение
-    const { data, error } = await supabase
-      .from('settings')
+    // Проверяем таблицу reviews
+    const { data: reviews, error } = await supabase
+      .from('reviews')
       .select('*')
-      .limit(1)
+      .limit(5)
     
     if (error) {
-      console.error('Error:', error)
+      console.error('Error fetching reviews:', error)
     } else {
-      console.log('Success! Data:', data)
+      console.log(`Found ${reviews.length} reviews in database:`)
+      reviews.forEach((review, index) => {
+        console.log(`${index + 1}. ${review.name || review.author} (${review.rating}⭐): ${review.text?.substring(0, 50)}...`)
+      })
     }
     
   } catch (error) {
@@ -35,4 +38,4 @@ async function testConnection() {
   }
 }
 
-testConnection() 
+testReviews()

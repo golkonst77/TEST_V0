@@ -144,7 +144,7 @@ export function PricingSection() {
         {/* ИП Тарифы */}
         <div className="mb-10">
           <div className="text-center mb-4">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 px-4">Тарифы для ИП</h3>
+            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 px-4">Тарифы для ИП</h3>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 px-4">
@@ -204,7 +204,7 @@ export function PricingSection() {
         {/* ООО Тарифы */}
         <div>
           <div className="text-center mb-4">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 px-4">Тарифы для ООО</h3>
+            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 px-4">Тарифы для ООО</h3>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 px-4">

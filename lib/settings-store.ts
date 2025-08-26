@@ -1,5 +1,10 @@
 import { createClient } from "@supabase/supabase-js"
 
+// Явно загружаем переменные окружения из .env.local
+if (typeof window === 'undefined') {
+  require('dotenv').config({ path: '.env.local' })
+}
+
 // Общее хранилище настроек для всего приложения
 export interface SiteSettings {
   siteName: string
@@ -27,16 +32,21 @@ export interface SiteSettings {
 }
 
 // Проверяем наличие переменных окружения
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY
 
 console.log("Supabase URL:", supabaseUrl ? "Configured" : "Not configured")
 console.log("Supabase Key:", supabaseKey ? "Configured" : "Not configured")
 
 let supabase: any = null
 if (supabaseUrl && supabaseKey) {
-  supabase = createClient(supabaseUrl, supabaseKey)
-  console.log("Supabase client created successfully")
+  try {
+    supabase = createClient(supabaseUrl, supabaseKey)
+    console.log("Supabase client created successfully")
+  } catch (error) {
+    console.error("Error creating Supabase client:", error)
+    supabase = null
+  }
 } else {
   console.warn("Supabase environment variables not found - using local storage fallback")
 }
@@ -92,12 +102,24 @@ function mapDatabaseToSettings(dbData: any): SiteSettings {
 }
 
 export async function getSettings(): Promise<any> {
+  // Если Supabase не настроен, сразу возвращаем локальные настройки
   if (!supabase) {
     console.warn("Supabase not configured - returning local settings")
-    return localSettings
+    return {
+      ...localSettings,
+      header: {
+        logo: {
+          show: localSettings.logoShow !== undefined ? localSettings.logoShow : true,
+          type: localSettings.logoType || "text",
+          imageUrl: localSettings.logoImageUrl || "",
+          text: localSettings.logoText || localSettings.siteName || "ПростоБюро"
+        }
+      }
+    }
   }
 
   try {
+    console.log("Attempting to fetch settings from Supabase...")
     const { data, error } = await supabase
       .from("settings")
       .select("*")
@@ -110,13 +132,33 @@ export async function getSettings(): Promise<any> {
       // Если таблица не существует, возвращаем локальные настройки
       if (error.code === '42P01') {
         console.log("Settings table doesn't exist, returning local settings");
-        return localSettings;
+        return {
+          ...localSettings,
+          header: {
+            logo: {
+              show: localSettings.logoShow !== undefined ? localSettings.logoShow : true,
+              type: localSettings.logoType || "text",
+              imageUrl: localSettings.logoImageUrl || "",
+              text: localSettings.logoText || localSettings.siteName || "ПростоБюро"
+            }
+          }
+        };
       }
       
-      return localSettings;
+      return {
+        ...localSettings,
+        header: {
+          logo: {
+            show: localSettings.logoShow !== undefined ? localSettings.logoShow : true,
+            type: localSettings.logoType || "text",
+            imageUrl: localSettings.logoImageUrl || "",
+            text: localSettings.logoText || localSettings.siteName || "ПростоБюро"
+          }
+        }
+      };
     }
     
-    console.log("Settings fetched successfully:", data);
+    console.log("Settings fetched successfully from Supabase:", data);
     const settings = mapDatabaseToSettings(data);
     // Возвращаем с header.logo для совместимости с компонентом Logo
     return {
@@ -132,7 +174,26 @@ export async function getSettings(): Promise<any> {
     }
   } catch (error) {
     console.error("Exception while fetching settings:", error);
-    return localSettings;
+    // Добавляем детальную информацию об ошибке для отладки
+    if (error instanceof Error) {
+      console.error("Error details:", {
+        message: error.message,
+        name: error.name,
+        stack: error.stack
+      });
+    }
+    // Возвращаем локальные настройки с правильной структурой
+    return {
+      ...localSettings,
+      header: {
+        logo: {
+          show: localSettings.logoShow !== undefined ? localSettings.logoShow : true,
+          type: localSettings.logoType || "text",
+          imageUrl: localSettings.logoImageUrl || "",
+          text: localSettings.logoText || localSettings.siteName || "ПростоБюро"
+        }
+      }
+    };
   }
 }
 

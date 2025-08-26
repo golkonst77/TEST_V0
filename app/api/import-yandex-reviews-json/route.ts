@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     const name = r.author || r.name || 'Гость'
     const text = r.text || ''
     const rating = r.rating || 5
-    const source = r.source || 'yandex-json'
+    const source = 'yandex'
 
     if (!text || text.length < 3) {
       skipped++
