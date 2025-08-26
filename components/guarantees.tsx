@@ -125,7 +125,7 @@ export function Guarantees() {
 
         {/* AI Documents Section */}
         <div className="mb-16 -mx-4">
-          <AIDocuments onQuizOpen={() => setQuizOpen(true)} />
+          <AIDocuments />
         </div>
 
         {/* CTA */}
