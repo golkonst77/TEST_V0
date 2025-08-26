@@ -110,12 +110,14 @@ export function Reviews() {
   const fetchReviews = async () => {
     try {
       setLoading(true)
+      setError(null)
+      
       // Сначала пробуем локальный API
       let response = await fetch('/api/local-reviews?limit=9')
       if (response.ok) {
         const data = await response.json()
-        if (data.success) {
-          const fetched = Array.isArray(data.reviews) ? data.reviews : []
+        if (data.success && Array.isArray(data.reviews)) {
+          const fetched = data.reviews
           setReviews(fetched)
           // Пересчитать агрегаты локально
           if (fetched.length > 0) {
@@ -135,8 +137,8 @@ export function Reviews() {
       response = await fetch('/api/random-reviews?limit=9')
       if (response.ok) {
         const data = await response.json()
-        if (data.success) {
-          const fetched = Array.isArray(data.reviews) ? data.reviews : []
+        if (data.success && Array.isArray(data.reviews)) {
+          const fetched = data.reviews
           setReviews(fetched)
           // Пересчитать агрегаты локально
           if (fetched.length > 0) {
@@ -148,13 +150,24 @@ export function Reviews() {
             setTotalReviews(0)
           }
           setPage(0)
-        } else setError(data.error || 'Ошибка загрузки отзывов')
+        } else {
+          setError(data.error || 'Ошибка загрузки отзывов')
+          setReviews([])
+          setAverageRating(5.0)
+          setTotalReviews(0)
+        }
       } else {
         setError('Ошибка загрузки отзывов')
+        setReviews([])
+        setAverageRating(5.0)
+        setTotalReviews(0)
       }
     } catch (error) {
       console.error('Ошибка загрузки отзывов:', error)
       setError('Ошибка загрузки отзывов')
+      setReviews([])
+      setAverageRating(5.0)
+      setTotalReviews(0)
     } finally {
       setLoading(false)
     }
@@ -165,10 +178,18 @@ export function Reviews() {
       const response = await fetch('/api/video-reviews?random=true&limit=3')
       if (response.ok) {
         const data = await response.json()
-        setVideoReviews(data.videoReviews || [])
+        if (Array.isArray(data.reviews)) {
+          setVideoReviews(data.reviews)
+        } else {
+          setVideoReviews([])
+        }
+      } else {
+        console.error('Ошибка ответа API видеоотзывов:', response.status)
+        setVideoReviews([])
       }
     } catch (error) {
       console.error('Ошибка загрузки видеоотзывов:', error)
+      setVideoReviews([])
     }
   }
 
@@ -180,39 +201,55 @@ export function Reviews() {
   }, [])
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+    try {
+      const date = new Date(dateString)
+      if (isNaN(date.getTime())) {
+        return 'Дата не указана'
+      }
+      return date.toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    } catch (error) {
+      console.error('Ошибка форматирования даты:', error)
+      return 'Дата не указана'
+    }
   }
 
   const renderStars = (rating: number) => {
-    const stars = []
-    const fullStars = Math.floor(rating)
-    const hasHalfStar = rating % 1 !== 0
+    try {
+      const stars = []
+      const validRating = typeof rating === 'number' && !isNaN(rating) ? Math.max(0, Math.min(5, rating)) : 5
+      const fullStars = Math.floor(validRating)
+      const hasHalfStar = validRating % 1 !== 0
 
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <Star key={i} className="w-4 h-4 md:w-5 md:h-5 text-yellow-400 fill-current" />
-      )
+      for (let i = 0; i < fullStars; i++) {
+        stars.push(
+          <Star key={i} className="w-4 h-4 md:w-5 md:h-5 text-yellow-400 fill-current" />
+        )
+      }
+
+      if (hasHalfStar) {
+        stars.push(
+          <StarHalf key="half" className="w-4 h-4 md:w-5 md:h-5 text-yellow-400 fill-current" />
+        )
+      }
+
+      const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0)
+      for (let i = 0; i < emptyStars; i++) {
+        stars.push(
+          <Star key={`empty-${i}`} className="w-4 h-4 md:w-5 md:h-5 text-gray-300" />
+        )
+      }
+
+      return stars
+    } catch (error) {
+      console.error('Ошибка рендеринга звезд:', error)
+      return Array(5).fill(null).map((_, i) => (
+        <Star key={i} className="w-4 h-4 md:w-5 md:h-5 text-gray-300" />
+      ))
     }
-
-    if (hasHalfStar) {
-      stars.push(
-        <StarHalf key="half" className="w-4 h-4 md:w-5 md:h-5 text-yellow-400 fill-current" />
-      )
-    }
-
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0)
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(
-        <Star key={`empty-${i}`} className="w-4 h-4 md:w-5 md:h-5 text-gray-300" />
-      )
-    }
-
-    return stars
   }
 
   if (loading) {
@@ -254,30 +291,36 @@ export function Reviews() {
 
         {/* Карточки отзывов (3 на страницу, до 3 страниц) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
-          {pagedReviews.map((review) => (
-            <div key={review.id} className="bg-white rounded-lg shadow-lg p-6 md:p-8">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h4 className="font-semibold text-gray-900">{review.name}</h4>
-                  {review.company && (
-                    <p className="text-sm text-gray-600">{review.company}</p>
-                  )}
+          {pagedReviews && pagedReviews.length > 0 ? (
+            pagedReviews.map((review) => (
+              <div key={review.id || Math.random()} className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="font-semibold text-gray-900">{review.name || 'Анонимный клиент'}</h4>
+                    {review.company && (
+                      <p className="text-sm text-gray-600">{review.company}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center">
+                    {renderStars(review.rating || 5)}
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  {renderStars(review.rating)}
+                <p className="text-gray-700 mb-4 line-clamp-4">{review.text || 'Отзыв недоступен'}</p>
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <span>{review.created_at ? formatDate(review.created_at) : 'Дата не указана'}</span>
+                  <span className="capitalize">{review.source || 'yandex-maps'}</span>
                 </div>
               </div>
-              <p className="text-gray-700 mb-4 line-clamp-4">{review.text}</p>
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>{formatDate(review.created_at)}</span>
-                <span className="capitalize">{review.source}</span>
-              </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-8">
+              <p className="text-gray-600">Отзывы загружаются...</p>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Пагинация */}
-        {maxPages > 0 && (
+        {maxPages > 0 && reviews.length > 0 && (
           <div className="flex items-center justify-center gap-3 mb-12">
             <button
               className="px-4 py-2 rounded border bg-white disabled:opacity-50"
@@ -338,7 +381,7 @@ export function Reviews() {
                       <span className="text-sm md:text-lg font-semibold text-gray-900">Рейтинг:</span>
                       <div className="flex items-center">
                         <span className="text-lg md:text-2xl font-bold text-yellow-500">
-                          {companyInfo.rating?.toFixed(1) || '5.0'}
+                          {typeof companyInfo.rating === 'number' && !isNaN(companyInfo.rating) ? companyInfo.rating.toFixed(1) : '5.0'}
                         </span>
                         <div className="flex ml-2">
                           {[...Array(5)].map((_, i) => (
@@ -349,7 +392,7 @@ export function Reviews() {
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs md:text-sm text-gray-600">Более {totalReviews} отзывов от довольных клиентов</p>
+                    <p className="text-xs md:text-sm text-gray-600">Более {typeof totalReviews === 'number' && !isNaN(totalReviews) ? totalReviews : 0} отзывов от довольных клиентов</p>
                   </div>
                   
                   <div className="bg-white rounded-lg p-3 md:p-4 shadow-sm">
@@ -427,6 +470,8 @@ export function Reviews() {
                 position: "relative"
               }}
             >
+
+              
               {videoReviews.length > 0 ? (
                 /* Отображение видеоотзыва из базы данных */
                 <div className="w-full h-full relative">

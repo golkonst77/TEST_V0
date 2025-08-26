@@ -1,20 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Явно загружаем переменные окружения из .env.local
+require('dotenv').config({ path: '.env.local' })
+
 // Проверяем, подключен ли Supabase
-const hasSupabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 let supabase: any = null
 
-if (hasSupabase) {
+if (supabaseUrl && supabaseKey) {
   try {
     const { createClient } = require('@supabase/supabase-js')
-    supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    supabase = createClient(supabaseUrl, supabaseKey)
+    console.log('Supabase client created successfully for public video-reviews')
   } catch (error) {
     console.warn('Supabase не подключен:', error)
   }
+} else {
+  console.warn('Missing Supabase environment variables for public video-reviews')
 }
 
 // GET - получить опубликованные видеоотзывы
