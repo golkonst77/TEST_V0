@@ -124,11 +124,11 @@ function QuizSidebar({
           <div className="text-sm font-bold mb-1 text-gray-900">Бонусы в подарок:</div>
           <div className="flex gap-1 mt-1 justify-center items-center w-full">
             {bonuses.map((bonus, idx) => (
-              <div
-                key={bonus}
-                className="flex flex-col items-center bg-green-200 rounded-xl shadow min-w-[100px] max-w-[100px] min-h-[100px] max-h-[100px] justify-center p-1"
-                style={{ flex: '0 0 100px' }}
-              >
+                             <div
+                 key={bonus}
+                 className="flex flex-col items-center bg-green-200 rounded-xl shadow min-w-[120px] max-w-[120px] min-h-[100px] max-h-[100px] justify-center p-1"
+                 style={{ flex: '0 0 120px' }}
+               >
                 <span
                   className={`w-8 h-8 flex items-center justify-center rounded-full text-white text-xl mb-1 ${idx === 0 ? 'bg-orange-500' : 'bg-cyan-500'}`}
                 >
@@ -186,7 +186,7 @@ async function sendWhatsAppMessage(phone: string, message: string) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer QlZ00L1DXVAv17SfAoTtarbseCNIKaIo',
+        'Authorization': 'Bearer K9edm63ZcOVma3QQQZy4vQM7JQOSI1RF',
       },
       body: JSON.stringify({
         to: cleanPhone,
@@ -399,15 +399,23 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
         throw new Error(`Не удалось сохранить купон: ${error.message}`)
       }
 
-      // Отправляем WhatsApp-сообщение клиенту
-      try {
-        await sendWhatsAppMessage(phone, `Здравствуйте, спасибо за интерес к нашей компании. Вам купон на скидку ${fullCoupon}. Также Вам бесплатная консультация 30 минут и СКИДКА 50% на первый месяц обслуживания! Если есть вопросы — пишите прямо здесь, ответим оперативно.`)
-        whatsappSent = true
-        console.log('WhatsApp сообщение отправлено успешно')
-      } catch (error) {
-        console.error('Ошибка отправки WhatsApp сообщения:', error)
-        // Не прерываем выполнение, продолжаем с другими операциями
-      }
+             // Отправляем WhatsApp-сообщение клиенту
+       try {
+                   await sendWhatsAppMessage(phone, `Здравствуйте, спасибо за интерес к нашей компании. Вам купон на скидку ${fullCoupon}. Также Вам бесплатная консультация 30 минут и СКИДКА 50% на первый месяц обслуживания! Если есть вопросы — пишите прямо здесь, ответим оперативно.`)
+         whatsappSent = true
+         console.log('WhatsApp сообщение отправлено успешно')
+       } catch (error) {
+         console.error('Ошибка отправки WhatsApp сообщения:', error)
+         // Создаем ссылку для ручной отправки
+         const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
+                   const message = `Здравствуйте, спасибо за интерес к нашей компании. Вам купон на скидку ${fullCoupon}. Также Вам бесплатная консультация 30 минут и СКИДКА 50% на первый месяц обслуживания! Если есть вопросы — пишите прямо здесь, ответим оперативно.`;
+         const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+         
+         // Открываем WhatsApp в новой вкладке
+         window.open(whatsappUrl, '_blank');
+         whatsappSent = true;
+         console.log('Открыта ссылка WhatsApp для ручной отправки:', whatsappUrl);
+       }
       
       // Отправляем PDF-файл с чек-листом
       if (wantChecklist) {
@@ -443,25 +451,25 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
       setWantChecklist(true)
       closeContactForm()
       
-      // Показываем соответствующее сообщение в зависимости от успешности операций
-      if (couponSaved && whatsappSent) {
-        toast({
-          title: "Успешно!",
-          description: "Ваш купон сохранен и предложение отправлено в WhatsApp.",
-        })
-      } else if (couponSaved) {
-        toast({
-          title: "Купон сохранен!",
-          description: "Купон сохранен, но возникли проблемы с отправкой в WhatsApp. Мы свяжемся с вами по телефону.",
-          variant: "default",
-        })
-      } else {
-        toast({
-          title: "Ошибка",
-          description: "Не удалось сохранить купон. Попробуйте еще раз или свяжитесь с нами по телефону.",
-          variant: "destructive",
-        })
-      }
+             // Показываем соответствующее сообщение в зависимости от успешности операций
+       if (couponSaved && whatsappSent) {
+         toast({
+           title: "Успешно!",
+           description: "Ваш купон сохранен! WhatsApp открыт в новой вкладке для отправки предложения.",
+         })
+       } else if (couponSaved) {
+         toast({
+           title: "Купон сохранен!",
+           description: "Купон сохранен, но возникли проблемы с WhatsApp. Мы свяжемся с вами по телефону.",
+           variant: "default",
+         })
+       } else {
+         toast({
+           title: "Ошибка",
+           description: "Не удалось сохранить купон. Попробуйте еще раз или свяжитесь с нами по телефону.",
+           variant: "destructive",
+         })
+       }
     } catch (error) {
       console.error('Критическая ошибка при отправке:', error)
       toast({

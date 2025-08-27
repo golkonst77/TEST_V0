@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 async function testWhatsAppAPI() {
   console.log('🧪 Тестируем WhatsApp API...\n');
@@ -6,12 +6,12 @@ async function testWhatsAppAPI() {
   // Тест 1: Проверка текстового сообщения
   console.log('1️⃣ Тестируем отправку текстового сообщения...');
   try {
-    const response = await fetch('https://gate.whapi.cloud/messages/text', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer QlZ00L1DXVAv17SfAoTtarbseCNIKaIo',
-      },
+         const response = await fetch('https://gate.whapi.cloud/messages/text', {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json',
+         'Authorization': 'Bearer K9edm63ZcOVma3QQQZy4vQM7JQOSI1RF',
+       },
       body: JSON.stringify({
         to: '79106000612', // Тестовый номер
         body: 'Тестовое сообщение от API',
@@ -34,11 +34,11 @@ async function testWhatsAppAPI() {
   // Тест 2: Проверка статуса API
   console.log('2️⃣ Проверяем статус API...');
   try {
-    const response = await fetch('https://gate.whapi.cloud/status', {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer QlZ00L1DXVAv17SfAoTtarbseCNIKaIo',
-      },
+         const response = await fetch('https://gate.whapi.cloud/status', {
+       method: 'GET',
+       headers: {
+         'Authorization': 'Bearer K9edm63ZcOVma3QQQZy4vQM7JQOSI1RF',
+       },
     });
     
     const result = await response.text();
@@ -57,11 +57,11 @@ async function testWhatsAppAPI() {
   // Тест 3: Проверка баланса
   console.log('3️⃣ Проверяем баланс...');
   try {
-    const response = await fetch('https://gate.whapi.cloud/balance', {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer QlZ00L1DXVAv17SfAoTtarbseCNIKaIo',
-      },
+         const response = await fetch('https://gate.whapi.cloud/balance', {
+       method: 'GET',
+       headers: {
+         'Authorization': 'Bearer K9edm63ZcOVma3QQQZy4vQM7JQOSI1RF',
+       },
     });
     
     const result = await response.text();

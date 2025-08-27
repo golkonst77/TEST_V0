@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const whapiResponse = await fetch('https://gate.whapi.cloud/messages/document', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer QlZ00L1DXVAv17SfAoTtarbseCNIKaIo',
+        'Authorization': 'Bearer K9edm63ZcOVma3QQQZy4vQM7JQOSI1RF',
         'Content-Type': 'application/json'
       },
       body: requestBody

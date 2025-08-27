@@ -84,3 +84,48 @@
 [2025-07-07T11:59:07.460Z] [WHAPI] Ответ от сервера: {"sent":true,"message":{"id":"PsoAiqQRSzq1g_c-wIsSaxXOLQ","from_me":true,"type":"document","chat_id":"79106002477@s.whatsapp.net","timestamp":1751889547,"source":"api","device_id":22,"status":"pending","document":{"id":"pdf-3eca008aa4114b3ab583f7-c08b126b15ce2d","mime_type":"application/pdf","file_size":1473537,"sha256":"+vVtcrfIuaHEShG0bJThLZRILYK4vSGosYUJXb1wnos=","file_name":"file","caption":"Ваш подарок: Чек-лист с полезной информацией для вашего бизнеса","filename":"file"},"from":"79533301777"}}
 [2025-07-07T11:59:07.500Z] [WHAPI] Статус: 200
 [2025-07-07T11:59:07.503Z] [WHAPI] Успешно отправлено: {"sent":true,"message":{"id":"PsoAiqQRSzq1g_c-wIsSaxXOLQ","from_me":true,"type":"document","chat_id":"79106002477@s.whatsapp.net","timestamp":1751889547,"source":"api","device_id":22,"status":"pending","document":{"id":"pdf-3eca008aa4114b3ab583f7-c08b126b15ce2d","mime_type":"application/pdf","file_size":1473537,"sha256":"+vVtcrfIuaHEShG0bJThLZRILYK4vSGosYUJXb1wnos=","file_name":"file","caption":"Ваш подарок: Чек-лист с полезной информацией для вашего бизнеса","filename":"file"},"from":"79533301777"}}
+[2025-08-27T08:44:19.654Z] [WHAPI] Начинаем отправку для номера: 79106000612
+[2025-08-27T08:44:19.661Z] [WHAPI] URL файла: https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf
+[2025-08-27T08:44:20.220Z] [WHAPI] Файл доступен, статус: 200
+[2025-08-27T08:44:20.222Z] [WHAPI] Отправляем запрос в WHAPI для номера: 79106000612
+[2025-08-27T08:44:20.223Z] [WHAPI] Payload: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T08:44:20.225Z] [WHAPI] Request body: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T08:44:35.702Z] [WHAPI] Ответ от сервера: {"error":"Channel not found","requestId":"77bbae1f-f995-464f-9bae-f4e0d296339b"}
+[2025-08-27T08:44:35.703Z] [WHAPI] Статус: 404
+[2025-08-27T08:44:35.704Z] [WHAPI] Ошибка отправки: 404 {"error":"Channel not found","requestId":"77bbae1f-f995-464f-9bae-f4e0d296339b"}
+[2025-08-27T10:21:06.235Z] [WHAPI] Начинаем отправку для номера: 79106000612
+[2025-08-27T10:21:06.237Z] [WHAPI] URL файла: https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf
+[2025-08-27T10:21:06.845Z] [WHAPI] Файл доступен, статус: 200
+[2025-08-27T10:21:06.847Z] [WHAPI] Отправляем запрос в WHAPI для номера: 79106000612
+[2025-08-27T10:21:06.848Z] [WHAPI] Payload: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T10:21:06.849Z] [WHAPI] Request body: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T10:21:22.295Z] [WHAPI] Ответ от сервера: {"error":"Channel not found","requestId":"fdf162e3-4497-435f-86ee-7ec766f0e443"}
+[2025-08-27T10:21:22.295Z] [WHAPI] Статус: 404
+[2025-08-27T10:21:22.296Z] [WHAPI] Ошибка отправки: 404 {"error":"Channel not found","requestId":"fdf162e3-4497-435f-86ee-7ec766f0e443"}
+[2025-08-27T10:27:16.945Z] [WHAPI] Начинаем отправку для номера: 79106000612
+[2025-08-27T10:27:16.945Z] [WHAPI] URL файла: https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf
+[2025-08-27T10:27:17.395Z] [WHAPI] Файл доступен, статус: 200
+[2025-08-27T10:27:17.396Z] [WHAPI] Отправляем запрос в WHAPI для номера: 79106000612
+[2025-08-27T10:27:17.396Z] [WHAPI] Payload: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T10:27:17.397Z] [WHAPI] Request body: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T10:27:33.372Z] [WHAPI] Ответ от сервера: {"error":"Channel not found","requestId":"9cce4dda-67d9-4a55-810d-abb26ccd1cac"}
+[2025-08-27T10:27:33.372Z] [WHAPI] Статус: 404
+[2025-08-27T10:27:33.373Z] [WHAPI] Ошибка отправки: 404 {"error":"Channel not found","requestId":"9cce4dda-67d9-4a55-810d-abb26ccd1cac"}
+[2025-08-27T10:32:31.958Z] [WHAPI] Начинаем отправку для номера: 79106000612
+[2025-08-27T10:32:31.959Z] [WHAPI] URL файла: https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf
+[2025-08-27T10:32:32.420Z] [WHAPI] Файл доступен, статус: 200
+[2025-08-27T10:32:32.421Z] [WHAPI] Отправляем запрос в WHAPI для номера: 79106000612
+[2025-08-27T10:32:32.424Z] [WHAPI] Payload: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T10:32:32.427Z] [WHAPI] Request body: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T10:32:47.730Z] [WHAPI] Ответ от сервера: {"error":"Channel not found","requestId":"b6fc9cee-e84a-44f8-9e59-18f7aa2bc13a"}
+[2025-08-27T10:32:47.731Z] [WHAPI] Статус: 404
+[2025-08-27T10:32:47.732Z] [WHAPI] Ошибка отправки: 404 {"error":"Channel not found","requestId":"b6fc9cee-e84a-44f8-9e59-18f7aa2bc13a"}
+[2025-08-27T10:42:16.029Z] [WHAPI] Начинаем отправку для номера: 79106000612
+[2025-08-27T10:42:16.030Z] [WHAPI] URL файла: https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf
+[2025-08-27T10:42:16.502Z] [WHAPI] Файл доступен, статус: 200
+[2025-08-27T10:42:16.503Z] [WHAPI] Отправляем запрос в WHAPI для номера: 79106000612
+[2025-08-27T10:42:16.504Z] [WHAPI] Payload: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T10:42:16.504Z] [WHAPI] Request body: {"to":"79106000612","media":"https://qbjcdftphxredexkwsui.supabase.co/storage/v1/object/public/checklists/1751882441466_Kak-izbezhat-blokirovki-scheta.pdf","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!"}
+[2025-08-27T10:42:18.914Z] [WHAPI] Ответ от сервера: {"sent":true,"message":{"id":"PsotNeAZwvhQZcU-wHYSaxXG5A","from_me":true,"type":"document","chat_id":"79106000612@s.whatsapp.net","timestamp":1756291338,"source":"api","device_id":26,"status":"pending","document":{"id":"pdf-3eca2d35e019c2f85065c5-c076126b15c6e4","mime_type":"application/pdf","file_size":1473537,"sha256":"+vVtcrfIuaHEShG0bJThLZRILYK4vSGosYUJXb1wnos=","file_name":"file","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!","filename":"file"},"from":"79533301777"}}
+[2025-08-27T10:42:18.941Z] [WHAPI] Статус: 200
+[2025-08-27T10:42:18.977Z] [WHAPI] Успешно отправлено: {"sent":true,"message":{"id":"PsotNeAZwvhQZcU-wHYSaxXG5A","from_me":true,"type":"document","chat_id":"79106000612@s.whatsapp.net","timestamp":1756291338,"source":"api","device_id":26,"status":"pending","document":{"id":"pdf-3eca2d35e019c2f85065c5-c076126b15c6e4","mime_type":"application/pdf","file_size":1473537,"sha256":"+vVtcrfIuaHEShG0bJThLZRILYK4vSGosYUJXb1wnos=","file_name":"file","caption":"Ваш чек-лист. Спасибо за интерес к ПростоБюро!","filename":"file"},"from":"79533301777"}}
