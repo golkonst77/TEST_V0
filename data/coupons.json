@@ -263,5 +263,13 @@
     "discount": 10000,
     "createdAt": "2025-08-27T10:42:13.191Z",
     "used": false
+  },
+  {
+    "id": 34,
+    "code": "PROSTOBURO-PMCWBQ-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-08-27T10:55:20.129Z",
+    "used": false
   }
 ]

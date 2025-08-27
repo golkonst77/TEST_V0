@@ -35,9 +35,11 @@ Content-Type: application/json
 - Авторизация API
 - Подключение к WhatsApp Business
 
-### ❌ Проблемы
+### ✅ Работает
+- Отправка текстовых сообщений
 - Отправка файлов (PDF документов)
-- Endpoint `/api/send-whatsapp-document` возвращает ошибки
+- Авторизация API
+- Подключение к WhatsApp Business
 
 ## Использование в проекте
 

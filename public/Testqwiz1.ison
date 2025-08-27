@@ -1,0 +1,101 @@
+{
+  "name": "Bright Engaging Quiz Design",
+  "description": "Яркий и вовлекающий дизайн с геймификацией и анимациями для квиза бухгалтерских услуг",
+  "colors": {
+    "backgroundGradient": ["#FF7E5F", "#FD3A69", "#7B2FF7"],
+    "primaryCardBackground": "#FFFFFF",
+    "primaryText": "#222222",
+    "buttonBackgroundGradient": ["#FF7E5F", "#FD3A69"],
+    "buttonTextColor": "#FFFFFF",
+    "optionBorder": "#DDD",
+    "optionHoverBackground": "#FFE8E8"
+  },
+  "fonts": {
+    "primary": "'Poppins', sans-serif",
+    "questionFontSize": "26px",
+    "optionFontSize": "18px",
+    "buttonFontSize": "20px",
+    "textFontWeight": "600"
+  },
+  "layout": {
+    "maxWidth": "700px",
+    "padding": "25px",
+    "borderRadius": "20px",
+    "shadow": "0 8px 20px rgba(0, 0, 0, 0.1)"
+  },
+  "elements": {
+    "progressBar": {
+      "height": "14px",
+      "background": "rgba(255, 255, 255, 0.4)",
+      "fillGradient": ["#FF7E5F", "#FD3A69"],
+      "borderRadius": "12px",
+      "animationDuration": "0.6s",
+      "icon": "running_character"
+    },
+    "optionCard": {
+      "background": "#FFFFFF",
+      "borderWidth": "1.5px",
+      "borderColor": "#DDD",
+      "borderRadius": "15px",
+      "padding": "18px",
+      "hover": {
+        "background": "#FFE8E8",
+        "borderColor": "#FD3A69",
+        "transform": "scale(1.03)",
+        "shadow": "0 6px 15px rgba(253, 58, 105, 0.3)"
+      },
+      "selected": {
+        "background": "#FFD7E0",
+        "borderColor": "#FD3A69",
+        "shadow": "0 0 20px rgba(253, 58, 105, 0.4)"
+      }
+    },
+    "button": {
+      "backgroundGradient": ["#FF7E5F", "#FD3A69"],
+      "color": "#FFFFFF",
+      "borderRadius": "30px",
+      "padding": "16px 45px",
+      "fontWeight": "700",
+      "fontSize": "20px",
+      "shadow": "0 7px 25px rgba(253, 58, 105, 0.4)",
+      "hover": {
+        "transform": "translateY(-3px)",
+        "shadow": "0 10px 30px rgba(253, 58, 105, 0.6)"
+      }
+    },
+    "confetti": {
+      "enabled": true,
+      "colors": ["#FF7E5F", "#FD3A69", "#7B2FF7", "#FFD500"],
+      "animationDuration": "800ms"
+    },
+    "progressCharacter": {
+      "type": "running_figure",
+      "animation": "run",
+      "positioning": "onProgressBar",
+      "colors": ["#FD3A69", "#7B2FF7"]
+    }
+  },
+  "gamificationLevels": [
+    {
+      "name": "Новичок",
+      "discount": 2000,
+      "emoji": "🎯"
+    },
+    {
+      "name": "Знаток",
+      "discount": 3000,
+      "emoji": "🏆"
+    },
+    {
+      "name": "Эксперт",
+      "discount": 5000,
+      "emoji": "🔥"
+    },
+    {
+      "name": "Мастер",
+      "discount": 10000,
+      "emoji": "👑",
+      "bonuses": ["Бесплатная консультация", "50% скидка на обслуживание 1 месяц"]
+    }
+  ]
+}

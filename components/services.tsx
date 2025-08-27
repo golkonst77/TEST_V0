@@ -70,7 +70,7 @@ export function Services({ showTitle = false }: { showTitle?: boolean }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const { openContactForm } = useContactForm()
   return (
-    <section className="pt-8 pb-16 bg-white">
+    <section className="pt-8 pb-16 bg-white" id="services">
       <div className="max-w-7xl mx-auto w-full px-2 md:px-4 xl:px-8">
         {showTitle && (
           <h2 className="text-4xl md:text-5xl font-extrabold mb-8 text-center">Наши услуги</h2>

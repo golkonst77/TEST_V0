@@ -62,13 +62,13 @@ export function FAQ() {
   }
 
   return (
-    <section className="py-16 bg-gradient-to-br from-slate-50 to-blue-50">
+    <section className="py-16 bg-gradient-to-br from-slate-50 to-blue-50" id="faq">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8 md:mb-12">
           <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-blue-100 rounded-full mb-4 md:mb-6">
             <Car className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
           </div>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-4 bg-blue-600 px-4 py-2 rounded-lg inline-block">
             Приборная Панель: Ответы на главные вопросы
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">

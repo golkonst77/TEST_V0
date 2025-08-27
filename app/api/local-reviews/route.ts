@@ -45,6 +45,10 @@ function loadLocalReviews() {
       // Если нет, загружаем старый файл
       jsonPath = path.join(process.cwd(), 'public', 'yandex-180493814174.json')
     }
+    if (!fs.existsSync(jsonPath)) {
+      // Если нет, загружаем локальный файл
+      jsonPath = path.join(process.cwd(), 'data', 'local-reviews.json')
+    }
     
     if (fs.existsSync(jsonPath)) {
       const content = fs.readFileSync(jsonPath, 'utf-8')

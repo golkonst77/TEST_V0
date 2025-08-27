@@ -19,7 +19,8 @@ export default function HomePage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return
-    if (!window.location.hash || loading) return
+    if (!window.location.hash) return
+    if (loading) return // Ждем загрузки конфигурации
     let attempts = 0
     function tryScroll() {
       const el = document.getElementById(window.location.hash.substring(1))
@@ -31,16 +32,14 @@ export default function HomePage() {
       }
     }
     tryScroll()
-  }, [loading, typeof window !== "undefined" ? window.location.hash : null])
+  }, [typeof window !== "undefined" ? window.location.hash : null, loading])
 
   if (loading) {
     return (
-      <main id="home-page" className="min-h-screen">
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Загрузка конфигурации секций...</p>
-          </div>
+      <main id="home-page" className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Загрузка...</p>
         </div>
       </main>
     )
@@ -52,7 +51,7 @@ export default function HomePage() {
       {isSectionVisible('guarantees') && <Guarantees />}
       {isSectionVisible('services') && <Services showTitle />}
       {isSectionVisible('technologies') && <Technologies />}
-      <AIDocuments />
+      {isSectionVisible('ai-documents') && <AIDocuments />}
       {isSectionVisible('pricing') && <PricingSection />}
       {isSectionVisible('faq') && <FAQ />}
       {isSectionVisible('calculator') && <Calculator />}

@@ -108,7 +108,7 @@ export function PricingSection() {
   const { handleCruiseClick } = useCruiseClick()
 
   return (
-    <section className="py-8 bg-white">
+    <section className="py-8 bg-white" id="pricing">
       <style jsx global>{`
         @keyframes priceGlow {
           0%, 100% {

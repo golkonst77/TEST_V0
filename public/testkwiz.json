@@ -1,0 +1,96 @@
+{
+  "name": "Dark Premium Quiz Design",
+  "description": "Премиальная тёмная тема с золотыми акцентами для продающего бухгалтерского квиза",
+  "colors": {
+    "backgroundGradient": ["#0c0c0c", "#1a1a2e", "#16213e"],
+    "primaryAccent": "#FFD700",
+    "secondaryAccent": "#FFA500",
+    "textPrimary": "#FFFFFF",
+    "textAccent": "#FFD700",
+    "optionBackground": "rgba(255, 255, 255, 0.05)",
+    "optionBackgroundHover": "rgba(255, 215, 0, 0.1)",
+    "optionBorder": "rgba(255, 255, 255, 0.1)",
+    "optionBorderHover": "#FFD700"
+  },
+  "fonts": {
+    "primary": "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    "questionFontSize": "28px",
+    "optionFontSize": "20px",
+    "buttonFontSize": "18px"
+  },
+  "layout": {
+    "maxWidth": "800px",
+    "padding": "20px",
+    "borderRadius": "15px"
+  },
+  "elements": {
+    "progressBar": {
+      "height": "12px",
+      "background": "rgba(255, 255, 255, 0.1)",
+      "fillGradient": ["#FFD700", "#FFA500"],
+      "borderRadius": "10px",
+      "shadow": "0 0 20px rgba(255, 215, 0, 0.5)",
+      "animationDuration": "0.8s"
+    },
+    "discountCounter": {
+      "shape": "circle",
+      "size": "80px",
+      "position": {
+        "top": "20px",
+        "right": "20px"
+      },
+      "backgroundGradient": ["#FFD700", "#FFA500"],
+      "textColor": "#000000",
+      "shadow": "0 0 30px rgba(255, 215, 0, 0.6)",
+      "pulseAnimation": true,
+      "pulseDuration": "2s"
+    },
+    "optionCard": {
+      "background": "rgba(255, 255, 255, 0.05)",
+      "borderWidth": "2px",
+      "borderColor": "rgba(255, 255, 255, 0.1)",
+      "borderRadius": "15px",
+      "padding": "20px",
+      "hover": {
+        "background": "rgba(255, 215, 0, 0.1)",
+        "borderColor": "#FFD700",
+        "shadow": "0 10px 30px rgba(255, 215, 0, 0.2)",
+        "transform": "translateY(-2px)"
+      },
+      "selected": {
+        "background": "rgba(255, 215, 0, 0.15)",
+        "borderColor": "#FFD700",
+        "shadow": "0 0 25px rgba(255, 215, 0, 0.3)"
+      },
+      "animation": {
+        "shineEffect": true,
+        "shineDuration": "0.6s"
+      }
+    },
+    "button": {
+      "backgroundGradient": ["#FFD700", "#FFA500"],
+      "color": "#000000",
+      "borderRadius": "25px",
+      "padding": "15px 40px",
+      "fontWeight": "bold",
+      "fontSize": "18px",
+      "shadow": "0 5px 20px rgba(255, 215, 0, 0.3)",
+      "hover": {
+        "transform": "translateY(-2px)",
+        "shadow": "0 8px 25px rgba(255, 215, 0, 0.4)"
+      }
+    },
+    "input": {
+      "background": "rgba(255, 255, 255, 0.1)",
+      "border": "2px solid rgba(255, 255, 255, 0.2)",
+      "borderRadius": "10px",
+      "padding": "15px",
+      "color": "#FFFFFF",
+      "fontSize": "16px",
+      "focus": {
+        "borderColor": "#FFD700",
+        "shadow": "0 0 15px rgba(255, 215, 0, 0.3)"
+      }
+    }
+  }
+}

@@ -6,10 +6,6 @@
  */
 
 import { useRef, useEffect, ReactNode } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
 
 interface AnimatedContentProps {
   children: ReactNode
@@ -43,6 +39,23 @@ function AnimatedContent({
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    // Динамическая загрузка GSAP только на клиенте
+    let gsap: any = null
+    let ScrollTrigger: any = null
+    
+    try {
+      gsap = require('gsap')
+      ScrollTrigger = require('gsap/ScrollTrigger')
+      gsap.registerPlugin(ScrollTrigger)
+    } catch (error) {
+      console.warn('GSAP не загружен:', error)
+      return
+    }
+    
+    if (!gsap || !ScrollTrigger) return
+    
     const el = ref.current
     if (!el) return
 
@@ -73,8 +86,12 @@ function AnimatedContent({
     })
 
     return () => {
-      ScrollTrigger.getAll().forEach((t: any) => t.kill())
-      gsap.killTweensOf(el)
+      if (ScrollTrigger && ScrollTrigger.getAll) {
+        ScrollTrigger.getAll().forEach((t: any) => t.kill())
+      }
+      if (gsap && gsap.killTweensOf) {
+        gsap.killTweensOf(el)
+      }
     }
   }, [
     distance,

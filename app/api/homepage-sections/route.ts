@@ -24,7 +24,8 @@ export async function GET() {
       faq: 'published',
       news: 'published',
       contacts: 'published',
-      technologies: 'published'
+      technologies: 'published',
+      'ai-documents': 'published'
     }
     
     return NextResponse.json(defaultConfig)

@@ -109,7 +109,7 @@ function QuizSidebar({
   isSubmitting: boolean
 }) {
   return (
-    <div className="w-80 bg-gray-50 px-6 py-6 border-l border-gray-100 flex flex-col justify-between items-center">
+         <div className="w-80 bg-amber-100 px-6 py-6 border-l border-amber-200 flex flex-col justify-between items-center">
       <style dangerouslySetInnerHTML={{ __html: discountCardAnimation }} />
       <div className="w-full flex flex-col items-center">
         <div className={`rounded-2xl flex flex-col items-center mb-3 min-h-[80px] max-h-[100px] p-2 w-full ${calculateDiscount() > 0 ? 'discount-card-animate' : 'bg-white shadow-md'}`}>
@@ -521,8 +521,16 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
   return (
     <>
       <Dialog open={!!(open !== undefined ? open : isOpen)} onOpenChange={onOpenChange || closeContactForm}>
-        <DialogContent className="max-w-4xl h-[90vh] max-h-[800px] p-0 overflow-hidden bg-white border-0 shadow-2xl">
-          <div className="h-full flex flex-col">
+                 <DialogContent className="max-w-4xl h-[90vh] max-h-[800px] p-0 overflow-hidden border-0 shadow-2xl" style={{
+           backgroundImage: 'url("/quiz-background.jpg")',
+           backgroundSize: 'cover',
+           backgroundPosition: 'center',
+           backgroundRepeat: 'no-repeat'
+         }}>
+                     <div className="h-full flex flex-col relative">
+             {/* Полупрозрачный overlay для читаемости */}
+             <div className="absolute inset-0 bg-white/90 backdrop-blur-sm"></div>
+             <div className="relative z-10 h-full flex flex-col">
             {/* Header */}
             <div className="bg-white px-12 py-8 text-center border-b border-gray-100">
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -533,7 +541,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
 
             <div className="flex flex-1 overflow-hidden">
               {/* Left side - Questions */}
-              <div className="flex-1 px-12 py-8 flex flex-col bg-white">
+                             <div className="flex-1 px-12 py-8 flex flex-col bg-amber-50">
                 {/* Progress */}
                 <div className="mb-12">
                   <div className="flex justify-between items-center mb-4">
@@ -573,12 +581,12 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                                   onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
                                   className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5"
                                 />
-                                <Label
-                                  htmlFor={option.value}
-                                  className="text-xs cursor-pointer text-gray-700 flex-1 font-normal"
-                                >
-                                  {option.label}
-                                </Label>
+                                                                 <Label
+                                   htmlFor={option.value}
+                                   className="text-base cursor-pointer text-gray-700 flex-1 font-normal"
+                                 >
+                                   {option.label}
+                                 </Label>
                               </div>
                             </div>
                           ))}
@@ -597,12 +605,12 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                                   onCheckedChange={(checked) => handleOptionCheckedChange(currentQuestion.id, option.value, checked)}
                                   className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5 rounded"
                                 />
-                                <Label
-                                  htmlFor={option.value}
-                                  className="text-sm cursor-pointer text-gray-700 flex-1 font-normal"
-                                >
-                                  {option.label}
-                                </Label>
+                                                                 <Label
+                                   htmlFor={option.value}
+                                   className="text-base cursor-pointer text-gray-700 flex-1 font-normal"
+                                 >
+                                   {option.label}
+                                 </Label>
                               </div>
                             </div>
                           ))}
@@ -688,6 +696,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
               />
             </div>
           </div>
+        </div>
         </DialogContent>
       </Dialog>
       {/* Модалка благодарности */}

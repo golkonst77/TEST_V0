@@ -189,7 +189,7 @@ export function Calculator() {
   }
 
   return (
-    <section className="py-12 md:py-20 relative z-10 min-h-screen overflow-hidden"
+    <section className="py-12 md:py-20 relative z-10 min-h-screen overflow-hidden" id="calculator"
       style={{
         backgroundImage: 'url("/euro-currency-euro-cash-closeup-euro-bancnotes-background.jpg")',
         backgroundSize: 'cover',
