@@ -211,12 +211,12 @@ export function Calculator() {
               <CalculatorIcon className="h-8 w-8 md:h-12 md:w-12 text-white" />
             </div>
           </div>
-          <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            Калькулятор стоимости услуг
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed text-center">
-            Рассчитайте стоимость бухгалтерских услуг для вашего бизнеса
-          </p>
+                     <h2 className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg mb-4">
+             Калькулятор стоимости услуг
+           </h2>
+           <p className="text-lg md:text-xl text-white drop-shadow-md max-w-3xl mx-auto leading-relaxed text-center">
+             Рассчитайте стоимость бухгалтерских услуг для вашего бизнеса
+           </p>
         </div>
 
         <div className="max-w-4xl mx-auto px-4">
@@ -228,14 +228,14 @@ export function Calculator() {
               <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-white/30 rounded-full blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
             </div>
             <div className="relative z-10">
-              <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
-                <CardTitle className="text-xl md:text-2xl font-bold">Параметры вашего бизнеса</CardTitle>
-                <CardDescription className="text-blue-100 text-sm md:text-base">Заполните информацию о вашей компании для расчета стоимости</CardDescription>
-              </CardHeader>
+                             <CardHeader className="bg-white text-gray-900 rounded-t-lg border-b-2 border-gray-200">
+                 <CardTitle className="text-xl md:text-2xl font-bold text-gray-900">Параметры вашего бизнеса</CardTitle>
+                 <CardDescription className="text-gray-600 text-sm md:text-base">Заполните информацию о вашей компании для расчета стоимости</CardDescription>
+               </CardHeader>
               <CardContent className="space-y-6 p-4 md:p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="companyType" className="text-sm font-semibold text-gray-700">Тип компании</Label>
+                    <Label htmlFor="companyType" className="text-sm font-semibold text-gray-900">Тип компании</Label>
                     <Select
                       value={state.companyType}
                       onValueChange={(value) => setState((prev) => ({ ...prev, companyType: value }))}
@@ -252,7 +252,7 @@ export function Calculator() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="taxSystem" className="text-sm font-semibold text-gray-700">Система налогообложения</Label>
+                    <Label htmlFor="taxSystem" className="text-sm font-semibold text-gray-900">Система налогообложения</Label>
                     <Select
                       value={state.taxSystem}
                       onValueChange={(value) => setState((prev) => ({ ...prev, taxSystem: value }))}
@@ -270,7 +270,7 @@ export function Calculator() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="employees" className="text-sm font-semibold text-gray-700">Количество сотрудников</Label>
+                    <Label htmlFor="employees" className="text-sm font-semibold text-gray-900">Количество сотрудников</Label>
                     <Input
                       id="employees"
                       type="number"
@@ -282,7 +282,7 @@ export function Calculator() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="documents" className="text-sm font-semibold text-gray-700">Количество документов в месяц</Label>
+                    <Label htmlFor="documents" className="text-sm font-semibold text-gray-900">Количество документов в месяц</Label>
                     <Input
                       id="documents"
                       type="number"
@@ -295,7 +295,7 @@ export function Calculator() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label className="text-sm font-semibold text-gray-700">Необходимые услуги</Label>
+                  <Label className="text-sm font-semibold text-gray-900">Необходимые услуги</Label>
                   <div className="grid grid-cols-1 gap-4">
                     <div className="flex items-start space-x-3 p-3 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
                       <Checkbox
@@ -304,7 +304,7 @@ export function Calculator() {
                         onCheckedChange={(checked) => handleServiceChange("accounting", checked as boolean)}
                         className="data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                       />
-                      <Label htmlFor="accounting" className="text-sm font-normal text-gray-700 flex-1">
+                      <Label htmlFor="accounting" className="text-sm font-normal text-gray-900 flex-1">
                         Бухгалтерский учет (от {servicePrices.accounting.price.toLocaleString()} руб/мес)
                       </Label>
                     </div>
@@ -315,7 +315,7 @@ export function Calculator() {
                         onCheckedChange={(checked) => handleServiceChange("payroll", checked as boolean)}
                         className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
                       />
-                      <Label htmlFor="payroll" className="text-sm font-normal text-gray-700 flex-1">
+                      <Label htmlFor="payroll" className="text-sm font-normal text-gray-900 flex-1">
                         Зарплата и кадры (от {servicePrices.payroll.price.toLocaleString()} руб/мес)
                       </Label>
                     </div>
@@ -326,7 +326,7 @@ export function Calculator() {
                         onCheckedChange={(checked) => handleServiceChange("legal", checked as boolean)}
                         className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                       />
-                      <Label htmlFor="legal" className="text-sm font-normal text-gray-700 flex-1">
+                      <Label htmlFor="legal" className="text-sm font-normal text-gray-900 flex-1">
                         Юридическое сопровождение (от {servicePrices.legal.price.toLocaleString()} руб/мес)
                       </Label>
                     </div>
@@ -337,7 +337,7 @@ export function Calculator() {
                         onCheckedChange={(checked) => handleServiceChange("terminal", checked as boolean)}
                         className="data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                       />
-                      <Label htmlFor="terminal" className="text-sm font-normal text-gray-700 flex-1">
+                                             <Label htmlFor="terminal" className="text-sm font-normal text-gray-900 flex-1">
                         Кассовый терминал (от {servicePrices.terminal.price.toLocaleString()} руб)
                       </Label>
                     </div>
