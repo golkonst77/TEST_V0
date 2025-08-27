@@ -122,9 +122,9 @@ export function Hero() {
               <div className="mb-4 md:mb-6">
                 <Badge 
                   variant="secondary" 
-                  className="px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium bg-blue-700 text-white border-blue-700 shadow-md"
+                  className="px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium bg-sky-200 text-sky-700 border-sky-300 shadow-md hover:bg-sky-300 hover:border-sky-400"
                 >
-                  {badge.text}
+                  Мы защищаем ваш бизнес
                 </Badge>
               </div>
             )}
@@ -146,7 +146,10 @@ export function Hero() {
                 <Button 
                   size="lg" 
                   onClick={handleCruiseClick}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-base md:text-lg px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-lg hover:scale-105 transition-all duration-200 text-left"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-base md:text-lg px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 border-2 border-blue-500 hover:border-blue-400"
+                  style={{
+                    boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                  }}
                 >
                   {button.text}
                 </Button>
