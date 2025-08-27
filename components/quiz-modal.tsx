@@ -170,22 +170,54 @@ function QuizSidebar({
   )
 }
 
-// Добавим функцию отправки WhatsApp
+// Добавим функцию отправки WhatsApp с улучшенной обработкой ошибок
 async function sendWhatsAppMessage(phone: string, message: string) {
-  // phone теперь вся маска, извлекаем только цифры
-  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
-  if (cleanPhone.length !== 11) return;
-  await fetch('https://gate.whapi.cloud/messages/text', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer QlZ00L1DXVAv17SfAoTtarbseCNIKaIo',
-    },
-    body: JSON.stringify({
-      to: cleanPhone,
-      body: message,
-    }),
-  });
+  try {
+    // phone теперь вся маска, извлекаем только цифры
+    const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
+    if (cleanPhone.length !== 11) {
+      console.error('[WHATSAPP] Неверный формат номера:', phone);
+      throw new Error('Неверный формат номера телефона');
+    }
+    
+    console.log('[WHATSAPP] Отправляем сообщение на номер:', cleanPhone);
+    
+    const response = await fetch('https://gate.whapi.cloud/messages/text', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer QlZ00L1DXVAv17SfAoTtarbseCNIKaIo',
+      },
+      body: JSON.stringify({
+        to: cleanPhone,
+        body: message,
+      }),
+    });
+    
+    const responseText = await response.text();
+    console.log('[WHATSAPP] Ответ от сервера:', responseText);
+    console.log('[WHATSAPP] Статус:', response.status);
+    
+    if (!response.ok) {
+      console.error('[WHATSAPP] Ошибка отправки:', response.status, responseText);
+      throw new Error(`Ошибка отправки WhatsApp: ${response.status}`);
+    }
+    
+    try {
+      const result = JSON.parse(responseText);
+      if (!result.sent) {
+        console.error('[WHATSAPP] Сообщение не отправлено:', result);
+        throw new Error('Сообщение не было отправлено');
+      }
+      console.log('[WHATSAPP] Сообщение успешно отправлено:', result);
+    } catch (parseError) {
+      console.error('[WHATSAPP] Ошибка парсинга ответа:', parseError);
+      throw new Error('Ошибка обработки ответа сервера');
+    }
+  } catch (error) {
+    console.error('[WHATSAPP] Ошибка при отправке сообщения:', error);
+    throw error;
+  }
 }
 
 // Определяем тип бизнеса на основе ответов
@@ -206,15 +238,15 @@ const getBusinessType = (answers: QuizAnswer[]): "ip" | "ooo" | "both" => {
   return businessTypeAnswer === "ip" ? "ip" : "ooo"
 }
 
-// Обновляем функцию отправки документа
+// Обновляем функцию отправки документа с улучшенной обработкой ошибок
 async function sendWhatsAppDocument(phone: string, quiz_result: "ip" | "ooo" | "both", caption: string) {
   console.log('[QUIZ] Начинаем отправку PDF:', { phone, quiz_result, caption });
   
   // phone теперь вся маска, извлекаем только цифры
   const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
   if (cleanPhone.length !== 11) {
-    console.log('[QUIZ] Неверный формат номера:', phone);
-    return;
+    console.error('[QUIZ] Неверный формат номера:', phone);
+    throw new Error('Неверный формат номера телефона');
   }
   
   try {
@@ -228,16 +260,19 @@ async function sendWhatsAppDocument(phone: string, quiz_result: "ip" | "ooo" | "
     });
     
     if (!checklistResponse.ok) {
-      console.error('[QUIZ] Ошибка получения чек-листа:', await checklistResponse.text());
-      return;
+      const errorText = await checklistResponse.text();
+      console.error('[QUIZ] Ошибка получения чек-листа:', errorText);
+      throw new Error(`Ошибка получения чек-листа: ${checklistResponse.status}`);
     }
     
     const { checklist } = await checklistResponse.json();
     
     if (!checklist) {
       console.error('[QUIZ] Чек-лист не найден для результата:', quiz_result);
-      return;
+      throw new Error('Чек-лист не найден');
     }
+    
+    console.log('[QUIZ] Получен чек-лист:', checklist);
     
     // Отправляем чек-лист через WhatsApp
     const response = await fetch('/api/send-whatsapp-document', {
@@ -256,12 +291,13 @@ async function sendWhatsAppDocument(phone: string, quiz_result: "ip" | "ooo" | "
     
     if (!response.ok) {
       console.error('[QUIZ] Ошибка отправки файла:', result);
-      return;
+      throw new Error(`Ошибка отправки файла: ${response.status}`);
     }
 
-    console.log('[QUIZ] Ответ от API отправки файла:', result);
+    console.log('[QUIZ] Файл успешно отправлен:', result);
   } catch (error) {
     console.error('[QUIZ] Ошибка при отправке файла:', error);
+    throw error;
   }
 }
 
@@ -324,6 +360,10 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
     if (!phone.trim()) return
 
     setIsSubmitting(true)
+    let couponSaved = false
+    let whatsappSent = false
+    let documentSent = false
+    
     try {
       const discount = calculateDiscount()
       const code = `PROSTOBURO-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
@@ -333,41 +373,66 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
       const businessType = getBusinessType(answers)
       
       // Сохраняем купон в базу данных
-      const response = await fetch('/api/coupons', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: fullCoupon,
-          phone: phone.trim(),
-          discount: discount,
-          business_type: businessType
+      try {
+        const response = await fetch('/api/coupons', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            code: fullCoupon,
+            phone: phone.trim(),
+            discount: discount,
+            business_type: businessType
+          })
         })
-      })
-      
-      if (!response.ok) {
-        throw new Error('Ошибка при сохранении купона')
+        
+        if (!response.ok) {
+          throw new Error(`Ошибка при сохранении купона: ${response.status}`)
+        }
+        
+        const result = await response.json()
+        console.log('Купон сохранен:', result)
+        couponSaved = true
+      } catch (error) {
+        console.error('Ошибка сохранения купона:', error)
+        throw new Error(`Не удалось сохранить купон: ${error.message}`)
       }
-      
-      const result = await response.json()
-      console.log('Купон сохранен:', result)
 
       // Отправляем WhatsApp-сообщение клиенту
-      await sendWhatsAppMessage(phone, `Здравствуйте, спасибо за интерес к нашей компании. Вам купон на скидку ${fullCoupon}. Также Вам бесплатная консультация 30 минут и СКИДКА 50% на первый месяц обслуживания! Если есть вопросы — пишите прямо здесь, ответим оперативно.`)
+      try {
+        await sendWhatsAppMessage(phone, `Здравствуйте, спасибо за интерес к нашей компании. Вам купон на скидку ${fullCoupon}. Также Вам бесплатная консультация 30 минут и СКИДКА 50% на первый месяц обслуживания! Если есть вопросы — пишите прямо здесь, ответим оперативно.`)
+        whatsappSent = true
+        console.log('WhatsApp сообщение отправлено успешно')
+      } catch (error) {
+        console.error('Ошибка отправки WhatsApp сообщения:', error)
+        // Не прерываем выполнение, продолжаем с другими операциями
+      }
       
       // Отправляем PDF-файл с чек-листом
       if (wantChecklist) {
-        await sendWhatsAppDocument(phone, businessType, `Ваш чек-лист. Спасибо за интерес к ПростоБюро!`)
+        try {
+          await sendWhatsAppDocument(phone, businessType, `Ваш чек-лист. Спасибо за интерес к ПростоБюро!`)
+          documentSent = true
+          console.log('WhatsApp документ отправлен успешно')
+        } catch (error) {
+          console.error('Ошибка отправки WhatsApp документа:', error)
+          // Не прерываем выполнение
+        }
       }
       
       // Отправляем событие в Яндекс.Метрику
-      sendYandexMetric(YANDEX_METRICS_EVENTS.QUIZ_COMPLETED, {
-        discount: discount,
-        business_type: businessType,
-        phone: phone.trim(),
-        coupon: fullCoupon
-      })
+      try {
+        sendYandexMetric(YANDEX_METRICS_EVENTS.QUIZ_COMPLETED, {
+          discount: discount,
+          business_type: businessType,
+          phone: phone.trim(),
+          coupon: fullCoupon
+        })
+      } catch (error) {
+        console.error('Ошибка отправки в Яндекс.Метрику:', error)
+        // Не критично
+      }
       
       setCoupon(fullCoupon)
       setShowThanks(true)
@@ -378,15 +443,30 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
       setWantChecklist(true)
       closeContactForm()
       
-      toast({
-        title: "Успешно!",
-        description: "Ваш купон сохранен. Мы свяжемся с вами в ближайшее время.",
-      })
+      // Показываем соответствующее сообщение в зависимости от успешности операций
+      if (couponSaved && whatsappSent) {
+        toast({
+          title: "Успешно!",
+          description: "Ваш купон сохранен и предложение отправлено в WhatsApp.",
+        })
+      } else if (couponSaved) {
+        toast({
+          title: "Купон сохранен!",
+          description: "Купон сохранен, но возникли проблемы с отправкой в WhatsApp. Мы свяжемся с вами по телефону.",
+          variant: "default",
+        })
+      } else {
+        toast({
+          title: "Ошибка",
+          description: "Не удалось сохранить купон. Попробуйте еще раз или свяжитесь с нами по телефону.",
+          variant: "destructive",
+        })
+      }
     } catch (error) {
-      console.error('Ошибка при отправке:', error)
+      console.error('Критическая ошибка при отправке:', error)
       toast({
         title: "Ошибка отправки",
-        description: "Попробуйте еще раз или свяжитесь с нами по телефону.",
+        description: error.message || "Попробуйте еще раз или свяжитесь с нами по телефону.",
         variant: "destructive",
       })
     } finally {
@@ -538,10 +618,12 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                   <div className="flex flex-col h-[600px] min-h-0">
                     <div className="flex-1 min-h-0 overflow-y-auto px-0 pt-2 pb-0 text-center max-w-lg mx-auto w-full flex flex-col items-stretch justify-start">
                       <h2 className="text-2xl font-bold mb-2 text-gray-900">Последний шаг!</h2>
-                      <p className="text-base text-gray-600 mb-4 leading-relaxed">
-                        Оставьте номер телефона и мы отправим персональное предложение со скидкой {" "}
-                        <span className="font-bold text-cyan-500">{calculateDiscount().toLocaleString()} ₽</span> в WhatsApp
-                      </p>
+                                             <p className="text-base text-gray-600 mb-4 leading-relaxed">
+                         Оставьте номер телефона и мы отправим персональное предложение со скидкой {" "}
+                         <span className="font-bold text-cyan-500">{calculateDiscount().toLocaleString()} ₽</span> в WhatsApp
+                         <br />
+                         <span className="text-sm font-medium text-gray-500">ЗВОНИТЬ НЕ БУДЕМ, ТОЛЬКО СООБЩЕНИЕ!</span>
+                       </p>
                       <InputMask
                         mask="+7 (999) 999-99-99"
                         value={phone}
@@ -572,13 +654,13 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                         </div>
                       </div>
                     </div>
-                    <div className="shrink-0 bg-white pt-2 pb-2">
-                      <div className="bg-gray-50 rounded-2xl p-4 text-center mt-2">
-                        <p className="text-xs font-bold text-gray-900 uppercase tracking-wide">
-                          ЗВОНИТЬ НЕ БУДЕМ! ОТПРАВИМ ПРЕДЛОЖЕНИЕ В WHATSAPP
-                        </p>
-                      </div>
-                    </div>
+                                         <div className="shrink-0 bg-white pt-2 pb-2">
+                       <div className="bg-gray-50 rounded-2xl p-4 text-center mt-2">
+                         <p className="text-xs font-bold text-gray-900 uppercase tracking-wide">
+                           БЕЗОПАСНО И КОНФИДЕНЦИАЛЬНО
+                         </p>
+                       </div>
+                     </div>
                   </div>
                 )}
               </div>
