@@ -562,16 +562,16 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                 {!isPhoneStep ? (
                   <>
                     <div className="flex flex-col px-0 py-0 overflow-y-auto max-h-[60vh]">
-                      <h2 className="text-xl font-bold mb-2 mt-2 text-gray-900 leading-tight">{currentQuestion.title}</h2>
+                      <h2 className="text-2xl font-bold mb-6 mt-2 text-gray-900 leading-tight">{currentQuestion.title}</h2>
 
                       {currentQuestion.type === "single" ? (
-                        <div className="space-y-1">
+                        <div className="space-y-4">
                           {currentQuestion.options.map((option) => (
                             <div
                               key={option.value}
-                              className="group relative bg-cyan-50 border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                              className="group relative bg-cyan-50 border border-gray-200 rounded-lg p-6 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
                             >
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-4">
                                 <input
                                   type="radio"
                                   id={option.value}
@@ -579,11 +579,11 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                                   value={option.value}
                                   checked={!Array.isArray(currentAnswer?.answer) && currentAnswer?.answer === option.value}
                                   onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
-                                  className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5"
+                                  className="text-cyan-500 border-2 border-gray-300 w-5 h-5"
                                 />
                                                                  <Label
                                    htmlFor={option.value}
-                                   className="text-base cursor-pointer text-gray-700 flex-1 font-normal"
+                                   className="text-lg cursor-pointer text-gray-700 flex-1 font-normal"
                                  >
                                    {option.label}
                                  </Label>
@@ -592,22 +592,22 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                           ))}
                         </div>
                       ) : (
-                        <div className="space-y-1">
+                        <div className="space-y-4">
                           {currentQuestion.options.map((option) => (
                             <div
                               key={option.value}
-                              className="group relative bg-cyan-50 border border-gray-200 rounded-lg p-2 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                              className="group relative bg-cyan-50 border border-gray-200 rounded-lg p-6 hover:border-cyan-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
                             >
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-4">
                                 <Checkbox
                                   id={option.value}
                                   checked={!!(Array.isArray(currentAnswer?.answer) && currentAnswer.answer.includes(option.value))}
                                   onCheckedChange={(checked) => handleOptionCheckedChange(currentQuestion.id, option.value, checked)}
-                                  className="text-cyan-500 border-2 border-gray-300 w-3.5 h-3.5 rounded"
+                                  className="text-cyan-500 border-2 border-gray-300 w-5 h-5 rounded"
                                 />
                                                                  <Label
                                    htmlFor={option.value}
-                                   className="text-base cursor-pointer text-gray-700 flex-1 font-normal"
+                                   className="text-lg cursor-pointer text-gray-700 flex-1 font-normal"
                                  >
                                    {option.label}
                                  </Label>

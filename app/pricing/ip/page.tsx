@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight, Phone } from "lucide-react"
-import { QuizModalTariff } from "@/components/quiz-modal-tariff"
+import { QuizModal } from "@/components/quiz-modal"
 import { FAQ } from "@/components/faq"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
 import { useState } from "react"
@@ -187,7 +187,7 @@ export default function IPPricingPage() {
       
       <FAQ />
       
-      <QuizModalTariff open={quizOpen} onOpenChange={setQuizOpen} />
+      <QuizModal open={quizOpen} onOpenChange={setQuizOpen} />
     </div>
   )
 }

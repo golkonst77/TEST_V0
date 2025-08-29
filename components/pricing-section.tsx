@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { QuizModalTariff } from "@/components/quiz-modal-tariff"
+import { QuizModal } from "@/components/quiz-modal"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
 import { useState } from "react"
 
@@ -313,7 +313,7 @@ export function PricingSection() {
           </Button>
         </div>
 
-        <QuizModalTariff open={quizOpen} onOpenChange={setQuizOpen} />
+        <QuizModal open={quizOpen} onOpenChange={setQuizOpen} />
       </div>
     </section>
   )
