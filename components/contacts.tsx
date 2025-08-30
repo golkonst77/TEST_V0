@@ -33,8 +33,8 @@ export function Contacts() {
     {
       icon: Phone,
       title: 'Телефон',
-      value: settings?.phone || '+7953 777 77 77',
-      href: `tel:${settings?.phone?.replace(/\s/g, '') || '+79537777777'}`,
+      value: settings?.phone || '+7953 330-17-77',
+      href: `tel:${settings?.phone?.replace(/\s/g, '') || '+79533301777'}`,
       color: 'text-blue-400'
     },
     {

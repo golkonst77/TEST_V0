@@ -55,7 +55,7 @@ if (supabaseUrl && supabaseKey) {
 let localSettings: SiteSettings = {
   siteName: "Просто Бюро",
   siteDescription: "Бухгалтерские услуги",
-  phone: "+7953 777 77 77",
+  phone: "+7953 330-17-77",
   email: "urist40@gmail.com",
   address: "Калуга, Дзержинского 37, офис 20",
   telegram: "@prostoburo",
@@ -80,7 +80,7 @@ function mapDatabaseToSettings(dbData: any): SiteSettings {
   return {
     siteName: dbData.sitename ?? dbData.site_name ?? "Просто Бюро",
     siteDescription: dbData.sitedescription ?? dbData.site_description ?? "Бухгалтерские услуги",
-    phone: dbData.phone ?? "+7953 777 77 77",
+    phone: dbData.phone ?? "+7953 330-17-77",
     email: dbData.email ?? "urist40@gmail.com",
     address: dbData.address ?? "Калуга, Дзержинского 37, офис 20",
     telegram: dbData.telegram ?? "@prostoburo",

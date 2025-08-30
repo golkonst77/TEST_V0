@@ -31,8 +31,24 @@ export const Header = () => {
   const { handleCruiseClick, modalOpen, setModalOpen, quizUrl } = useCruiseClick()
   const [authOpen, setAuthOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [settings, setSettings] = useState<any>(null)
   const router = useRouter()
   const pathname = usePathname()
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/settings')
+        if (response.ok) {
+          const data = await response.json()
+          setSettings(data)
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error)
+      }
+    }
+    fetchSettings()
+  }, [])
 
   const handleMenuClick = (item: any) => (e: React.MouseEvent) => {
     if (item.isAnchor) {
@@ -85,11 +101,11 @@ export const Header = () => {
           {/* Быстрые контакты: телефон, Telegram, VK */}
           <div className="flex items-center space-x-4">
             <a
-              href="tel:+79537777777"
+              href={`tel:${settings?.phone?.replace(/\s/g, '') || '+79533301777'}`}
               className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
             >
               <Phone className="h-4 w-4" />
-              <span className="hidden xl:inline">+7 953 777 77 77</span>
+              <span className="hidden xl:inline">{settings?.phone || '+7953 330-17-77'}</span>
             </a>
             <a
               href="https://t.me/prostoburo"
@@ -129,11 +145,11 @@ export const Header = () => {
               ))}
               <div className="pt-4 border-t">
                 <a
-                  href="tel:+79537777777"
+                  href={`tel:${settings?.phone?.replace(/\s/g, '') || '+79533301777'}`}
                   className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <Phone className="h-4 w-4" />
-                  <span>+7 953 777 77 77</span>
+                  <span>{settings?.phone || '+7953 330-17-77'}</span>
                 </a>
                 <a
                   href="https://t.me/prostoburo"

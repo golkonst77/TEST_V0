@@ -13,7 +13,7 @@ export async function GET() {
     const fallbackSettings = {
       siteName: "Просто Бюро",
       siteDescription: "Бухгалтерские услуги",
-      phone: "+7953 777 77 77",
+      phone: "+7953 330-17-77",
       email: "urist40@gmail.com",
       address: "Калуга, Дзержинского 37, офис 20",
       telegram: "@prostoburo",

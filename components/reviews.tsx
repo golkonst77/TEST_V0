@@ -76,14 +76,14 @@ export function Reviews() {
         const data = await response.json()
         setSettings({
           address: data.address || 'Калуга, Дзержинского 37, офис 20',
-          phone: data.phone || '+7953 777 77 77'
+          phone: data.phone || '+7953 330-17-77'
         })
       }
     } catch (error) {
       console.error('Ошибка получения настроек:', error)
       setSettings({
         address: 'Калуга, Дзержинского 37, офис 20',
-        phone: '+7953 777 77 77'
+        phone: '+7953 330-17-77'
       })
     }
   }
