@@ -1,14 +1,50 @@
 {
-  "hero": "published",
-  "about": "draft",
-  "services": "published",
-  "calculator": "published",
-  "pricing": "published",
-  "reviews": "published",
-  "guarantees": "published",
-  "faq": "published",
-  "news": "draft",
-  "contacts": "published",
-  "technologies": "published",
-  "ai-documents": "published"
+  "hero": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "about": {
+    "desktop": "draft",
+    "mobile": "draft"
+  },
+  "services": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "calculator": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "pricing": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "reviews": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "guarantees": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "faq": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "news": {
+    "desktop": "draft",
+    "mobile": "draft"
+  },
+  "contacts": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "technologies": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "ai-documents": {
+    "desktop": "published",
+    "mobile": "published"
+  }
 }

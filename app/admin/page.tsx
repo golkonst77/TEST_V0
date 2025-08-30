@@ -15,7 +15,8 @@ import {
   TrendingUp,
   Activity,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Eye
 } from "lucide-react"
 import Link from "next/link"
 
@@ -25,6 +26,12 @@ const quickActions = [
     description: "Редактирование контента и расположения элементов",
     href: "/admin/homepage",
     icon: Home
+  },
+  {
+    title: "Видимость секций",
+    description: "Управление отображением секций для мобильных и десктопа",
+    href: "/admin/visibility",
+    icon: Eye
   },
   {
     title: "Калькулятор",

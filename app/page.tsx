@@ -12,10 +12,12 @@ import { Contacts } from "@/components/contacts"
 import { Technologies } from "@/components/technologies"
 import { AIDocuments } from "@/components/ai-documents"
 import { useHomepageSections } from "@/hooks/use-homepage-sections"
+import { useDeviceType } from "@/hooks/use-device-type"
 import { useEffect } from "react"
 
 export default function HomePage() {
   const { isSectionVisible, loading } = useHomepageSections()
+  const deviceType = useDeviceType()
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -45,19 +47,22 @@ export default function HomePage() {
     )
   }
 
+  // Определяем тип устройства для проверки видимости
+  const deviceTypeForVisibility = deviceType === 'mobile' ? 'mobile' : 'desktop'
+
   return (
     <main id="home-page" className="min-h-screen">
-      {isSectionVisible('hero') && <Hero />}
-      {isSectionVisible('guarantees') && <Guarantees />}
-      {isSectionVisible('services') && <Services showTitle />}
-      {isSectionVisible('technologies') && <Technologies />}
-      {isSectionVisible('ai-documents') && <AIDocuments />}
-      {isSectionVisible('pricing') && <PricingSection />}
-      {isSectionVisible('faq') && <FAQ />}
-      {isSectionVisible('calculator') && <Calculator />}
-      {isSectionVisible('reviews') && <Reviews />}
-      {isSectionVisible('news') && <News />}
-      {isSectionVisible('contacts') && <Contacts />}
+      {isSectionVisible('hero', deviceTypeForVisibility) && <Hero />}
+      {isSectionVisible('guarantees', deviceTypeForVisibility) && <Guarantees />}
+      {isSectionVisible('services', deviceTypeForVisibility) && <Services showTitle />}
+      {isSectionVisible('technologies', deviceTypeForVisibility) && <Technologies />}
+      {isSectionVisible('ai-documents', deviceTypeForVisibility) && <AIDocuments />}
+      {isSectionVisible('pricing', deviceTypeForVisibility) && <PricingSection />}
+      {isSectionVisible('faq', deviceTypeForVisibility) && <FAQ />}
+      {isSectionVisible('calculator', deviceTypeForVisibility) && <Calculator />}
+      {isSectionVisible('reviews', deviceTypeForVisibility) && <Reviews />}
+      {isSectionVisible('news', deviceTypeForVisibility) && <News />}
+      {isSectionVisible('contacts', deviceTypeForVisibility) && <Contacts />}
     </main>
   )
 }

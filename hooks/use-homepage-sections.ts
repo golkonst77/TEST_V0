@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
 
+interface SectionConfig {
+  desktop: 'published' | 'draft'
+  mobile: 'published' | 'draft'
+}
+
 interface SectionsConfig {
-  [key: string]: 'published' | 'draft'
+  [key: string]: SectionConfig
 }
 
 export function useHomepageSections() {
@@ -27,18 +32,18 @@ export function useHomepageSections() {
       
       // Fallback к дефолтной конфигурации
       const defaultConfig: SectionsConfig = {
-        hero: 'published',
-        about: 'published',
-        services: 'published',
-        calculator: 'published',
-        pricing: 'published',
-        reviews: 'published',
-        guarantees: 'published',
-        faq: 'published',
-        news: 'published',
-        contacts: 'published',
-        technologies: 'published',
-        'ai-documents': 'published'
+        hero: { desktop: 'published', mobile: 'published' },
+        about: { desktop: 'published', mobile: 'published' },
+        services: { desktop: 'published', mobile: 'published' },
+        calculator: { desktop: 'published', mobile: 'published' },
+        pricing: { desktop: 'published', mobile: 'published' },
+        reviews: { desktop: 'published', mobile: 'published' },
+        guarantees: { desktop: 'published', mobile: 'published' },
+        faq: { desktop: 'published', mobile: 'published' },
+        news: { desktop: 'published', mobile: 'published' },
+        contacts: { desktop: 'published', mobile: 'published' },
+        technologies: { desktop: 'published', mobile: 'published' },
+        'ai-documents': { desktop: 'published', mobile: 'published' }
       }
       setSectionsConfig(defaultConfig)
     } finally {
@@ -50,8 +55,11 @@ export function useHomepageSections() {
     fetchSectionsConfig()
   }, [])
 
-  const isSectionVisible = (sectionKey: string): boolean => {
-    return sectionsConfig[sectionKey] === 'published'
+  const isSectionVisible = (sectionKey: string, deviceType: 'desktop' | 'mobile' = 'desktop'): boolean => {
+    const section = sectionsConfig[sectionKey]
+    if (!section) return true // Если секция не найдена, показываем по умолчанию
+    
+    return section[deviceType] === 'published'
   }
 
   return {
