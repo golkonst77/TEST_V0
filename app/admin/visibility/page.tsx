@@ -175,37 +175,50 @@ export default function AdminVisibilityPage() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-6">
-                      {/* Десктоп */}
-                      <div className="flex items-center space-x-2">
-                        <Monitor className="h-4 w-4 text-gray-500" />
-                        <Switch
-                          checked={isDesktopVisible}
-                          onCheckedChange={() => toggleSectionVisibility(sectionInfo.key, 'desktop')}
-                          className="data-[state=checked]:bg-blue-600"
-                        />
-                        <Badge
-                          variant={isDesktopVisible ? "default" : "secondary"}
-                          className="text-xs"
-                        >
-                          {isDesktopVisible ? "Вкл" : "Выкл"}
-                        </Badge>
+                    <div className="flex flex-col space-y-3">
+                      {/* Заголовки колонок */}
+                      <div className="flex items-center space-x-6 text-xs font-medium text-gray-600">
+                        <div className="flex items-center space-x-2">
+                          <Monitor className="h-3 w-3" />
+                          <span>Десктоп</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Smartphone className="h-3 w-3" />
+                          <span>Мобильные</span>
+                        </div>
                       </div>
+                      
+                      {/* Переключатели */}
+                      <div className="flex items-center space-x-6">
+                        {/* Десктоп */}
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={isDesktopVisible}
+                            onCheckedChange={() => toggleSectionVisibility(sectionInfo.key, 'desktop')}
+                            className="data-[state=checked]:bg-blue-600"
+                          />
+                          <Badge
+                            variant={isDesktopVisible ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {isDesktopVisible ? "Вкл" : "Выкл"}
+                          </Badge>
+                        </div>
 
-                      {/* Мобильные */}
-                      <div className="flex items-center space-x-2">
-                        <Smartphone className="h-4 w-4 text-gray-500" />
-                        <Switch
-                          checked={isMobileVisible}
-                          onCheckedChange={() => toggleSectionVisibility(sectionInfo.key, 'mobile')}
-                          className="data-[state=checked]:bg-green-600"
-                        />
-                        <Badge
-                          variant={isMobileVisible ? "default" : "secondary"}
-                          className="text-xs"
-                        >
-                          {isMobileVisible ? "Вкл" : "Выкл"}
-                        </Badge>
+                        {/* Мобильные */}
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={isMobileVisible}
+                            onCheckedChange={() => toggleSectionVisibility(sectionInfo.key, 'mobile')}
+                            className="data-[state=checked]:bg-green-600"
+                          />
+                          <Badge
+                            variant={isMobileVisible ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {isMobileVisible ? "Вкл" : "Выкл"}
+                          </Badge>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -267,8 +280,8 @@ export default function AdminVisibilityPage() {
           <CardContent className="pt-4">
             <h3 className="font-semibold text-blue-900 mb-2">Как это работает:</h3>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• <strong>Десктоп</strong> - настройки для компьютеров и планшетов (ширина экрана ≥ 1024px)</li>
-              <li>• <strong>Мобильные</strong> - настройки для смартфонов (ширина экрана &lt; 1024px)</li>
+              <li>• <strong>🖥️ Десктоп</strong> (синий переключатель) - настройки для компьютеров и планшетов (ширина экрана ≥ 1024px)</li>
+              <li>• <strong>📱 Мобильные</strong> (зеленый переключатель) - настройки для смартфонов (ширина экрана &lt; 1024px)</li>
               <li>• <strong>Вкл</strong> - секция отображается на соответствующем типе устройств</li>
               <li>• <strong>Выкл</strong> - секция скрыта на соответствующем типе устройств</li>
               <li>• Изменения применяются мгновенно после сохранения</li>

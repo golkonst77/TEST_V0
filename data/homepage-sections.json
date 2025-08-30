@@ -13,11 +13,11 @@
   },
   "calculator": {
     "desktop": "published",
-    "mobile": "published"
+    "mobile": "draft"
   },
   "pricing": {
     "desktop": "published",
-    "mobile": "published"
+    "mobile": "draft"
   },
   "reviews": {
     "desktop": "published",
@@ -25,11 +25,11 @@
   },
   "guarantees": {
     "desktop": "published",
-    "mobile": "published"
+    "mobile": "draft"
   },
   "faq": {
     "desktop": "published",
-    "mobile": "published"
+    "mobile": "draft"
   },
   "news": {
     "desktop": "draft",
@@ -41,10 +41,10 @@
   },
   "technologies": {
     "desktop": "published",
-    "mobile": "published"
+    "mobile": "draft"
   },
   "ai-documents": {
     "desktop": "published",
-    "mobile": "published"
+    "mobile": "draft"
   }
 }

@@ -68,12 +68,12 @@ export function AdminLayout({
     {
       name: 'Контент сайта',
       icon: FileText,
-      current: ['/admin/homepage', '/admin/header', '/admin/content', '/admin/media', '/admin/contacts'].includes(pathname),
+      current: ['/admin/homepage', '/admin/header', '/admin/media', '/admin/contacts', '/admin/visibility'].includes(pathname),
       children: [
         { name: 'Главная страница', href: '/admin/homepage', current: pathname === '/admin/homepage' },
         { name: 'Шапка сайта', href: '/admin/header', current: pathname === '/admin/header' },
         { name: 'Контактная информация', href: '/admin/contacts', current: pathname === '/admin/contacts' },
-        { name: 'Контент', href: '/admin/content', current: pathname === '/admin/content' },
+        { name: 'Видимость секций', href: '/admin/visibility', current: pathname === '/admin/visibility' },
         { name: 'Медиафайлы', href: '/admin/media', current: pathname === '/admin/media' }
       ]
     },

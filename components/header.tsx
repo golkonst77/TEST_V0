@@ -15,6 +15,8 @@ import { Mail, Lock, User, FileText, Loader2 } from "lucide-react"
 import { Logo } from "./logo"
 import { ReCAPTCHAComponent } from "./recaptcha"
 import { useRouter, usePathname } from "next/navigation"
+import { useHomepageSections } from "@/hooks/use-homepage-sections"
+import { useDeviceType } from "@/hooks/use-device-type"
 
 const MENU_ITEMS = [
   { id: 'services', title: 'Услуги', href: '/#services', isAnchor: true },
@@ -34,6 +36,8 @@ export const Header = () => {
   const [settings, setSettings] = useState<any>(null)
   const router = useRouter()
   const pathname = usePathname()
+  const { isSectionVisible } = useHomepageSections()
+  const deviceType = useDeviceType()
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -49,6 +53,13 @@ export const Header = () => {
     }
     fetchSettings()
   }, [])
+
+  // Фильтруем пункты меню на основе настроек видимости секций
+  const visibleMenuItems = MENU_ITEMS.filter(item => {
+    // Преобразуем тип устройства в формат для видимости секций
+    const deviceTypeForVisibility = deviceType === 'tablet' ? 'desktop' : deviceType
+    return isSectionVisible(item.id, deviceTypeForVisibility)
+  })
 
   const handleMenuClick = (item: any) => (e: React.MouseEvent) => {
     if (item.isAnchor) {
@@ -83,7 +94,7 @@ export const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden lg:block">
           <ul className="flex items-center gap-2">
-            {MENU_ITEMS.map(renderMenuItem)}
+            {visibleMenuItems.map(renderMenuItem)}
           </ul>
         </nav>
 
@@ -132,17 +143,17 @@ export const Header = () => {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-t">
           <div className="container mx-auto px-4 py-4">
-            <nav className="space-y-2">
-              {MENU_ITEMS.map((item) => (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  {item.title}
-                </Link>
-              ))}
+                         <nav className="space-y-2">
+               {visibleMenuItems.map((item) => (
+                 <Link
+                   key={item.id}
+                   href={item.href}
+                   onClick={() => setMobileMenuOpen(false)}
+                   className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                 >
+                   {item.title}
+                 </Link>
+               ))}
               <div className="pt-4 border-t">
                 <a
                   href={`tel:${settings?.phone?.replace(/\s/g, '') || '+79533301777'}`}

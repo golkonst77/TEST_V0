@@ -48,7 +48,7 @@ export default function HomePage() {
   }
 
   // Определяем тип устройства для проверки видимости
-  const deviceTypeForVisibility = deviceType === 'mobile' ? 'mobile' : 'desktop'
+  const deviceTypeForVisibility = deviceType === 'tablet' ? 'desktop' : deviceType
 
   return (
     <main id="home-page" className="min-h-screen">

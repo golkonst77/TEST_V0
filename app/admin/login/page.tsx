@@ -94,7 +94,7 @@ export default function AdminLoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    placeholder="prostoburo2024"
+                    placeholder="Введите пароль"
                   />
                   <Button
                     type="button"
