@@ -149,7 +149,7 @@ export function HiddenAdminAccess() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="prostoburo2024"
+                placeholder="Введите пароль"
                 required
               />
             </div>

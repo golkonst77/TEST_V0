@@ -38,7 +38,8 @@ export async function PUT(request: NextRequest) {
       logoType: body.logoType,
       logoImageUrl: body.logoImageUrl,
       logoText: body.logoText,
-      logoShow: body.logoShow
+      logoShow: body.logoShow,
+      admin_email: body.adminEmail
     }
 
     console.log("Settings to update:", settingsToUpdate)

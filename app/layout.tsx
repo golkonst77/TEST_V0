@@ -25,7 +25,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const ymId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || "103085667"
+  const ymId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || "45860892"
   
   return (
     <html lang="ru">

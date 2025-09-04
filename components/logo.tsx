@@ -26,11 +26,25 @@ export function Logo({ siteName = "ПростоБюро", className = "" }: Logo
 
   const fetchLogoConfig = async () => {
     try {
+      // Проверяем, есть ли уже данные в localStorage
+      const cachedData = localStorage.getItem('logo-config')
+      if (cachedData) {
+        const parsed = JSON.parse(cachedData)
+        const cacheTime = parsed.timestamp || 0
+        const now = Date.now()
+        // Если данные свежие (менее 5 минут), используем кэш
+        if (now - cacheTime < 300000) {
+          console.log("Logo: Using cached config")
+          setLogoConfig(parsed.config)
+          return
+        }
+      }
+
       console.log("Logo: Fetching logo config...")
       const response = await fetch("/api/settings", {
-        cache: 'no-store', // Отключаем кэширование
+        cache: 'force-cache', // Включаем кэширование
         headers: {
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'max-age=300' // Кэш на 5 минут
         }
       })
       if (response.ok) {
@@ -39,6 +53,11 @@ export function Logo({ siteName = "ПростоБюро", className = "" }: Logo
         if (data.header?.logo) {
           console.log("Logo: Updating config:", data.header.logo)
           setLogoConfig(data.header.logo)
+          // Сохраняем в localStorage для кэширования
+          localStorage.setItem('logo-config', JSON.stringify({
+            config: data.header.logo,
+            timestamp: Date.now()
+          }))
         }
       } else {
         console.error("Logo: Failed to fetch config, status:", response.status)

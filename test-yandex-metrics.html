@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест Яндекс.Метрики</title>
+</head>
+<body>
+    <h1>Тест отправки событий в Яндекс.Метрику</h1>
+    
+    <button onclick="testYandexMetric()">Отправить тестовое событие</button>
+    <button onclick="testQuizCompleted()">Отправить событие завершения квиза</button>
+    
+    <div id="log"></div>
+
+    <!-- Яндекс.Метрика -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+        
+        ym(103085667, "init", {
+            defer: true,
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true,
+            webvisor: true
+        });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/103085667" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += '<p>' + new Date().toLocaleTimeString() + ': ' + message + '</p>';
+            console.log(message);
+        }
+
+        function testYandexMetric() {
+            log('🧪 Тестируем отправку события в Яндекс.Метрику...');
+            
+            if (typeof window.ym === 'function') {
+                try {
+                    ym(103085667, 'reachGoal', 'test_event', { test: true });
+                    log('✅ Тестовое событие отправлено успешно');
+                } catch (error) {
+                    log('❌ Ошибка отправки тестового события: ' + error.message);
+                }
+            } else {
+                log('❌ Функция ym не найдена');
+            }
+        }
+
+        function testQuizCompleted() {
+            log('🧪 Тестируем отправку события завершения квиза...');
+            
+            if (typeof window.ym === 'function') {
+                try {
+                    const parameters = {
+                        discount: 10000,
+                        business_type: 'ooo',
+                        phone: '+7 (910) 600-06-12',
+                        coupon: 'PROSTOBURO-TEST-10000'
+                    };
+                    
+                    ym(103085667, 'reachGoal', 'quiz_completed', parameters);
+                    log('✅ Событие завершения квиза отправлено успешно');
+                    log('📊 Параметры: ' + JSON.stringify(parameters));
+                } catch (error) {
+                    log('❌ Ошибка отправки события квиза: ' + error.message);
+                }
+            } else {
+                log('❌ Функция ym не найдена');
+            }
+        }
+
+        // Проверяем загрузку Яндекс.Метрики
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                if (typeof window.ym === 'function') {
+                    log('✅ Яндекс.Метрика загружена успешно');
+                } else {
+                    log('❌ Яндекс.Метрика не загружена');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

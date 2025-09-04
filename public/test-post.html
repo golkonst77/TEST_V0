@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест POST запросов</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 4px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .test-section { border: 1px solid #ddd; padding: 20px; margin: 20px 0; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Тест POST запросов к API</h1>
+    
+    <!-- Тест простого API -->
+    <div class="test-section">
+        <h2>1. Тест простого API (/api/test-email)</h2>
+        <button onclick="testSimpleAPI()">📧 Тест простого API</button>
+        <div id="simpleResult"></div>
+    </div>
+    
+         <!-- Тест основного API -->
+     <div class="test-section">
+         <h2>2. Тест основного API (/api/admin/notify-quiz-completion)</h2>
+         <button onclick="testMainAPI()">📧 Тест основного API</button>
+         <div id="mainResult"></div>
+     </div>
+     
+     <!-- Тест Email -->
+     <div class="test-section">
+         <h2>3. Тест Email отправки</h2>
+         <button onclick="testNodemailer()">📧 Тест Nodemailer</button>
+         <div id="emailResult"></div>
+     </div>
+    
+    <script>
+        async function testSimpleAPI() {
+            const resultDiv = document.getElementById('simpleResult');
+            resultDiv.innerHTML = '<div class="info">⏳ Тестируем простой API...</div>';
+            
+            try {
+                const testData = {
+                    phone: "+7 (953) 123-45-67",
+                    discount: 25,
+                    businessType: "ip",
+                    coupon: "TEST123-2500",
+                    answers: [
+                        {"questionId": 1, "answer": "ip"},
+                        {"questionId": 2, "answer": "chaos"}
+                    ]
+                };
+                
+                const response = await fetch('/api/test-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Простой API работает!<br>
+                            <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Ошибка простого API<br>
+                            <strong>Статус:</strong> ${response.status}<br>
+                            <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Ошибка выполнения запроса<br>
+                        <strong>Детали:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function testMainAPI() {
+            const resultDiv = document.getElementById('mainResult');
+            resultDiv.innerHTML = '<div class="info">⏳ Тестируем основной API...</div>';
+            
+            try {
+                const testData = {
+                    phone: "+7 (953) 123-45-67",
+                    discount: 25,
+                    businessType: "ip",
+                    coupon: "TEST123-2500",
+                    answers: [
+                        {"questionId": 1, "answer": "ip"},
+                        {"questionId": 2, "answer": "chaos"}
+                    ]
+                };
+                
+                const response = await fetch('/api/admin/notify-quiz-completion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Основной API работает!<br>
+                            <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Ошибка основного API<br>
+                            <strong>Статус:</strong> ${response.status}<br>
+                            <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Ошибка выполнения запроса<br>
+                        <strong>Детали:</strong> ${error.message}
+                    </div>
+                `;
+            }
+                 }
+         
+         async function testSupabase() {
+             const resultDiv = document.getElementById('supabaseResult');
+             resultDiv.innerHTML = '<div class="info">⏳ Тестируем подключение к Supabase...</div>';
+             
+             try {
+                 const response = await fetch('/api/test-supabase', {
+                     method: 'GET'
+                 });
+                 
+                 const result = await response.json();
+                 
+                 if (response.ok) {
+                     resultDiv.innerHTML = `
+                         <div class="success">
+                             ✅ Supabase подключение успешно!<br>
+                             <strong>База данных:</strong> ${result.services.database ? '✅' : '❌'}<br>
+                             <strong>Email сервис:</strong> ${result.services.email ? '✅' : '❌'}<br>
+                             <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                         </div>
+                     `;
+                 } else {
+                     resultDiv.innerHTML = `
+                         <div class="error">
+                             ❌ Ошибка подключения к Supabase<br>
+                             <strong>Статус:</strong> ${response.status}<br>
+                             <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                         </div>
+                     `;
+                 }
+             } catch (error) {
+                 resultDiv.innerHTML = `
+                     <div class="error">
+                         ❌ Ошибка выполнения запроса<br>
+                         <strong>Детали:</strong> ${error.message}
+                     </div>
+                 `;
+             }
+         }
+         
+         async function testSupabaseEmail() {
+             const resultDiv = document.getElementById('supabaseResult');
+             resultDiv.innerHTML = '<div class="info">⏳ Тестируем отправку email через Supabase...</div>';
+             
+             try {
+                 const response = await fetch('/api/test-supabase', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify({
+                         testEmail: 'admin@prostoburo.com'
+                     })
+                 });
+                 
+                 const result = await response.json();
+                 
+                 if (response.ok) {
+                     resultDiv.innerHTML = `
+                         <div class="success">
+                             ✅ Supabase email работает!<br>
+                             <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                         </div>
+                     `;
+                 } else {
+                     resultDiv.innerHTML = `
+                         <div class="error">
+                             ❌ Ошибка Supabase email<br>
+                             <strong>Статус:</strong> ${response.status}<br>
+                             <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                         </div>
+                     `;
+                 }
+             } catch (error) {
+                 resultDiv.innerHTML = `
+                     <div class="error">
+                         ❌ Ошибка выполнения запроса<br>
+                         <strong>Детали:</strong> ${error.message}
+                     </div>
+                 `;
+             }
+         }
+         
+         async function testEdgeFunction() {
+             const resultDiv = document.getElementById('supabaseResult');
+             resultDiv.innerHTML = '<div class="info">⏳ Тестируем Edge Function...</div>';
+             
+             try {
+                 // Получаем URL Supabase из переменных окружения (через наш API)
+                 const configResponse = await fetch('/api/test-supabase');
+                 const config = await configResponse.json();
+                 
+                 if (!config.success) {
+                     throw new Error('Не удалось получить конфигурацию Supabase');
+                 }
+                 
+                 // Формируем URL Edge Function
+                 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://qbjcdftphxre.supabase.co';
+                 const edgeFunctionUrl = `${supabaseUrl}/functions/v1/send-email`;
+                 
+                 resultDiv.innerHTML = `
+                     <div class="info">
+                         🔍 Тестируем Edge Function:<br>
+                         <strong>URL:</strong> ${edgeFunctionUrl}<br>
+                         <strong>Статус:</strong> Проверяем доступность...
+                     </div>
+                 `;
+                 
+                 // Тестируем Edge Function
+                 const response = await fetch(edgeFunctionUrl, {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify({
+                         to: 'admin@prostoburo.com',
+                         subject: '🧪 Тест Edge Function',
+                         html: '<h1>Тест Edge Function</h1><p>Это тестовое сообщение от Supabase Edge Function.</p>',
+                         text: 'Тест Edge Function\n\nЭто тестовое сообщение от Supabase Edge Function.'
+                     })
+                 });
+                 
+                 const result = await response.json();
+                 
+                 if (response.ok) {
+                     resultDiv.innerHTML = `
+                         <div class="success">
+                             ✅ Edge Function работает!<br>
+                             <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                         </div>
+                     `;
+                 } else {
+                     resultDiv.innerHTML = `
+                         <div class="error">
+                             ❌ Ошибка Edge Function<br>
+                             <strong>Статус:</strong> ${response.status}<br>
+                             <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}<br>
+                             <strong>Примечание:</strong> Возможно, Edge Function не развернут. См. SUPABASE_SETUP.md
+                         </div>
+                     `;
+                 }
+             } catch (error) {
+                 resultDiv.innerHTML = `
+                     <div class="error">
+                         ❌ Ошибка выполнения запроса<br>
+                         <strong>Детали:</strong> ${error.message}<br>
+                         <strong>Примечание:</strong> Edge Function может быть не развернут. См. SUPABASE_SETUP.md
+                     </div>
+                 `;
+             }
+         }
+     </script>
+</body>
+</html>

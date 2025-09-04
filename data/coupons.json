@@ -287,5 +287,173 @@
     "discount": 10000,
     "createdAt": "2025-08-29T14:53:36.832Z",
     "used": false
+  },
+  {
+    "id": 37,
+    "code": "PROSTOBURO-B7RCYN-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-02T13:33:43.955Z",
+    "used": false
+  },
+  {
+    "id": 38,
+    "code": "PROSTOBURO-90X5UR-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-02T19:28:16.661Z",
+    "used": false
+  },
+  {
+    "id": 39,
+    "code": "PROSTOBURO-KQRSMT-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-02T19:39:20.932Z",
+    "used": false
+  },
+  {
+    "id": 40,
+    "code": "PROSTOBURO-BMNPKG-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-03T09:36:50.833Z",
+    "used": false
+  },
+  {
+    "id": 41,
+    "code": "PROSTOBURO-XMN2ZU-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-03T09:44:28.636Z",
+    "used": false
+  },
+  {
+    "id": 42,
+    "code": "PROSTOBURO-PM0JE1-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-03T09:46:17.767Z",
+    "used": false
+  },
+  {
+    "id": 43,
+    "code": "PROSTOBURO-53UETW-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-03T10:36:52.610Z",
+    "used": false
+  },
+  {
+    "id": 44,
+    "code": "PROSTOBURO-XO26QU-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-03T10:59:12.332Z",
+    "used": false
+  },
+  {
+    "id": 45,
+    "code": "PROSTOBURO-OKS8RZ-10000",
+    "phone": "+7 (999) 887-76-65",
+    "discount": 10000,
+    "createdAt": "2025-09-03T12:01:31.703Z",
+    "used": false
+  },
+  {
+    "id": 46,
+    "code": "PROSTOBURO-9XDDB9-10000",
+    "phone": "+7 (910) 777-88-99",
+    "discount": 10000,
+    "createdAt": "2025-09-03T12:09:18.393Z",
+    "used": false
+  },
+  {
+    "id": 47,
+    "code": "PROSTOBURO-15CFRM-10000",
+    "phone": "+7 (215) 446-46-46",
+    "discount": 10000,
+    "createdAt": "2025-09-03T12:28:22.637Z",
+    "used": false
+  },
+  {
+    "id": 48,
+    "code": "PROSTOBURO-P8ZW0B-10000",
+    "phone": "+7 (111) 966-56-56",
+    "discount": 10000,
+    "createdAt": "2025-09-03T12:31:53.622Z",
+    "used": false
+  },
+  {
+    "id": 49,
+    "code": "PROSTOBURO-9E42OQ-10000",
+    "phone": "+7 (243) 434-64-65",
+    "discount": 10000,
+    "createdAt": "2025-09-03T14:13:48.842Z",
+    "used": false
+  },
+  {
+    "id": 50,
+    "code": "PROSTOBURO-NG6Q6P-10000",
+    "phone": "+7 (546) 546-54-65",
+    "discount": 10000,
+    "createdAt": "2025-09-04T08:34:18.855Z",
+    "used": false
+  },
+  {
+    "id": 51,
+    "code": "PROSTOBURO-HLAGUT-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-04T08:38:08.035Z",
+    "used": false
+  },
+  {
+    "id": 52,
+    "code": "PROSTOBURO-33BYP5-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-04T08:42:47.725Z",
+    "used": false
+  },
+  {
+    "id": 53,
+    "code": "PROSTOBURO-XXGIRE-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-04T08:45:09.176Z",
+    "used": false
+  },
+  {
+    "id": 54,
+    "code": "PROSTOBURO-0AUUGB-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-04T08:47:05.643Z",
+    "used": false
+  },
+  {
+    "id": 55,
+    "code": "PROSTOBURO-9TWMBD-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-04T09:25:30.822Z",
+    "used": false
+  },
+  {
+    "id": 56,
+    "code": "PROSTOBURO-WVKUQS-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-04T09:33:15.521Z",
+    "used": false
+  },
+  {
+    "id": 57,
+    "code": "PROSTOBURO-AJ53CH-10000",
+    "phone": "+7 (910) 600-06-12",
+    "discount": 10000,
+    "createdAt": "2025-09-04T10:18:01.194Z",
+    "used": false
   }
 ]

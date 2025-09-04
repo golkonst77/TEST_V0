@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Простой тест Яндекс.Метрики</title>
+</head>
+<body>
+    <h1>Тест отправки события в Яндекс.Метрику</h1>
+    
+    <button onclick="sendTestEvent()" style="padding: 10px 20px; font-size: 16px; background: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Отправить событие quiz_completed
+    </button>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 5px;"></div>
+
+    <!-- Яндекс.Метрика -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+        
+        ym(45860892, "init", {
+            defer: true,
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true,
+            webvisor: true
+        });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/45860892" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+    <script>
+        function log(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML += '<p>' + new Date().toLocaleTimeString() + ': ' + message + '</p>';
+            console.log(message);
+        }
+
+        function sendTestEvent() {
+            log('🧪 Отправляем тестовое событие...');
+            
+            if (typeof window.ym === 'function') {
+                try {
+                    // Отправляем точно такое же событие, как в квизе
+                    ym(45860892, 'reachGoal', 'quiz_completed', {
+                        discount: 10000,
+                        business_type: 'ooo',
+                        phone: '+7 (910) 600-06-12',
+                        coupon: 'TEST-COUPON-12345'
+                    });
+                    
+                    log('✅ Событие отправлено успешно!');
+                    log('📊 ID счетчика: 45860892');
+                    log('📊 Название события: quiz_completed');
+                    log('📊 Параметры: discount=10000, business_type=ooo');
+                    log('⏰ Проверьте в Яндекс.Метрике через 5-10 минут');
+                    
+                } catch (error) {
+                    log('❌ Ошибка: ' + error.message);
+                }
+            } else {
+                log('❌ Функция ym не найдена! Яндекс.Метрика не загружена.');
+            }
+        }
+
+        // Проверяем загрузку при старте
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                if (typeof window.ym === 'function') {
+                    log('✅ Яндекс.Метрика загружена успешно');
+                } else {
+                    log('❌ Яндекс.Метрика не загружена');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

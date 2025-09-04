@@ -18,7 +18,8 @@ export default function AdminSettingsPage() {
     maintenanceMode: false,
     analyticsEnabled: true,
     quiz_mode: "custom",
-    quiz_url: ""
+    quiz_url: "",
+    adminEmail: ""
   })
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -39,7 +40,8 @@ export default function AdminSettingsPage() {
           maintenanceMode: data.maintenancemode ?? false,
           analyticsEnabled: data.analyticsenabled ?? true,
           quiz_mode: data.quiz_mode || "custom",
-          quiz_url: data.quiz_url || ""
+          quiz_url: data.quiz_url || "",
+          adminEmail: data.admin_email || "admin@prostoburo.com"
         })
         setMessage("Настройки загружены")
       } else {
@@ -174,6 +176,30 @@ export default function AdminSettingsPage() {
                 placeholder="#popup:marquiz_685a59bddc273b0019e372cd"
                 className="h-8 text-sm mt-1"
               />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Email уведомления */}
+        <Card className="border border-gray-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Email уведомления</CardTitle>
+            <CardDescription className="text-sm">Настройки уведомлений о завершении квиза</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="adminEmail" className="text-sm">Email администратора</Label>
+              <Input
+                id="adminEmail"
+                type="email"
+                value={settings.adminEmail}
+                onChange={(e) => setSettings({ ...settings, adminEmail: e.target.value })}
+                placeholder="admin@prostoburo.com"
+                className="h-8 text-sm mt-1"
+              />
+              <p className="text-xs text-gray-600 mt-1">
+                На этот адрес будут отправляться уведомления о завершении квиза клиентами
+              </p>
             </div>
           </CardContent>
         </Card>

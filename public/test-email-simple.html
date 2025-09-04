@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест Email API</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; }
+        button:hover { background: #0056b3; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 4px; margin: 20px 0; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 4px; margin: 20px 0; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; padding: 15px; border-radius: 4px; margin: 20px 0; }
+        .test-section { border: 1px solid #ddd; padding: 20px; margin: 20px 0; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Тест Email API</h1>
+    
+    <div class="test-section">
+        <h2>Тест Nodemailer</h2>
+        <button onclick="testNodemailer()">📧 Тест Nodemailer</button>
+        <div id="emailResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Тест основного API</h2>
+        <button onclick="testMainAPI()">🎯 Тест основного API</button>
+        <div id="mainResult"></div>
+    </div>
+    
+    <script>
+        async function testNodemailer() {
+            const resultDiv = document.getElementById('emailResult');
+            resultDiv.innerHTML = '<div class="info">⏳ Тестируем отправку email через Nodemailer...</div>';
+            
+            try {
+                const response = await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        to: 'admin@prostoburo.com',
+                        subject: '🧪 Тест Nodemailer',
+                        html: '<h1>Тест Nodemailer</h1><p>Это тестовое сообщение от Nodemailer API.</p>',
+                        text: 'Тест Nodemailer\n\nЭто тестовое сообщение от Nodemailer API.'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Nodemailer работает!<br>
+                            <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Ошибка Nodemailer<br>
+                            <strong>Статус:</strong> ${response.status}<br>
+                            <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}<br>
+                            <strong>Примечание:</strong> Проверьте настройки EMAIL_USER и EMAIL_PASS в .env.local
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Ошибка выполнения запроса<br>
+                        <strong>Детали:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function testMainAPI() {
+            const resultDiv = document.getElementById('mainResult');
+            resultDiv.innerHTML = '<div class="info">⏳ Тестируем основной API...</div>';
+            
+            try {
+                const testData = {
+                    phone: "+7 (953) 123-45-67",
+                    discount: 2500,
+                    businessType: "ip",
+                    coupon: "TEST123-2500",
+                    answers: [
+                        {"questionId": 1, "answer": "ip"},
+                        {"questionId": 2, "answer": "chaos"}
+                    ]
+                };
+                
+                const response = await fetch('/api/admin/notify-quiz-completion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Основной API работает!<br>
+                            <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Ошибка основного API<br>
+                            <strong>Статус:</strong> ${response.status}<br>
+                            <strong>Ответ:</strong> ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Ошибка выполнения запроса<br>
+                        <strong>Детали:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
