@@ -132,13 +132,13 @@ export const Header = () => {
 
           {/* CTA Button and Version */}
           <div className="flex items-center gap-3">
-            <VersionBadge />
             <Button
               onClick={handleCruiseClick}
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               Получить скидку
             </Button>
+            <VersionBadge />
           </div>
         </div>
       </div>
