@@ -1,0 +1,116 @@
+[33mbc46f66[m Исправление читаемости текста в калькуляторе - Заголовок и подзаголовок калькулятора теперь белые с тенями для лучшей видимости - Внутренний блок 'Параметры вашего бизнеса' имеет белый фон и темный текст - Все надписи в калькуляторе теперь хорошо читаются
+[1mdiff --git a/components/calculator.tsx b/components/calculator.tsx[m
+[1mindex 336ebb7..571eb66 100644[m
+[1m--- a/components/calculator.tsx[m
+[1m+++ b/components/calculator.tsx[m
+[36m@@ -211,12 +211,12 @@[m [mexport function Calculator() {[m
+               <CalculatorIcon className="h-8 w-8 md:h-12 md:w-12 text-white" />[m
+             </div>[m
+           </div>[m
+[31m-          <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">[m
+[31m-            Калькулятор стоимости услуг[m
+[31m-          </h2>[m
+[31m-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed text-center">[m
+[31m-            Рассчитайте стоимость бухгалтерских услуг для вашего бизнеса[m
+[31m-          </p>[m
+[32m+[m[32m                     <h2 className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg mb-4">[m
+[32m+[m[32m             Калькулятор стоимости услуг[m
+[32m+[m[32m           </h2>[m
+[32m+[m[32m           <p className="text-lg md:text-xl text-white drop-shadow-md max-w-3xl mx-auto leading-relaxed text-center">[m
+[32m+[m[32m             Рассчитайте стоимость бухгалтерских услуг для вашего бизнеса[m
+[32m+[m[32m           </p>[m
+         </div>[m
+ [m
+         <div className="max-w-4xl mx-auto px-4">[m
+[36m@@ -228,14 +228,14 @@[m [mexport function Calculator() {[m
+               <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-white/30 rounded-full blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>[m
+             </div>[m
+             <div className="relative z-10">[m
+[31m-              <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">[m
+[31m-                <CardTitle className="text-xl md:text-2xl font-bold">Параметры вашего бизнеса</CardTitle>[m
+[31m-                <CardDescription className="text-blue-100 text-sm md:text-base">Заполните информацию о вашей компании для расчета стоимости</CardDescription>[m
+[31m-              </CardHeader>[m
+[32m+[m[32m                             <CardHeader className="bg-white text-gray-900 rounded-t-lg border-b-2 border-gray-200">[m
+[32m+[m[32m                 <CardTitle className="text-xl md:text-2xl font-bold text-gray-900">Параметры вашего бизнеса</CardTitle>[m
+[32m+[m[32m                 <CardDescription className="text-gray-600 text-sm md:text-base">Заполните информацию о вашей компании для расчета стоимости</CardDescription>[m
+[32m+[m[32m               </CardHeader>[m
+               <CardContent className="space-y-6 p-4 md:p-8">[m
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">[m
+                   <div className="space-y-2">[m
+[31m-                    <Label htmlFor="companyType" className="text-sm font-semibold text-gray-700">Тип компании</Label>[m
+[32m+[m[32m                    <Label htmlFor="companyType" className="text-sm font-semibold text-gray-900">Тип компании</Label>[m
+                     <Select[m
+                       value={state.companyType}[m
+                       onValueChange={(value) => setState((prev) => ({ ...prev, companyType: value }))}[m
+[36m@@ -252,7 +252,7 @@[m [mexport function Calculator() {[m
+                   </div>[m
+ [m
+                   <div className="space-y-2">[m
+[31m-                    <Label htmlFor="taxSystem" className="text-sm font-semibold text-gray-700">Система налогообложения</Label>[m
+[32m+[m[32m                    <Label htmlFor="taxSystem" className="text-sm font-semibold text-gray-900">Система налогообложения</Label>[m
+                     <Select[m
+                       value={state.taxSystem}[m
+                       onValueChange={(value) => setState((prev) => ({ ...prev, taxSystem: value }))}[m
+[36m@@ -270,7 +270,7 @@[m [mexport function Calculator() {[m
+                   </div>[m
+ [m
+                   <div className="space-y-2">[m
+[31m-                    <Label htmlFor="employees" className="text-sm font-semibold text-gray-700">Количество сотрудников</Label>[m
+[32m+[m[32m                    <Label htmlFor="employees" className="text-sm font-semibold text-gray-900">Количество сотрудников</Label>[m
+                     <Input[m
+                       id="employees"[m
+                       type="number"[m
+[36m@@ -282,7 +282,7 @@[m [mexport function Calculator() {[m
+                   </div>[m
+ [m
+                   <div className="space-y-2">[m
+[31m-                    <Label htmlFor="documents" className="text-sm font-semibold text-gray-700">Количество документов в месяц</Label>[m
+[32m+[m[32m                    <Label htmlFor="documents" className="text-sm font-semibold text-gray-900">Количество документов в месяц</Label>[m
+                     <Input[m
+                       id="documents"[m
+                       type="number"[m
+[36m@@ -295,7 +295,7 @@[m [mexport function Calculator() {[m
+                 </div>[m
+ [m
+                 <div className="space-y-4">[m
+[31m-                  <Label className="text-sm font-semibold text-gray-700">Необходимые услуги</Label>[m
+[32m+[m[32m                  <Label className="text-sm font-semibold text-gray-900">Необходимые услуги</Label>[m
+                   <div className="grid grid-cols-1 gap-4">[m
+                     <div className="flex items-start space-x-3 p-3 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">[m
+                       <Checkbox[m
+[36m@@ -304,7 +304,7 @@[m [mexport function Calculator() {[m
+                         onCheckedChange={(checked) => handleServiceChange("accounting", checked as boolean)}[m
+                         className="data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"[m
+                       />[m
+[31m-                      <Label htmlFor="accounting" className="text-sm font-normal text-gray-700 flex-1">[m
+[32m+[m[32m                      <Label htmlFor="accounting" className="text-sm font-normal text-gray-900 flex-1">[m
+                         Бухгалтерский учет (от {servicePrices.accounting.price.toLocaleString()} руб/мес)[m
+                       </Label>[m
+                     </div>[m
+[36m@@ -315,7 +315,7 @@[m [mexport function Calculator() {[m
+                         onCheckedChange={(checked) => handleServiceChange("payroll", checked as boolean)}[m
+                         className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"[m
+                       />[m
+[31m-                      <Label htmlFor="payroll" className="text-sm font-normal text-gray-700 flex-1">[m
+[32m+[m[32m                      <Label htmlFor="payroll" className="text-sm font-normal text-gray-900 flex-1">[m
+                         Зарплата и кадры (от {servicePrices.payroll.price.toLocaleString()} руб/мес)[m
+                       </Label>[m
+                     </div>[m
+[36m@@ -326,7 +326,7 @@[m [mexport function Calculator() {[m
+                         onCheckedChange={(checked) => handleServiceChange("legal", checked as boolean)}[m
+                         className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"[m
+                       />[m
+[31m-                      <Label htmlFor="legal" className="text-sm font-normal text-gray-700 flex-1">[m
+[32m+[m[32m                      <Label htmlFor="legal" className="text-sm font-normal text-gray-900 flex-1">[m
+                         Юридическое сопровождение (от {servicePrices.legal.price.toLocaleString()} руб/мес)[m
+                       </Label>[m
+                     </div>[m
+[36m@@ -337,7 +337,7 @@[m [mexport function Calculator() {[m
+                         onCheckedChange={(checked) => handleServiceChange("terminal", checked as boolean)}[m
+                         className="data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"[m
+                       />[m
+[31m-                      <Label htmlFor="terminal" className="text-sm font-normal text-gray-700 flex-1">[m
+[32m+[m[32m                                             <Label htmlFor="terminal" className="text-sm font-normal text-gray-900 flex-1">[m
+                         Кассовый терминал (от {servicePrices.terminal.price.toLocaleString()} руб)[m
+                       </Label>[m
+                     </div>[m

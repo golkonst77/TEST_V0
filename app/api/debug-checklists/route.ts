@@ -1,13 +1,24 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
 export async function GET() {
   try {
+    // Проверяем наличие переменных окружения
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.log("Supabase environment variables not found - using fallback")
+      return NextResponse.json({ 
+        checklists: [],
+        storageChecks: [],
+        total: 0,
+        message: "Supabase не настроен - используем fallback"
+      })
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
     // Получаем все чек-листы
     const { data: checklists, error } = await supabase
       .from("checklists")

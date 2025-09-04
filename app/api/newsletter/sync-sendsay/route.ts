@@ -2,11 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getSendsayService } from "@/lib/sendsay-service";
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_KEY!);
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase environment variables not configured");
+  }
+
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 export async function POST() {
   try {
     console.log('🔄 Начинаем синхронизацию подписчиков с Sendsay...');
+    
+    const supabase = getSupabaseClient();
     
     // Получаем сервис Sendsay
     const sendsayService = getSendsayService();
@@ -124,6 +135,7 @@ export async function POST() {
 // Получение статуса синхронизации
 export async function GET() {
   try {
+    const supabase = getSupabaseClient();
     const sendsayService = getSendsayService();
     
     // Проверяем соединение

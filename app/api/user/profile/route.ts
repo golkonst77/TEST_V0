@@ -1,11 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_KEY!);
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase environment variables not configured");
+  }
+
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 // Функция для создания таблицы user_profiles если её нет
 async function ensureUserProfilesTableExists() {
   try {
+    const supabase = getSupabaseClient();
+    
     // Проверяем существование таблицы user_profiles
     const { data: profiles, error: profilesError } = await supabase
       .from('user_profiles')
@@ -65,6 +76,8 @@ async function ensureUserProfilesTableExists() {
 
 export async function GET(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient();
+    
     // Убеждаемся что таблица существует
     await ensureUserProfilesTableExists();
     
@@ -95,6 +108,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient();
+    
     // Убеждаемся что таблица существует
     await ensureUserProfilesTableExists();
     
