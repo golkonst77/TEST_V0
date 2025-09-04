@@ -17,6 +17,7 @@ import { ReCAPTCHAComponent } from "./recaptcha"
 import { useRouter, usePathname } from "next/navigation"
 import { useHomepageSections } from "@/hooks/use-homepage-sections"
 import { useDeviceType } from "@/hooks/use-device-type"
+import { VersionBadge } from "./version-badge"
 
 const MENU_ITEMS = [
   { id: 'services', title: 'Услуги', href: '/#services', isAnchor: true },
@@ -129,13 +130,16 @@ export const Header = () => {
             </a>
           </div>
 
-          {/* CTA Button */}
-          <Button
-            onClick={handleCruiseClick}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            Получить скидку
-          </Button>
+          {/* CTA Button and Version */}
+          <div className="flex items-center gap-3">
+            <VersionBadge />
+            <Button
+              onClick={handleCruiseClick}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              Получить скидку
+            </Button>
+          </div>
         </div>
       </div>
 

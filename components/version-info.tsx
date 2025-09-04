@@ -38,7 +38,7 @@ export function VersionInfo() {
 
   if (isLoading) {
     return (
-      <div className="text-xs text-gray-400 text-center mt-2">
+      <div className="text-sm text-black text-center mt-2 font-medium">
         <span className="font-mono">Загрузка версии...</span>
       </div>
     )
@@ -46,23 +46,23 @@ export function VersionInfo() {
 
   if (!versionInfo) {
     return (
-      <div className="text-xs text-gray-400 text-center mt-2">
+      <div className="text-sm text-black text-center mt-2 font-medium">
         <span className="font-mono">v1.0.2</span>
         <span className="mx-1">•</span>
         <span className="font-mono">build 102</span>
         <span className="mx-1">•</span>
-        <span className="text-gray-500">2025-09-04</span>
+        <span className="text-gray-600">2025-09-04</span>
       </div>
     )
   }
 
   return (
-    <div className="text-xs text-gray-400 text-center mt-2">
+    <div className="text-sm text-black text-center mt-2 font-medium">
       <span className="font-mono">v{versionInfo.version}</span>
       <span className="mx-1">•</span>
       <span className="font-mono">build {versionInfo.build}</span>
       <span className="mx-1">•</span>
-      <span className="text-gray-500">{versionInfo.date}</span>
+      <span className="text-gray-600">{versionInfo.date}</span>
     </div>
   )
 }
