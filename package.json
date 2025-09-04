@@ -6,7 +6,10 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "version:patch": "node scripts/update-version.cjs patch",
+    "version:minor": "node scripts/update-version.cjs minor",
+    "version:major": "node scripts/update-version.cjs major"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { useState, useEffect } from "react"
 import ReactMarkdown from "react-markdown"
+import { VersionInfo } from "./version-info"
 
 export function Footer() {
   const [open, setOpen] = useState(false)
@@ -80,6 +81,9 @@ export function Footer() {
           </div>
         </div>
       </div>
+      
+      {/* Версия приложения */}
+      <VersionInfo />
     </footer>
   )
 }
