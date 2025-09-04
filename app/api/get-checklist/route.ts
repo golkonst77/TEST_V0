@@ -1,13 +1,22 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
 export async function POST(request: Request) {
   try {
+    // Проверяем наличие переменных окружения
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.log("Supabase environment variables not found - using fallback")
+      return NextResponse.json({ 
+        error: "Активный чек-лист не найден",
+        message: "Supabase не настроен"
+      }, { status: 404 })
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
     // Получаем активный чек-лист (только один может быть активным)
     const { data: checklist, error } = await supabase
       .from("checklists")
