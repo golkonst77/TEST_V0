@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_KEY!
-)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase environment variables not configured");
+  }
+  
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -66,10 +72,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(
   try {
     // Получаем список всех подписчиков (только для админа)
-    const { data, error } = await supabase
+    ) {
+    const supabase = getSupabaseClient();
+    $3const { data, error } = await supabase
       .from('newsletter_subscribers')
       .select('*')
       .eq('is_active', true)

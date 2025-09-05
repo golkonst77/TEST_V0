@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_KEY!
-const supabase = createClient(supabaseUrl, supabaseKey)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.SUPABASE_KEY
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase environment variables not configured")
+  }
+
+  return createClient(supabaseUrl, supabaseKey)
+}
 
 // Получение конкретной кампании
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const supabase = getSupabaseClient()
     const { data: campaign, error } = await supabase
       .from('newsletter_campaigns')
       .select('*')
@@ -29,6 +37,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // Обновление кампании
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const supabase = getSupabaseClient()
     const { subject, content, scheduled_at, status } = await request.json()
 
     const { data: campaign, error } = await supabase
@@ -59,6 +68,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 // Удаление кампании
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const supabase = getSupabaseClient()
     const { error } = await supabase
       .from('newsletter_campaigns')
       .delete()

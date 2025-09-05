@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_KEY!
-const supabase = createClient(supabaseUrl, supabaseKey)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.SUPABASE_KEY
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase environment variables not configured")
+  }
+
+  return createClient(supabaseUrl, supabaseKey)
+}
 
 // Функция для создания таблиц если их нет
 async function ensureTablesExist() {
   try {
+    const supabase = getSupabaseClient()
+    
     // Проверяем существование таблицы newsletter_campaigns
     const { data: campaigns, error: campaignsError } = await supabase
       .from('newsletter_campaigns')
@@ -91,6 +100,8 @@ async function ensureTablesExist() {
 // Получение списка кампаний
 export async function GET() {
   try {
+    const supabase = getSupabaseClient()
+    
     // Убеждаемся что таблицы существуют
     await ensureTablesExist()
     
@@ -114,6 +125,8 @@ export async function GET() {
 // Создание новой кампании
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient()
+    
     // Убеждаемся что таблицы существуют
     await ensureTablesExist()
     
