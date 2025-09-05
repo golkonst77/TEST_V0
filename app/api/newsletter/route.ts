@@ -72,12 +72,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(
+export async function GET() {
   try {
+    const supabase = getSupabaseClient()
+    
     // Получаем список всех подписчиков (только для админа)
-    ) {
-    const supabase = getSupabaseClient();
-    $3const { data, error } = await supabase
+    const { data, error } = await supabase
       .from('newsletter_subscribers')
       .select('*')
       .eq('is_active', true)

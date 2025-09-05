@@ -118,14 +118,13 @@ const logEmailResults = async (campaignId: string, emails: string[], success: bo
 };
 
 // Отправка кампании
-export async function POST(
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const campaignId = params.id
     
     // Получаем кампанию
-    ) {
-    const supabase = getSupabaseClient();
-    $3const { data, error } = await supabase
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
       .from('newsletter_campaigns')
       .select('*')
       .eq('id', campaignId)
