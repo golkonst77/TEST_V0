@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { createClient } from '@supabase/supabase-js'
 
-const DATA_FILE = path.join(process.cwd(), 'data', 'coupons.json')
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase environment variables not configured");
+  }
+  
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 // Интерфейс для купона
 interface Coupon {
@@ -15,28 +23,48 @@ interface Coupon {
   usedAt?: string
 }
 
-// Функция для чтения купонов из файла
-async function readCoupons(): Promise<Coupon[]> {
-  try {
-    const data = await fs.readFile(DATA_FILE, 'utf8')
-    return JSON.parse(data)
-  } catch (error) {
-    // Если файл не существует, создаем пустой массив
-    return []
-  }
-}
-
-// Функция для записи купонов в файл
-async function writeCoupons(coupons: Coupon[]): Promise<void> {
-  // Создаем директорию data если её нет
-  const dataDir = path.dirname(DATA_FILE)
-  try {
-    await fs.access(dataDir)
-  } catch {
-    await fs.mkdir(dataDir, { recursive: true })
-  }
+// Функция для создания таблицы купонов если её нет
+async function ensureCouponsTableExists() {
+  const supabase = getSupabaseClient();
   
-  await fs.writeFile(DATA_FILE, JSON.stringify(coupons, null, 2))
+  try {
+    // Проверяем существование таблицы
+    const { error } = await supabase
+      .from('coupons')
+      .select('id')
+      .limit(1);
+    
+    if (error && error.code === '42P01') {
+      // Таблица не существует, создаем её
+      console.log('Создаем таблицу coupons...');
+      
+      const { error: createError } = await supabase.rpc('create_coupons_table');
+      
+      if (createError) {
+        console.error('Ошибка создания таблицы coupons:', createError);
+        // Если RPC не работает, создаем таблицу через SQL
+        const { error: sqlError } = await supabase.rpc('exec_sql', {
+          sql: `
+            CREATE TABLE IF NOT EXISTS coupons (
+              id SERIAL PRIMARY KEY,
+              code VARCHAR(255) UNIQUE NOT NULL,
+              phone VARCHAR(20) NOT NULL,
+              discount INTEGER NOT NULL,
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+              used BOOLEAN DEFAULT FALSE,
+              used_at TIMESTAMP WITH TIME ZONE
+            );
+          `
+        });
+        
+        if (sqlError) {
+          console.error('Ошибка создания таблицы через SQL:', sqlError);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Ошибка проверки таблицы coupons:', error);
+  }
 }
 
 // POST - создание нового купона
@@ -51,46 +79,70 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const coupons = await readCoupons()
+    const supabase = getSupabaseClient();
     
-    // Генерируем новый ID
-    const newId = coupons.length > 0 ? Math.max(...coupons.map(c => c.id)) + 1 : 1
+    // Убеждаемся что таблица существует
+    await ensureCouponsTableExists();
     
-    const newCoupon: Coupon = {
-      id: newId,
+    const newCoupon = {
       code,
       phone,
       discount,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
       used: false
     }
     
-    coupons.push(newCoupon)
-    await writeCoupons(coupons)
+    const { data, error } = await supabase
+      .from('coupons')
+      .insert([newCoupon])
+      .select()
+      .single();
     
-    console.log('Новый купон сохранен:', newCoupon)
+    if (error) {
+      console.error('Ошибка Supabase при сохранении купона:', error);
+      return NextResponse.json(
+        { error: 'Ошибка при сохранении купона: ' + error.message },
+        { status: 500 }
+      );
+    }
     
-    return NextResponse.json({ success: true, coupon: newCoupon })
+    console.log('Новый купон сохранен:', data);
+    
+    return NextResponse.json({ success: true, coupon: data });
   } catch (error) {
-    console.error('Ошибка при сохранении купона:', error)
+    console.error('Ошибка при сохранении купона:', error);
     return NextResponse.json(
       { error: 'Ошибка сервера при сохранении купона' },
       { status: 500 }
-    )
+    );
   }
 }
 
 // GET - получение всех купонов
 export async function GET() {
   try {
-    const coupons = await readCoupons()
-    return NextResponse.json({ coupons })
+    const supabase = getSupabaseClient();
+    
+    const { data, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Ошибка Supabase при получении купонов:', error);
+      return NextResponse.json(
+        { error: 'Ошибка при получении купонов: ' + error.message },
+        { status: 500 }
+      );
+    }
+    
+    return NextResponse.json({ coupons: data || [] });
   } catch (error) {
-    console.error('Ошибка при получении купонов:', error)
+    console.error('Ошибка при получении купонов:', error);
     return NextResponse.json(
       { error: 'Ошибка сервера при получении купонов' },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -106,27 +158,39 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const coupons = await readCoupons()
-    const couponIndex = coupons.findIndex(c => c.code === code)
+    const supabase = getSupabaseClient();
     
-    if (couponIndex === -1) {
+    const { data, error } = await supabase
+      .from('coupons')
+      .update({ 
+        used: true, 
+        used_at: new Date().toISOString() 
+      })
+      .eq('code', code)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Ошибка Supabase при обновлении купона:', error);
+      return NextResponse.json(
+        { error: 'Ошибка при обновлении купона: ' + error.message },
+        { status: 500 }
+      );
+    }
+    
+    if (!data) {
       return NextResponse.json(
         { error: 'Купон не найден' },
         { status: 404 }
-      )
+      );
     }
     
-    coupons[couponIndex].used = true
-    coupons[couponIndex].usedAt = new Date().toISOString()
-    
-    await writeCoupons(coupons)
-    
-    return NextResponse.json({ success: true, coupon: coupons[couponIndex] })
+    return NextResponse.json({ success: true, coupon: data });
   } catch (error) {
-    console.error('Ошибка при обновлении купона:', error)
+    console.error('Ошибка при обновлении купона:', error);
     return NextResponse.json(
       { error: 'Ошибка сервера при обновлении купона' },
       { status: 500 }
-    )
+    );
   }
 } 
