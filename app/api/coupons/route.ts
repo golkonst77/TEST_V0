@@ -18,6 +18,7 @@ interface Coupon {
   code: string
   phone: string
   discount: number
+  business_type?: string
   createdAt: string
   used: boolean
   usedAt?: string
@@ -50,6 +51,7 @@ async function ensureCouponsTableExists() {
               code VARCHAR(255) UNIQUE NOT NULL,
               phone VARCHAR(20) NOT NULL,
               discount INTEGER NOT NULL,
+              business_type VARCHAR(100),
               created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
               used BOOLEAN DEFAULT FALSE,
               used_at TIMESTAMP WITH TIME ZONE
@@ -70,7 +72,7 @@ async function ensureCouponsTableExists() {
 // POST - создание нового купона
 export async function POST(request: NextRequest) {
   try {
-    const { code, phone, discount } = await request.json()
+    const { code, phone, discount, business_type } = await request.json()
     
     if (!code || !phone || !discount) {
       return NextResponse.json(
@@ -88,6 +90,7 @@ export async function POST(request: NextRequest) {
       code,
       phone,
       discount,
+      business_type: business_type || null,
       created_at: new Date().toISOString(),
       used: false
     }
