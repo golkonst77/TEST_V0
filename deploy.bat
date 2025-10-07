@@ -26,11 +26,12 @@ if not exist "%SSH_KEY_PATH%" (
 echo [INFO] SSH key found: %SSH_KEY_PATH%
 echo [INFO] Connecting to server: %SSH_USER%@%SSH_HOST%
 echo [INFO] Project path: %PROJECT_PATH%
+echo [INFO] Deploy script: %DEPLOY_SCRIPT_PATH%
 echo.
 
-REM Upload improved deploy script to server
-echo [STEP 1] Uploading deploy script to server...
-scp -i "%SSH_KEY_PATH%" deploy-server.sh %SSH_USER%@%SSH_HOST%:/home/pb001/deploy-server.sh
+REM Upload improved deploy script to server (replace the old one)
+echo [STEP 1] Uploading improved deploy script to server...
+scp -i "%SSH_KEY_PATH%" deploy-server.sh %SSH_USER%@%SSH_HOST%:/home/pb001/deploy.sh
 
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Failed to upload deploy script to server
@@ -38,17 +39,11 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] Failed to create deploy script on server
-    pause
-    exit /b 1
-)
-
 echo [STEP 2] Making deploy script executable...
-ssh -t -i "%SSH_KEY_PATH%" %SSH_USER%@%SSH_HOST% "chmod +x /home/pb001/deploy-server.sh"
+ssh -t -i "%SSH_KEY_PATH%" %SSH_USER%@%SSH_HOST% "chmod +x /home/pb001/deploy.sh"
 
 echo [STEP 3] Running deployment with improved logging...
-ssh -t -i "%SSH_KEY_PATH%" %SSH_USER%@%SSH_HOST% "/home/pb001/deploy-server.sh"
+ssh -t -i "%SSH_KEY_PATH%" %SSH_USER%@%SSH_HOST% "/home/pb001/deploy.sh"
 
 if %ERRORLEVEL% equ 0 (
     echo.
