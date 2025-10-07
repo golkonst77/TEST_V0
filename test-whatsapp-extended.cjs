@@ -3,7 +3,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 async function testWhatsAppExtended() {
   console.log('🧪 Расширенное тестирование WhatsApp API...\n');
   
-  const token = 'QlZ00L1DXVAv17SfAoTtarbseCNIKaIo';
+  const token = 'K9edm63ZcOVma3QQQZy4vQM7JQOSI1RF';
   const testPhone = '79106000612';
   
   // Тест 1: Проверка с разными заголовками

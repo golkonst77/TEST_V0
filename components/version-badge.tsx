@@ -15,7 +15,12 @@ export function VersionBadge() {
   useEffect(() => {
     const fetchVersion = async () => {
       try {
-        const response = await fetch('/version.json')
+        // Пробуем сначала API endpoint, потом статический файл
+        let response = await fetch('/api/version')
+        if (!response.ok) {
+          response = await fetch('/version.json')
+        }
+        
         if (response.ok) {
           const data = await response.json()
           setVersionInfo(data)
@@ -30,14 +35,14 @@ export function VersionBadge() {
 
   if (!versionInfo) {
     return (
-      <div className="text-xs text-gray-500 font-mono">
+      <div className="text-xs text-blue-600 font-mono bg-blue-50 px-2 py-1 rounded">
         v1.0.2
       </div>
     )
   }
 
   return (
-    <div className="text-xs text-gray-500 font-mono">
+    <div className="text-xs text-blue-600 font-mono bg-blue-50 px-2 py-1 rounded">
       v{versionInfo.version}
     </div>
   )

@@ -17,7 +17,12 @@ export function VersionInfo() {
     const fetchVersion = async () => {
       try {
         console.log('🔍 Загружаем версию...')
-        const response = await fetch('/version.json')
+        // Пробуем сначала API endpoint, потом статический файл
+        let response = await fetch('/api/version')
+        if (!response.ok) {
+          response = await fetch('/version.json')
+        }
+        
         console.log('📡 Ответ сервера:', response.status, response.ok)
         if (response.ok) {
           const data = await response.json()
@@ -46,23 +51,19 @@ export function VersionInfo() {
 
   if (!versionInfo) {
     return (
-      <div className="text-sm text-black text-center mt-2 font-medium">
-        <span className="font-mono">v1.0.2</span>
+      <div className="text-sm text-gray-600 text-center mt-4 font-medium border-t border-gray-300 pt-2">
+        <span className="font-mono text-blue-600">v1.0.2</span>
         <span className="mx-1">•</span>
-        <span className="font-mono">build 102</span>
-        <span className="mx-1">•</span>
-        <span className="text-gray-600">2025-09-04</span>
+        <span className="text-gray-500">2025-09-04</span>
       </div>
     )
   }
 
   return (
-    <div className="text-sm text-black text-center mt-2 font-medium">
-      <span className="font-mono">v{versionInfo.version}</span>
+    <div className="text-sm text-gray-600 text-center mt-4 font-medium border-t border-gray-300 pt-2">
+      <span className="font-mono text-blue-600">v{versionInfo.version}</span>
       <span className="mx-1">•</span>
-      <span className="font-mono">build {versionInfo.build}</span>
-      <span className="mx-1">•</span>
-      <span className="text-gray-600">{versionInfo.date}</span>
+      <span className="text-gray-500">{versionInfo.date}</span>
     </div>
   )
 }

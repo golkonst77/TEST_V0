@@ -493,18 +493,17 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
       setShowThanks(true)
       
       // Отправляем цель в Яндекс.Метрику
-      if (typeof window !== 'undefined' && (window as any).ym) {
-        try {
-          (window as any).ym(45860892, 'reachGoal', 'quiz_completed', {
-            phone: phone.trim(),
-            discount: discount,
-            businessType: businessType,
-            coupon: fullCoupon
-          })
-          console.log('✅ [METRIKA] Цель "quiz_completed" отправлена в Яндекс.Метрику')
-        } catch (error) {
-          console.error('❌ [METRIKA] Ошибка отправки цели в Яндекс.Метрику:', error)
-        }
+      try {
+        const { sendYandexMetric } = await import('@/utils/yandex-metrics')
+        sendYandexMetric('quiz_completed', {
+          phone: phone.trim(),
+          discount: discount,
+          businessType: businessType,
+          coupon: fullCoupon
+        })
+        console.log('✅ [METRIKA] Цель "quiz_completed" отправлена в Яндекс.Метрику')
+      } catch (error) {
+        console.error('❌ [METRIKA] Ошибка отправки цели в Яндекс.Метрику:', error)
       }
       
       // Reset form

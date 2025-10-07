@@ -39,7 +39,13 @@ export async function PUT(request: NextRequest) {
       logoImageUrl: body.logoImageUrl,
       logoText: body.logoText,
       logoShow: body.logoShow,
-      admin_email: body.adminEmail
+      admin_email: body.adminEmail,
+      // Обрабатываем header данные если они есть
+      ...(body.header && {
+        phone: body.header.phone?.number || body.phone,
+        telegram: body.header.social?.telegram || body.telegram,
+        vk: body.header.social?.vk || body.vk
+      })
     }
 
     console.log("Settings to update:", settingsToUpdate)

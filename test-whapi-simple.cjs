@@ -11,7 +11,7 @@ async function testWhapi() {
     const response = await fetch('https://gate.whapi.cloud/messages/document', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer QlZ00L1DXVAv17SfAoTtarbseCNIKaIo',
+        'Authorization': 'Bearer K9edm63ZcOVma3QQQZy4vQM7JQOSI1RF',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)

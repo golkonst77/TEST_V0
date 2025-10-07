@@ -17,7 +17,6 @@ import { ReCAPTCHAComponent } from "./recaptcha"
 import { useRouter, usePathname } from "next/navigation"
 import { useHomepageSections } from "@/hooks/use-homepage-sections"
 import { useDeviceType } from "@/hooks/use-device-type"
-import { VersionBadge } from "./version-badge"
 
 const MENU_ITEMS = [
   { id: 'services', title: 'Услуги', href: '/#services', isAnchor: true },
@@ -138,7 +137,6 @@ export const Header = () => {
             >
               Получить скидку
             </Button>
-            <VersionBadge />
           </div>
         </div>
       </div>

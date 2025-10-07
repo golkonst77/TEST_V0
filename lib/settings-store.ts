@@ -32,7 +32,7 @@ export interface SiteSettings {
 }
 
 // Проверяем наличие переменных окружения
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY
 
 console.log("Supabase URL:", supabaseUrl ? "Configured" : "Not configured")

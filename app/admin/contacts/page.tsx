@@ -92,8 +92,8 @@ export default function AdminContactsPage() {
     setMessage("")
     
     try {
-      // Сохраняем в настройки
-      const settingsResponse = await fetch("/api/admin/settings", {
+      // Сохраняем все данные одним запросом
+      const response = await fetch("/api/admin/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -104,17 +104,7 @@ export default function AdminContactsPage() {
           address: contacts.address,
           telegram: contacts.telegram,
           vk: contacts.vk,
-          working_hours: contacts.working_hours
-        }),
-      })
-
-      // Синхронизируем с header
-      const headerResponse = await fetch("/api/admin/settings", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+          working_hours: contacts.working_hours,
           header: {
             phone: {
               number: contacts.phone,
@@ -129,12 +119,19 @@ export default function AdminContactsPage() {
         }),
       })
 
-      if (settingsResponse.ok && headerResponse.ok) {
-        setMessage("Контактная информация сохранена")
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setMessage("Контактная информация сохранена")
+        } else {
+          setMessage("Не удалось сохранить контактную информацию")
+        }
       } else {
-        setMessage("Не удалось сохранить контактную информацию")
+        const errorData = await response.json()
+        setMessage(errorData.error || "Не удалось сохранить контактную информацию")
       }
     } catch (error) {
+      console.error("Save error:", error)
       setMessage("Ошибка подключения к серверу")
     } finally {
       setSaving(false)
