@@ -16,7 +16,8 @@ import {
   Activity,
   Clock,
   CheckCircle,
-  Eye
+  Eye,
+  Server
 } from "lucide-react"
 import Link from "next/link"
 
@@ -50,6 +51,12 @@ const quickActions = [
     description: "Общие настройки сайта и конфигурация",
     href: "/admin/settings",
     icon: Settings
+  },
+  {
+    title: "Переменные окружения",
+    description: "Просмотр конфигурации приложения",
+    href: "/admin/environment",
+    icon: Server
   }
 ]
 

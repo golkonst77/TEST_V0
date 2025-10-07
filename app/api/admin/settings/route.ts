@@ -72,3 +72,8 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Ошибка сохранения настроек" }, { status: 500 })
   }
 }
+
+export async function POST(request: NextRequest) {
+  // Перенаправляем POST запросы на PUT логику
+  return PUT(request)
+}

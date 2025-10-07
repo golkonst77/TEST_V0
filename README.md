@@ -193,7 +193,143 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 ## 🚀 Деплой
 
-Проект автоматически деплоится на Vercel при пуше в ветку `main`.
+### Схема портов на сервере
+
+**Важно!** На сервере используется следующая схема портов:
+
+- **hvostikalert.ru** → **порт 3001** ✅
+- **prostoburo.com** → **порт 3000** ✅
+
+### Скрипты деплоя
+
+#### 1. Основной деплой PROSTOBURO
+```bash
+# Windows batch файл
+D:\DATA\BAT\Запуск деплоя на сервере PROSTOBURO.bat
+```
+
+**Что делает:**
+- Подключается к серверу `212.34.138.16`
+- Выполняет скрипт `/home/pb001/deploy.sh`
+- Обновляет код из Git репозитория
+- Устанавливает зависимости
+- Собирает проект
+- Перезапускает PM2 процесс
+
+#### 2. Деплой HVOSTIK-ALERT
+```bash
+# Windows batch файл
+D:\DATA\BAT\Запуск деплоя на сервере HVOSTIK-ALERT.bat
+```
+
+**Что делает:**
+- Подключается к серверу `212.34.138.16`
+- Выполняет скрипт `/var/www/hvostikalert_usr/deploy.sh`
+- Запускает приложение на порту 3001
+
+### Структура деплоя на сервере
+
+```
+/var/www/
+├── hvostikalert_usr/
+│   ├── data/www/hvostikalert.ru/    # Код hvostik-alert
+│   └── deploy.sh                    # Скрипт деплоя hvostik-alert
+└── prostoburo_c_usr/
+    ├── data/www/prostoburo.com/     # Код prostoburo
+    └── deploy.sh                    # Скрипт деплоя prostoburo
+```
+
+### PM2 процессы
+
+```bash
+# Проверка статуса
+pm2 status
+
+# Ожидаемый результат:
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ hvastik-alert      │ fork     │ 0    │ online    │ 0%       │ 58.6mb   │
+│ 1  │ prostoburo         │ fork     │ 0    │ online    │ 0%       │ 58.6mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+```
+
+### Nginx конфигурация
+
+#### hvostikalert.ru
+```nginx
+upstream hvostikalert.ru {
+    server localhost:3001;
+}
+```
+
+#### prostoburo.com
+```nginx
+upstream prostoburo.com {
+    server localhost:3000;
+}
+```
+
+### Переменные окружения
+
+#### .env.local для prostoburo
+```env
+PORT=3000
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+#### .env.local для hvostik-alert
+```env
+PORT=3001
+# другие переменные...
+```
+
+### Команды для диагностики
+
+```bash
+# Проверка портов
+netstat -tlnp | grep -E ':(3000|3001)'
+
+# Проверка PM2
+pm2 status
+pm2 logs prostoburo
+pm2 logs hvastik-alert
+
+# Проверка Nginx
+nginx -t
+systemctl reload nginx
+```
+
+### Устранение проблем
+
+#### Проблема: prostoburo не запускается
+```bash
+# Решение: пересборка
+cd /var/www/prostoburo_c_usr/data/www/prostoburo.com
+rm -rf .next
+npm run build
+PORT=3000 pm2 start npm --name prostoburo -- start
+```
+
+#### Проблема: неправильные порты
+```bash
+# Остановить все процессы
+pm2 stop all && pm2 delete all
+
+# Запустить hvastik-alert на 3001
+cd /var/www/hvostikalert_usr/data/www/hvostikalert.ru
+PORT=3001 pm2 start npm --name hvastik-alert -- start
+
+# Запустить prostoburo на 3000
+cd /var/www/prostoburo_c_usr/data/www/prostoburo.com
+PORT=3000 pm2 start npm --name prostoburo -- start
+```
+
+### Автоматический деплой
+
+Проект также автоматически деплоится на Vercel при пуше в ветку `main`.
 
 ---
 

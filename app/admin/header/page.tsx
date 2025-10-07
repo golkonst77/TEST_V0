@@ -206,10 +206,18 @@ export default function HeaderEditor() {
 
       if (response.ok) {
         console.log("Header configuration saved successfully")
-        // Показываем уведомление об успехе
+        toast.success("Настройки заголовка сохранены")
       } else {
-        console.error("Failed to save header configuration")
-        // Показываем уведомление об ошибке
+        // Проверяем, является ли ответ JSON
+        const contentType = response.headers.get("content-type")
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json()
+          console.error("Failed to save header configuration:", errorData)
+          toast.error(`Ошибка: ${errorData.error || "Не удалось сохранить настройки"}`)
+        } else {
+          console.error(`Server error: ${response.status} ${response.statusText}`)
+          toast.error(`Ошибка сервера: ${response.status}`)
+        }
       }
     } catch (error) {
       console.error("Error saving header configuration:", error)

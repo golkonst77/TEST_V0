@@ -67,16 +67,24 @@ export default function AdminSettingsPage() {
         body: JSON.stringify(settings),
       })
 
-      const data = await response.json()
       if (response.ok) {
+        const data = await response.json()
         setMessage("Настройки сохранены")
         if (data.settings) {
           setSettings(data.settings)
         }
       } else {
-        setMessage("Не удалось сохранить настройки")
+        // Проверяем, является ли ответ JSON
+        const contentType = response.headers.get("content-type")
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json()
+          setMessage(`Ошибка: ${errorData.error || "Не удалось сохранить настройки"}`)
+        } else {
+          setMessage(`Ошибка сервера: ${response.status} ${response.statusText}`)
+        }
       }
     } catch (error) {
+      console.error("Save error:", error)
       setMessage("Ошибка подключения к серверу")
     } finally {
       setSaving(false)
