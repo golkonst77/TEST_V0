@@ -17,7 +17,7 @@ echo
 
 # Configuration
 PROJECT_PATH="/var/www/prostoburo_c_usr/data/www/prostoburo.com"
-APP_NAME="my-next-app"
+APP_NAME="prostoburo"
 
 # Record start time
 START_TIME=$(date +%s)

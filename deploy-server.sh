@@ -43,7 +43,7 @@ echo
 
 # Configuration
 PROJECT_PATH="/var/www/prostoburo_c_usr/data/www/prostoburo.com"
-APP_NAME="my-next-app"
+APP_NAME="prostoburo"
 
 echo -e "${YELLOW}[INFO]${NC} Current directory: $(pwd)"
 echo -e "${YELLOW}[INFO]${NC} User: $(whoami)"
@@ -113,6 +113,13 @@ if [ ! -f "package.json" ]; then
 fi
 
 echo -e "${GREEN}[SUCCESS]${NC} package.json found"
+
+# Show current version
+if [ -f "package.json" ]; then
+    CURRENT_VERSION=$(grep '"version"' package.json | sed 's/.*"version": *"\([^"]*\)".*/\1/')
+    echo -e "${YELLOW}[INFO]${NC} Current version: $CURRENT_VERSION"
+fi
+
 echo -e "${YELLOW}[INFO]${NC} Node.js version: $(node --version)"
 echo -e "${YELLOW}[INFO]${NC} NPM version: $(npm --version)"
 echo
@@ -234,6 +241,12 @@ echo -e "${PURPLE}[SYSTEM]${NC} Total deployment time: ${MINUTES}m ${SECONDS}s"
 echo -e "${YELLOW}[INFO]${NC} Application name: $APP_NAME"
 echo -e "${YELLOW}[INFO]${NC} Project path: $PROJECT_PATH"
 echo -e "${YELLOW}[INFO]${NC} Website: https://prostoburo.com"
+
+# Show deployed version
+if [ -f "package.json" ]; then
+    DEPLOYED_VERSION=$(grep '"version"' package.json | sed 's/.*"version": *"\([^"]*\)".*/\1/')
+    echo -e "${YELLOW}[INFO]${NC} Deployed version: $DEPLOYED_VERSION"
+fi
 echo
 
 # Show system resources after deployment
