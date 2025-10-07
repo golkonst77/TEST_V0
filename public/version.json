@@ -1,6 +1,6 @@
 {
-  "version": "1.0.2",
-  "build": "102",
-  "date": "2025-09-04",
-  "description": "Включена WhatsApp отправка, исправлена Яндекс.Метрика"
+  "version": "1.0.3",
+  "build": "103",
+  "date": "2025-10-07",
+  "description": "Fixed admin panel contact saving, improved deployment scripts, enhanced version display"
 }
