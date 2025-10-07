@@ -6,9 +6,15 @@ import { getSendsayService } from '@/lib/sendsay-service'
 require('isomorphic-fetch') // Полифилл для fetch
 const Sendsay = require('sendsay-api')
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_KEY!
-const supabase = createClient(supabaseUrl, supabaseKey)
+// Проверяем наличие Supabase переменных
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  console.warn('Supabase переменные не настроены, API endpoint отключен')
+}
+
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
 // Инициализируем Sendsay клиент
 const initSendsay = () => {
@@ -96,6 +102,11 @@ const sendEmailViaSendsay = async (campaign: any, subscribers: any[]) => {
 
 // Функция логирования результатов
 const logEmailResults = async (campaignId: string, emails: string[], success: boolean, mode: string) => {
+  if (!supabase) {
+    console.log(`📝 Логирование отключено (Supabase не настроен) - ${emails.length} писем (режим: ${mode})`);
+    return;
+  }
+
   const logs = emails.map(email => ({
     campaign_id: campaignId,
     email: email,
@@ -120,11 +131,18 @@ const logEmailResults = async (campaignId: string, emails: string[], success: bo
 // Отправка кампании
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    // Проверяем наличие Supabase
+    if (!supabase) {
+      return NextResponse.json({ 
+        error: 'Supabase не настроен', 
+        message: 'API endpoint отключен из-за отсутствия конфигурации Supabase' 
+      }, { status: 503 })
+    }
+
     const campaignId = params.id
     
     // Получаем кампанию
-    const supabase = getSupabaseClient()
-    const { data, error } = await supabase
+    const { data: campaign, error: campaignError } = await supabase
       .from('newsletter_campaigns')
       .select('*')
       .eq('id', campaignId)
