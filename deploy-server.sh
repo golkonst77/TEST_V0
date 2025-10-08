@@ -77,6 +77,10 @@ fi
 
 echo -e "${GREEN}[SUCCESS] Dependencies installed${NC}"
 
+# Очистка старой сборки
+echo "[INFO] Cleaning old build..."
+rm -rf .next
+
 # Сборка проекта
 echo "[INFO] Building Next.js application..."
 echo "[INFO] This may take several minutes..."

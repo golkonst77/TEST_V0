@@ -74,3 +74,49 @@ export async function PUT(request: NextRequest) {
     }, { status: 500 })
   }
 }
+
+// Некоторые прокси/фаерволы могут блокировать PUT. Дублируем логику на POST.
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    console.log("POST request body (settings):", body)
+
+    const settingsToUpdate = {
+      siteName: body.siteName,
+      siteDescription: body.siteDescription,
+      phone: body.phone,
+      email: body.email,
+      address: body.address,
+      telegram: body.telegram,
+      vk: body.vk,
+      maintenanceMode: body.maintenanceMode,
+      analyticsEnabled: body.analyticsEnabled,
+      quiz_mode: body.quiz_mode,
+      quiz_url: body.quiz_url,
+      working_hours: body.working_hours,
+      logoType: body.logoType,
+      logoImageUrl: body.logoImageUrl,
+      logoText: body.logoText,
+      logoShow: body.logoShow,
+      admin_email: body.adminEmail
+    }
+
+    console.log("Settings to update (POST):", settingsToUpdate)
+
+    const updatedSettings = await updateSettings(settingsToUpdate)
+
+    if (!updatedSettings) {
+      return NextResponse.json({ error: "Не удалось сохранить настройки в базе данных" }, { status: 500 })
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Настройки успешно сохранены",
+      settings: updatedSettings,
+    })
+  } catch (error) {
+    console.error("Error saving settings (POST):", error)
+    const errorMessage = error instanceof Error ? error.message : "Неизвестная ошибка"
+    return NextResponse.json({ error: "Ошибка сохранения настроек", details: errorMessage }, { status: 500 })
+  }
+}
