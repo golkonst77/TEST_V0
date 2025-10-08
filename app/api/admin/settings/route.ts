@@ -49,7 +49,11 @@ export async function PUT(request: NextRequest) {
     console.log("Settings saved successfully:", updatedSettings)
 
     if (!updatedSettings) {
-      return NextResponse.json({ error: "Не удалось сохранить настройки в базе данных" }, { status: 500 })
+      console.error("updateSettings returned null or undefined")
+      return NextResponse.json({ 
+        error: "Не удалось сохранить настройки в базе данных",
+        details: "updateSettings returned null"
+      }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -63,6 +67,10 @@ export async function PUT(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error saving settings:", error)
-    return NextResponse.json({ error: "Ошибка сохранения настроек" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : "Неизвестная ошибка"
+    return NextResponse.json({ 
+      error: "Ошибка сохранения настроек",
+      details: errorMessage
+    }, { status: 500 })
   }
 }
