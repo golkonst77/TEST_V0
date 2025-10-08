@@ -44,12 +44,14 @@ git stash
 echo "[INFO] Fetching from origin..."
 git fetch origin
 
-# Переключение на нужную ветку и pull
+# Переключение на нужную ветку
 echo "[INFO] Checking out branch: $BRANCH"
 git checkout "$BRANCH" || git checkout -b "$BRANCH" origin/"$BRANCH"
 
-echo "[INFO] Pulling latest changes..."
-git pull origin "$BRANCH"
+# Принудительное обновление до состояния на GitHub (force pull)
+echo "[INFO] Force pulling latest changes from GitHub..."
+echo "[WARNING] Local changes will be overwritten"
+git reset --hard origin/"$BRANCH"
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}[ERROR] Failed to pull changes from GitHub${NC}"
