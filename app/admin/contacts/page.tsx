@@ -94,7 +94,7 @@ export default function AdminContactsPage() {
     try {
       // Сохраняем в настройки
       const settingsResponse = await fetch("/api/admin/settings", {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -110,7 +110,7 @@ export default function AdminContactsPage() {
 
       // Синхронизируем с header
       const headerResponse = await fetch("/api/admin/settings", {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
