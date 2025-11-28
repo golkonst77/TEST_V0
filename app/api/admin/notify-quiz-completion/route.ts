@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSettings } from '@/lib/settings-store'
+import { sendEmail } from '@/lib/email-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,53 +28,56 @@ ${answers.map((answer: any, index: number) => {
     
     console.log('📝 [API] Текст уведомления сформирован')
 
-    // Получаем email админа из настроек
+    // Получаем email админа из настроек (приоритет: Яндекс)
     console.log('🔍 [API] Получаем email админа из настроек...')
     let adminEmail = 'admin@prostoburo.com' // fallback
     try {
       const settings = await getSettings()
       console.log('⚙️ [API] Настройки получены:', { admin_email: settings.admin_email, env_admin: process.env.ADMIN_EMAIL })
-      adminEmail = settings.admin_email || process.env.ADMIN_EMAIL || 'admin@prostoburo.com'
+      adminEmail = process.env.YANDEX_EMAIL || settings.admin_email || process.env.ADMIN_EMAIL || 'admin@prostoburo.com'
       console.log('📧 [API] Email админа для отправки:', adminEmail)
     } catch (error) {
       console.error('❌ [API] Ошибка получения настроек, используем fallback email:', error)
     }
 
-    // Отправляем email через nodemailer API
-    console.log('📤 [API] Отправляем email через nodemailer API...')
+    // Отправляем email напрямую через email-service
+    console.log('📤 [API] Отправляем email напрямую через email-service...')
     try {
-      const emailData = {
+      const emailResult = await sendEmail({
         to: adminEmail,
-        subject: `🎯 Новый клиент завершил квиз - ${phone}`,
+        subject: `📱 Квиз: ${phone} — купон ${coupon}`,
         html: notificationText.replace(/\n/g, '<br>'),
         text: notificationText
-      }
-      console.log('📧 [API] Данные для отправки email:', emailData)
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/send-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(emailData)
       })
 
-      console.log('📡 [API] Ответ от email API:', response.status, response.statusText)
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(`Email API error: ${response.status} - ${JSON.stringify(errorData)}`)
+      if (emailResult.success) {
+        console.log('✅ [API] Email уведомление отправлено успешно:', emailResult.messageId)
+      } else {
+        const errorMsg = `Ошибка отправки email: ${emailResult.error}`
+        console.error('❌ [API]', errorMsg)
+        throw new Error(errorMsg)
       }
-
-      const result = await response.json()
-      console.log('✅ [API] Email уведомление отправлено через nodemailer:', result)
       
     } catch (emailError) {
-      console.error('❌ [API] Ошибка отправки email, используем fallback в консоль:', emailError)
+      console.error('❌ [API] Ошибка отправки email (catch):', emailError)
+      console.error('❌ [API] Стек ошибки:', emailError instanceof Error ? emailError.stack : 'нет стека')
       
       // Fallback: логируем в консоль
-      console.log('📧 [API] УВЕДОМЛЕНИЕ АДМИНИСТРАТОРУ (консоль):')
+      console.log('📧 [API] УВЕДОМЛЕНИЕ АДМИНИСТРАТОРУ (консоль, email не отправлен):')
       console.log(notificationText)
+    }
+
+    // Fire-and-forget вызов интеграции с amoCRM; не блокируем ответ
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+      await fetch(`${siteUrl}/api/integrations/amocrm/lead`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, discount, businessType, coupon, answers }),
+        cache: 'no-store',
+      })
+    } catch (e) {
+      console.error('Не удалось отправить данные в amoCRM (не критично):', e)
     }
 
     return NextResponse.json({ success: true, message: 'Уведомление отправлено' })

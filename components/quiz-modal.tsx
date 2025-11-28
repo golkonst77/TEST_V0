@@ -367,7 +367,6 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
     console.log('📝 [QUIZ] Ответы:', answers)
     
     setIsSubmitting(true)
-    let couponSaved = false
     let whatsappSent = false
     let documentSent = false
     
@@ -379,33 +378,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
       // Определяем тип бизнеса
       const businessType = getBusinessType(answers)
       
-      // Сохраняем купон в базу данных
-      try {
-        const response = await fetch('/api/coupons', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            code: fullCoupon,
-            phone: phone.trim(),
-            discount: discount,
-            business_type: businessType
-          })
-        })
-        
-        if (!response.ok) {
-          throw new Error(`Ошибка при сохранении купона: ${response.status}`)
-        }
-        
-        const result = await response.json()
-        console.log('Купон сохранен:', result)
-        couponSaved = true
-      } catch (error) {
-        console.error('Ошибка сохранения купона:', error)
-        const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка'
-        throw new Error(`Не удалось сохранить купон: ${errorMessage}`)
-      }
+      // Купон больше не сохраняем в БД — отправляем админу по email вместе с номером телефона
 
       // ✅ ВКЛЮЧЕНО: Отправка WhatsApp-сообщения клиенту
       try {
@@ -514,25 +487,12 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
       setWantChecklist(true)
       closeContactForm()
       
-                   // Показываем соответствующее сообщение в зависимости от успешности операций
-      if (couponSaved && whatsappSent) {
-        toast({
-          title: "Успешно!",
-          description: "Ваш купон сохранен! WhatsApp временно отключен для тестирования. Мы свяжемся с вами по телефону.",
-        })
-      } else if (couponSaved) {
-        toast({
-          title: "Купон сохранен!",
-          description: "Купон сохранен, но возникли проблемы с отправкой. Мы свяжемся с вами по телефону.",
-          variant: "default",
-        })
-      } else {
-        toast({
-          title: "Ошибка",
-          description: "Не удалось сохранить купон. Попробуйте еще раз или свяжитесь с нами по телефону.",
-          variant: "destructive",
-        })
-      }
+      // Нейтральное уведомление об успехе (мы больше не сохраняем купон в БД)
+      toast({
+        title: "Заявка принята",
+        description: "Купон показан на экране. Мы свяжемся с вами в ближайшее время.",
+        variant: "default",
+      })
     } catch (error) {
       console.error('Критическая ошибка при отправке:', error)
       const errorMessage = error instanceof Error ? error.message : "Попробуйте еще раз или свяжитесь с нами по телефону."

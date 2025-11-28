@@ -16,8 +16,8 @@ export function VersionInfo() {
   useEffect(() => {
     const fetchVersion = async () => {
       try {
-        console.log('🔍 Загружаем версию...')
-        const response = await fetch('/version.json')
+        console.log('🔍 Загружаем версию из API...')
+        const response = await fetch('/api/version')
         console.log('📡 Ответ сервера:', response.status, response.ok)
         if (response.ok) {
           const data = await response.json()

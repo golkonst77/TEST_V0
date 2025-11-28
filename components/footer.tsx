@@ -80,6 +80,19 @@ export function Footer() {
             <a href="/policy" className="underline hover:text-blue-400">Политикой конфиденциальности</a>.
           </div>
         </div>
+
+        {/* Соответствие законодательству */}
+        <div className="mt-4 w-full bg-blue-50 border-l-4 border-blue-600 text-gray-800 py-3 px-4 text-center rounded">
+          <div className="flex items-center justify-center gap-2 text-sm">
+            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span className="font-semibold">Соответствие ФЗ-152 и всем требованиям Роскомнадзора на 01.12.2025 года</span>
+          </div>
+          <div className="text-xs text-gray-600 mt-1">
+            Обработка и хранение персональных данных осуществляется на территории Российской Федерации
+          </div>
+        </div>
       </div>
       
       {/* Версия приложения */}

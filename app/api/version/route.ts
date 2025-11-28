@@ -4,21 +4,30 @@ import { join } from 'path'
 
 export async function GET() {
   try {
-    const versionPath = join(process.cwd(), 'version.json')
-    const versionData = readFileSync(versionPath, 'utf8')
-    const version = JSON.parse(versionData)
+    // Читаем package.json
+    const packagePath = join(process.cwd(), 'package.json')
+    const packageJson = JSON.parse(readFileSync(packagePath, 'utf-8'))
     
-    return NextResponse.json(version)
+    const version = packageJson.version
+    const [major, minor, patch] = version.split('.')
+    const build = `${major}${minor}${patch}`
+    const date = new Date().toISOString().split('T')[0]
+    
+    return NextResponse.json({
+      version,
+      build,
+      date,
+      description: 'Cookie Consent Banner, Политика конфиденциальности ФЗ-152, блок соответствия законодательству'
+    })
   } catch (error) {
     console.error('Ошибка чтения версии:', error)
-    return NextResponse.json(
-      { 
-        version: '1.0.0', 
-        build: 'unknown', 
-        date: new Date().toISOString().split('T')[0],
-        description: 'Версия не найдена'
-      },
-      { status: 200 }
-    )
+    
+    // Fallback версия
+    return NextResponse.json({
+      version: '1.0.19',
+      build: '1019',
+      date: '2025-11-28',
+      description: 'Fallback version'
+    })
   }
 }

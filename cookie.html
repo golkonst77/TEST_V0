@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Consent Banner - prostoburo.com</title>
+    <style>
+        :root {
+            --color-primary: #2180A2;
+            --color-primary-hover: #1d748f;
+            --color-text: #134252;
+            --color-bg: #f5f5f5;
+            --color-surface: #ffffff;
+            --color-border: #e0e0e0;
+            --color-error: #c01530;
+            --color-success: #208089;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-bg);
+            padding: 20px;
+        }
+
+        /* Cookie Consent Banner */
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-surface);
+            border-top: 3px solid var(--color-primary);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 9999;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .cookie-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cookie-content {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .cookie-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--color-text);
+            margin-bottom: 8px;
+        }
+
+        .cookie-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .cookie-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .cookie-link:hover {
+            color: var(--color-primary-hover);
+            text-decoration: underline;
+        }
+
+        .cookie-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-accept {
+            background: var(--color-primary);
+            color: #ffffff;
+        }
+
+        .btn-accept:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-settings {
+            background: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-settings:hover {
+            background: var(--color-bg);
+            border-color: var(--color-primary);
+        }
+
+        .btn-reject {
+            background: transparent;
+            color: #666;
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-reject:hover {
+            background: var(--color-bg);
+        }
+
+        /* Modal для детальных настроек */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-surface);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--color-text);
+        }
+
+        .consent-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--color-bg);
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+        }
+
+        .consent-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .consent-item-title {
+            font-weight: 600;
+            color: var(--color-text);
+            font-size: 15px;
+        }
+
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 28px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: '';
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--color-primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+        .consent-item-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cookie-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cookie-actions {
+                width: 100%;
+            }
+
+            .btn {
+                flex: 1;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<main>
+    <section style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+        <h1 style="color: var(--color-text); margin-bottom: 20px;">Cookie & Аналитика: Пример баннера согласия</h1>
+        <p style="color: #666; line-height: 1.6; margin-bottom: 15px;">
+            Это демонстрация компонента для получения согласия на обработку персональных данных и использование Яндекс.Метрики.
+            Баннер появляется внизу страницы при первом посещении.
+        </p>
+        <p style="color: #666; line-height: 1.6;">
+            <strong>Для testing:</strong> Откройте DevTools (F12 → Application → Cookies → Удалите cookie с именем "cookie_consent"), затем обновите страницу.
+        </p>
+    </section>
+</main>
+
+<!-- Cookie Consent Banner -->
+<div id="cookieBanner" class="cookie-banner">
+    <div class="cookie-container">
+        <div class="cookie-content">
+            <div class="cookie-title">🍪 Согласие на обработку данных и аналитику</div>
+            <div class="cookie-text">
+                Мы используем <strong>Яндекс.Метрику</strong> и cookie-файлы для анализа работы сайта, улучшения услуг и соблюдения требований законодательства РФ.
+                <br>Подробнее см. <a href="https://prostoburo.com/policy" class="cookie-link">Политику конфиденциальности</a>.
+            </div>
+        </div>
+        <div class="cookie-actions">
+            <button id="acceptAllBtn" class="btn btn-accept">Согласен</button>
+            <button id="settingsBtn" class="btn btn-settings">⚙ Настройки</button>
+            <button id="rejectBtn" class="btn btn-reject">Отклонить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для управления согласиями -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Управление согласиями</h2>
+            <button id="closeModal" class="modal-close">&times;</button>
+        </div>
+
+        <div class="consent-item">
+            <div class="consent-item-header">
+                <span class="consent-item-title">✓ Необходимые cookies (обязательны)</span>
+                <label class="toggle">
+                    <input type="checkbox" id="essentialToggle" checked disabled>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="consent-item-desc">
+                Обеспечивают безопасность, аутентификацию и функциональность сайта. Эти файлы обрабатываются всегда по требованиям законодательства.
+            </div>
+        </div>
+
+        <div class="consent-item">
+            <div class="consent-item-header">
+                <span class="consent-item-title">📊 Яндекс.Метрика (аналитика)</span>
+                <label class="toggle">
+                    <input type="checkbox" id="analyticsToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="consent-item-desc">
+                Позволяет анализировать поведение пользователей, улучшать контент и услуги. Обработка в соответствии с <a href="https://yandex.ru/legal/confidential/" class="cookie-link" target="_blank">политикой Яндекса</a>.
+            </div>
+        </div>
+
+        <div class="consent-item">
+            <div class="consent-item-header">
+                <span class="consent-item-title">📧 Маркетинговые cookies</span>
+                <label class="toggle">
+                    <input type="checkbox" id="marketingToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="consent-item-desc">
+                Используются для отправки персонализированных предложений, рекламных сообщений и отслеживания эффективности кампаний.
+            </div>
+        </div>
+
+        <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid var(--color-primary);">
+            <p style="font-size: 13px; color: #333; margin: 0;">
+                <strong>По ФЗ-152 "О персональных данных":</strong> Вы можете отозвать согласие в любой момент, отправив запрос на <a href="mailto:privacy@prostoburo.com" class="cookie-link">privacy@prostoburo.com</a>.
+            </p>
+        </div>
+
+        <div class="modal-footer">
+            <button id="rejectAllBtn" class="btn btn-reject">Отклонить все</button>
+            <button id="saveSettingsBtn" class="btn btn-accept">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Яндекс.Метрика (загружается ТОЛЬКО после согласия) -->
+<script id="yandexMetrikaScript">
+    // Скрипт загружается только после явного согласия пользователя
+    function loadYandexMetrika() {
+        const consents = JSON.parse(localStorage.getItem('cookie_consent') || '{}');
+        
+        if (consents.analytics) {
+            // Вставляем Яндекс.Метрику
+            (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+            
+            ym(XXXXXXXX, "init", {
+                id: XXXXXXXX,
+                clickmap:true,
+                trackLinks:true,
+                accurateTrackBounce:true
+            });
+            
+            // Установленная нотификация в консоль
+            console.log('✅ Яндекс.Метрика загружена с согласием пользователя');
+        } else {
+            console.log('⚠️ Яндекс.Метрика НЕ загружена — пользователь не согласился');
+        }
+    }
+
+    // Загружаем при загрузке страницы
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadYandexMetrika);
+    } else {
+        loadYandexMetrika();
+    }
+</script>
+
+<script>
+    // Cookie Consent Manager
+    class CookieConsentManager {
+        constructor() {
+            this.banner = document.getElementById('cookieBanner');
+            this.modal = document.getElementById('settingsModal');
+            this.storageKey = 'cookie_consent';
+            this.cookieName = 'cookie_consent_accepted';
+            this.init();
+        }
+
+        init() {
+            this.setupEventListeners();
+            this.checkConsent();
+        }
+
+        setupEventListeners() {
+            document.getElementById('acceptAllBtn').addEventListener('click', () => this.acceptAll());
+            document.getElementById('rejectBtn').addEventListener('click', () => this.rejectAll());
+            document.getElementById('settingsBtn').addEventListener('click', () => this.openModal());
+            document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
+            document.getElementById('saveSettingsBtn').addEventListener('click', () => this.saveSettings());
+            document.getElementById('rejectAllBtn').addEventListener('click', () => this.rejectAll());
+        }
+
+        checkConsent() {
+            const consent = this.getConsent();
+            if (consent) {
+                this.banner.style.display = 'none';
+            }
+        }
+
+        getConsent() {
+            const stored = localStorage.getItem(this.storageKey);
+            return stored ? JSON.parse(stored) : null;
+        }
+
+        setConsent(consents) {
+            const timestamp = new Date().toISOString();
+            const data = {
+                ...consents,
+                timestamp,
+                version: '1.0'
+            };
+            localStorage.setItem(this.storageKey, JSON.stringify(data));
+            this.setCookie(this.cookieName, 'true', 365);
+            
+            // Логирование (в реальной системе отправить на сервер)
+            console.log('📋 Согласие сохранено:', data);
+        }
+
+        setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+            document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/; SameSite=Strict`;
+        }
+
+        acceptAll() {
+            this.setConsent({
+                essential: true,
+                analytics: true,
+                marketing: true
+            });
+            this.banner.style.display = 'none';
+            // Загружаем Яндекс.Метрику
+            location.reload();
+        }
+
+        rejectAll() {
+            this.setConsent({
+                essential: true,
+                analytics: false,
+                marketing: false
+            });
+            this.banner.style.display = 'none';
+            this.closeModal();
+            console.log('✅ Аналитика отключена');
+        }
+
+        openModal() {
+            const consent = this.getConsent() || {
+                essential: true,
+                analytics: true,
+                marketing: false
+            };
+            
+            document.getElementById('essentialToggle').checked = true;
+            document.getElementById('analyticsToggle').checked = consent.analytics || false;
+            document.getElementById('marketingToggle').checked = consent.marketing || false;
+            
+            this.modal.classList.add('active');
+        }
+
+        closeModal() {
+            this.modal.classList.remove('active');
+        }
+
+        saveSettings() {
+            const consents = {
+                essential: true,
+                analytics: document.getElementById('analyticsToggle').checked,
+                marketing: document.getElementById('marketingToggle').checked
+            };
+            
+            this.setConsent(consents);
+            this.banner.style.display = 'none';
+            this.closeModal();
+            location.reload();
+        }
+    }
+
+    // Инициализируем при загрузке страницы
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            new CookieConsentManager();
+        });
+    } else {
+        new CookieConsentManager();
+    }
+
+    // Закрыть модал при клике вне контента
+    document.getElementById('settingsModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('settingsModal')) {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+    });
+</script>
+
+</body>
+</html>

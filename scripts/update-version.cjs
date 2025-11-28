@@ -7,20 +7,20 @@ const path = require('path')
 const args = process.argv.slice(2)
 const versionType = args[0] || 'patch' // patch, minor, major
 
-// Читаем текущую версию
-const versionPath = path.join(process.cwd(), 'version.json')
-let versionData
+// Читаем package.json (единственный источник истины)
+const packagePath = path.join(process.cwd(), 'package.json')
+let packageData
 
 try {
-  const versionFile = fs.readFileSync(versionPath, 'utf8')
-  versionData = JSON.parse(versionFile)
+  const packageFile = fs.readFileSync(packagePath, 'utf8')
+  packageData = JSON.parse(packageFile)
 } catch (error) {
-  console.error('Ошибка чтения version.json:', error)
+  console.error('Ошибка чтения package.json:', error)
   process.exit(1)
 }
 
-// Парсим версию
-const [major, minor, patch] = versionData.version.split('.').map(Number)
+// Парсим текущую версию
+const [major, minor, patch] = packageData.version.split('.').map(Number)
 
 // Обновляем версию
 let newMajor = major
@@ -45,18 +45,19 @@ switch (versionType) {
 
 const newVersion = `${newMajor}.${newMinor}.${newPatch}`
 const newBuild = `${newMajor}${newMinor}${newPatch}`
+const date = new Date().toISOString().split('T')[0]
 
-// Обновляем данные
-versionData.version = newVersion
-versionData.build = newBuild
-versionData.date = new Date().toISOString().split('T')[0]
+// Обновляем версию в package.json
+packageData.version = newVersion
 
-// Записываем обновленную версию
 try {
-  fs.writeFileSync(versionPath, JSON.stringify(versionData, null, 2))
-  console.log(`✅ Версия обновлена: ${versionData.version} (build ${versionData.build})`)
-  console.log(`📅 Дата: ${versionData.date}`)
+  fs.writeFileSync(packagePath, JSON.stringify(packageData, null, 2) + '\n')
+  console.log(`✅ package.json обновлен: ${newVersion}`)
+  console.log(`📦 Build: ${newBuild}`)
+  console.log(`📅 Дата: ${date}`)
+  console.log(`\n💡 Теперь версия хранится только в package.json`)
+  console.log(`   API /api/version автоматически вернет актуальную версию`)
 } catch (error) {
-  console.error('Ошибка записи version.json:', error)
+  console.error('Ошибка обновления package.json:', error)
   process.exit(1)
 }

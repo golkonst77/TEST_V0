@@ -102,9 +102,16 @@ export async function POST(request: NextRequest) {
       .single();
     
     if (error) {
-      console.error('Ошибка Supabase при сохранении купона:', error);
+      console.error('Ошибка Supabase при сохранении купона:', { code: (error as any).code, message: error.message, details: (error as any).details, hint: (error as any).hint });
+      // Конфликт уникального кода купона
+      if ((error as any).code === '23505') {
+        return NextResponse.json(
+          { error: 'Купон с таким кодом уже существует', code: (error as any).code, details: (error as any).details },
+          { status: 409 }
+        );
+      }
       return NextResponse.json(
-        { error: 'Ошибка при сохранении купона: ' + error.message },
+        { error: 'Ошибка при сохранении купона', code: (error as any).code, message: error.message, details: (error as any).details, hint: (error as any).hint },
         { status: 500 }
       );
     }
