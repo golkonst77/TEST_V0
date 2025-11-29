@@ -47,14 +47,16 @@ export default function RootLayout({
           @media (min-width: 768px) { .hero-section { min-height: 100vh; } }
         `}} />
         
-        {/* Preload критического изображения Hero для улучшения LCP */}
+        {/* Preload критических ресурсов для улучшения LCP и FCP */}
         <link rel="preload" href="/uploads/hero-bg.webp" as="image" fetchPriority="high" />
+        <link rel="preload" href="/uploads/1751551383681________.jpg" as="image" />
         
         {/* Preconnect к внешним ресурсам для ускорения */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://mc.yandex.ru" />
         <link rel="dns-prefetch" href="https://qbjcdftphxredexkwsui.supabase.co" />
+        <link rel="dns-prefetch" href="https://vercel.com" />
       </head>
       <body className={inter.className}>
           {/* Критический контент (выше fold) */}

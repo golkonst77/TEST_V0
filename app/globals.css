@@ -45,6 +45,23 @@ img {
   animation: skeleton-loading 1s linear infinite alternate;
 }
 
+/* Предотвращение CLS для Hero и секций */
+.hero-section {
+  min-height: 600px;
+  contain: layout;
+}
+
+section {
+  min-height: 100px;
+  contain: layout;
+}
+
+/* Фиксированные размеры для логотипа */
+header img, header svg {
+  width: 48px;
+  height: 48px;
+}
+
 /* Базовые стили для мобильной адаптации */
 * {
   box-sizing: border-box;

@@ -18,7 +18,13 @@ const nextConfig = {
   compress: true,
   // Оптимизация импортов
   experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', '@supabase/supabase-js', 'framer-motion'],
+  },
+  // Удаление console.log в production
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
   },
   // Powering up Next.js
   poweredByHeader: false, // Убрать X-Powered-By header
@@ -32,8 +38,12 @@ const nextConfig = {
         ...config.optimization,
         moduleIds: 'deterministic',
         runtimeChunk: 'single',
+        usedExports: true,
+        sideEffects: false,
         splitChunks: {
           chunks: 'all',
+          maxInitialRequests: 25,
+          minSize: 20000,
           cacheGroups: {
             default: false,
             vendors: false,
@@ -52,6 +62,13 @@ const nextConfig = {
               priority: 10,
               reuseExistingChunk: true,
               enforce: true,
+            },
+            // Отдельный chunk для React
+            react: {
+              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+              name: 'react',
+              chunks: 'all',
+              priority: 30,
             },
           },
         },

@@ -147,12 +147,14 @@ export function Hero() {
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        aspectRatio: '16/9',
+        minHeight: '600px'
       }}
     >
       {/* Preload критического изображения */}
       {backgroundImage && (
-        <link rel="preload" as="image" href={backgroundImage} />
+        <link rel="preload" as="image" href={backgroundImage} fetchPriority="high" />
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-white/0 z-10" />
       <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-8 md:py-12">
