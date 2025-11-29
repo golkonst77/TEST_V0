@@ -51,40 +51,74 @@ const iconMap = {
   Shield,
 }
 
+// Дефолтная конфигурация для мгновенной отрисовки (оптимизация LCP)
+const defaultConfig: HeroConfig = {
+  badge: { text: 'Защищаем ваш бизнес', show: true },
+  title: {
+    text: 'ПростоБюро — бухгалтерия, с которой вы спокойно едете к своей мечте на',
+    highlightText: 'круиз контроле!'
+  },
+  description: 'Полный аутсорсинг бухгалтерии для ИП и ООО. Всё прозрачно, вовремя и без головной боли.',
+  button: { text: 'Хочу на круиз без штрафов', show: true },
+  features: [
+    {
+      id: 'cruise-control',
+      title: 'Круиз-контроль:',
+      description: 'Мы следим за сроками, вы — за ростом',
+      icon: 'CheckCircle',
+      color: 'blue',
+      show: true
+    },
+    {
+      id: 'communication',
+      title: 'На связи:',
+      description: 'Личный бухгалтер в Telegram или WhatsApp',
+      icon: 'MessageCircle',
+      color: 'green',
+      show: true
+    },
+    {
+      id: 'no-risks',
+      title: 'Без рисков:',
+      description: 'Защита от штрафов и проверок',
+      icon: 'Shield',
+      color: 'orange',
+      show: true
+    }
+  ],
+  background: { image: '/uploads/1752577122792_hero-bg.jpg', overlay: 0 },
+  layout: {
+    alignment: 'center',
+    maxWidth: 'max-w-4xl',
+    marginLeft: 0,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingX: 60
+  }
+}
+
 export function Hero() {
-  const [config, setConfig] = useState<HeroConfig | null>(null)
+  // Используем дефолтную конфигурацию сразу для мгновенной отрисовки
+  const [config, setConfig] = useState<HeroConfig>(defaultConfig)
   const { handleCruiseClick } = useCruiseClick()
 
   useEffect(() => {
+    // Загружаем конфигурацию в фоне (не блокируем отрисовку)
     const fetchConfig = async () => {
       try {
-        console.log("Hero: Fetching homepage config...")
         const response = await fetch("/api/homepage")
         if (response.ok) {
           const data = await response.json()
-          console.log("Hero: Loaded config:", data)
           setConfig(data)
-        } else {
-          console.error("Hero: Failed to fetch config")
         }
       } catch (error) {
         console.error("Hero: Error fetching config:", error)
+        // Оставляем дефолтную конфигурацию при ошибке
       }
     }
 
     fetchConfig()
   }, [])
-
-  if (!config) {
-    return (
-      <section className="relative min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-2"></div>
-          <p className="text-sm text-gray-600">Загрузка...</p>
-        </div>
-      </section>
-    )
-  }
 
   // Значения по умолчанию для безопасности
   const backgroundImage = config.background?.image || ''
@@ -105,7 +139,7 @@ export function Hero() {
 
   return (
     <section 
-      className="relative min-h-screen flex items-center justify-center px-4 md:px-8"
+      className="relative min-h-[600px] md:min-h-screen flex items-center justify-center px-4 md:px-8"
       style={{
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
         backgroundSize: 'cover',
@@ -113,6 +147,10 @@ export function Hero() {
         backgroundRepeat: 'no-repeat'
       }}
     >
+      {/* Preload критического изображения */}
+      {backgroundImage && (
+        <link rel="preload" as="image" href={backgroundImage} />
+      )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-white/0 z-10" />
       <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-8 md:py-12">
         <div className="relative z-10 w-full flex justify-start">

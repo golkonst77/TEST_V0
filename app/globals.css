@@ -2,14 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Плавная прокрутка для якорных ссылок */
+/* Критические стили для предотвращения CLS и ускорения FCP */
+* {
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
+  /* Предотвращение layout shift */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden; /* Предотвращаем горизонтальную прокрутку */
+  overflow-x: hidden;
+  /* Минимальная высота для предотвращения CLS */
+  min-height: 100vh;
+  /* Фиксированный размер для стабильности */
+  width: 100%;
+}
+
+/* Предотвращение CLS для изображений */
+img {
+  max-width: 100%;
+  height: auto;
+  /* Резервный фон пока изображение загружается */
+  background-color: #f3f4f6;
+}
+
+/* Skeleton loading для улучшения восприятия */
+@keyframes skeleton-loading {
+  0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+}
+
+.skeleton {
+  animation: skeleton-loading 1s linear infinite alternate;
 }
 
 /* Базовые стили для мобильной адаптации */
