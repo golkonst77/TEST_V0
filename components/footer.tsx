@@ -77,7 +77,7 @@ export function Footer() {
           <div className="text-xs leading-snug">
             Продолжая использовать этот сайт, вы соглашаетесь на их использование. Запретить обработку Cookies можно в настройках Вашего браузера.<br />
             Для получения дополнительной информации, пожалуйста, ознакомьтесь с нашей{' '}
-            <a href="/policy" className="underline hover:text-blue-400">Политикой конфиденциальности</a>.
+            <button onClick={() => setOpen(true)} className="underline hover:text-blue-400">Политикой конфиденциальности</button>.
           </div>
         </div>
 
