@@ -69,8 +69,8 @@ let localSettings: SiteSettings = {
     saturday: "По согласованию",
     sunday: "Выходной"
   },
-  logoType: "text",
-  logoImageUrl: "",
+  logoType: "image",
+  logoImageUrl: "/uploads/1751551383681________.jpg",
   logoText: "ПростоБюро",
   logoShow: true
 }

@@ -56,6 +56,7 @@ Thumbs.db
 # local data
 public/uploads/*
 !public/uploads/hero-bg.webp
+!public/uploads/1751551383681________.jpg
 temp/
 cache/
 
