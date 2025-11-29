@@ -12,6 +12,8 @@ html {
   /* Предотвращение layout shift */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Предотвращение автоскролла при загрузке */
+  overflow-anchor: none;
 }
 
 body {

@@ -42,26 +42,25 @@ export default function HomePage() {
   const { isSectionVisible, loading } = useHomepageSections()
   const deviceType = useDeviceType()
 
+  // Скролл на верх при загрузке страницы
   useEffect(() => {
     if (typeof window === "undefined") return
-    if (!window.location.hash) return
-    if (loading) return
-    let attempts = 0
-    function tryScroll() {
-      const el = document.getElementById(window.location.hash.substring(1))
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" })
-      } else if (attempts < 5) {
-        attempts++
-        setTimeout(tryScroll, 200)
-      }
+    
+    // Сначала скроллим наверх
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    
+    // Только если есть hash в URL - скроллим к элементу
+    if (window.location.hash && !loading) {
+      const hash = window.location.hash.substring(1)
+      // Даём время на рендер секций
+      setTimeout(() => {
+        const el = document.getElementById(hash)
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+      }, 500)
     }
-    tryScroll()
-  }, [typeof window !== "undefined" ? window.location.hash : null, loading])
-
-  if (loading) {
-    return null // Не показываем loader, пускай Hero отображается сразу
-  }
+  }, [loading])
 
   const deviceTypeForVisibility = deviceType === 'tablet' ? 'desktop' : deviceType
 
