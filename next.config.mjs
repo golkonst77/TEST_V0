@@ -9,19 +9,12 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Оптимизация сборки
-  swcMinify: true, // Используем SWC для минификации (быстрее)
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? {
-      exclude: ['error', 'warn'],
-    } : false,
-  },
-  // Оптимизация пакетов
+  // Оптимизация минификации
+  swcMinify: true,
+  // Оптимизация импортов (только легкие библиотеки)
   experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    optimizePackageImports: ['lucide-react'],
   },
-  // Параллельная сборка
-  output: 'standalone',
 }
 
 export default nextConfig
