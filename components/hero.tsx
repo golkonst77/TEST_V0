@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -51,34 +52,76 @@ const iconMap = {
   Shield,
 }
 
-interface HeroProps {
-  initialConfig?: HeroConfig
+// Дефолтная конфигурация с правильным путем к WebP
+const defaultConfig: HeroConfig = {
+  badge: { text: 'Защищаем ваш бизнес', show: true },
+  title: {
+    text: 'ПростоБюро — бухгалтерия, с которой вы спокойно едете к своей мечте на',
+    highlightText: 'круиз контроле!'
+  },
+  description: 'Полный аутсорсинг бухгалтерии для ИП и ООО. Всё прозрачно, вовремя и без головной боли — ведение, отчётность, налоги, консультации и юридическое сопровождение.',
+  button: { text: 'Хочу на круиз без штрафов', show: true },
+  features: [
+    {
+      id: 'cruise-control',
+      title: 'Круиз-контроль:',
+      description: 'Мы следим за сроками, вы — за ростом',
+      icon: 'CheckCircle',
+      color: 'blue',
+      show: true
+    },
+    {
+      id: 'communication',
+      title: 'На связи:',
+      description: 'Личный бухгалтер в Telegram или WhatsApp',
+      icon: 'MessageCircle',
+      color: 'green',
+      show: true
+    },
+    {
+      id: 'no-risks',
+      title: 'Без рисков:',
+      description: 'Защита от штрафов и проверок',
+      icon: 'Shield',
+      color: 'orange',
+      show: true
+    }
+  ],
+  background: { image: '/uploads/hero-bg.webp', overlay: 0 },
+  layout: {
+    alignment: 'center',
+    maxWidth: 'max-w-4xl',
+    marginLeft: 0,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingX: 60
+  }
 }
 
-export function Hero({ initialConfig }: HeroProps) {
-  // Используем конфигурацию переданную с сервера (SSR) - НЕТ МЕРЦАНИЯ!
-  const config = initialConfig || {
-    badge: { text: 'Защищаем ваш бизнес', show: true },
-    title: {
-      text: 'ПростоБюро — бухгалтерия, с которой вы спокойно едете к своей мечте на',
-      highlightText: 'круиз контроле!'
-    },
-    description: 'Полный аутсорсинг бухгалтерии для ИП и ООО.',
-    button: { text: 'Хочу на круиз без штрафов', show: true },
-    features: [],
-    background: { image: '/uploads/hero-bg.webp', overlay: 0 },
-    layout: {
-      alignment: 'center',
-      maxWidth: 'max-w-4xl',
-      marginLeft: 0,
-      marginTop: 0,
-      marginBottom: 0,
-      paddingX: 60
-    }
-  }
-  
+export function Hero() {
+  const [config, setConfig] = useState<HeroConfig>(defaultConfig)
   const { handleCruiseClick } = useCruiseClick()
-  // Больше НЕТ useEffect для загрузки конфигурации - приходит с сервера!
+
+  useEffect(() => {
+    // Загружаем конфигурацию из админки
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch("/api/homepage")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.hero) {
+            setConfig(data.hero)
+          } else {
+            setConfig(data)
+          }
+        }
+      } catch (error) {
+        console.error("Hero: Ошибка загрузки конфигурации:", error)
+      }
+    }
+
+    fetchConfig()
+  }, [])
 
   // Значения по умолчанию для безопасности
   const backgroundImage = config.background?.image || ''

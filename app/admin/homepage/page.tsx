@@ -160,6 +160,12 @@ export default function HomepageEditor() {
         // Автосохранение через 500мс
         setTimeout(async () => {
           try {
+            // Проверяем что config загружен
+            if (!config) {
+              console.log("Homepage: Skipping auto-save, config not loaded yet")
+              return
+            }
+            
             const saveResponse = await fetch("/api/admin/homepage", {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
@@ -167,7 +173,7 @@ export default function HomepageEditor() {
                 hero: {
                   ...config,
                   background: {
-                    ...config?.background,
+                    ...config.background,
                     image: data.url
                   }
                 }
@@ -177,9 +183,25 @@ export default function HomepageEditor() {
             if (saveResponse.ok) {
               setLastSaved(new Date().toLocaleTimeString())
               console.log("Homepage: Auto-saved after image upload")
+              toast({
+                title: "Успешно",
+                description: "Изображение сохранено",
+              })
+            } else {
+              const errorData = await saveResponse.json()
+              toast({
+                title: "Ошибка",
+                description: errorData.message || "Ошибка сохранения файла",
+                variant: "destructive",
+              })
             }
           } catch (error) {
             console.error("Homepage: Auto-save failed:", error)
+            toast({
+              title: "Ошибка",
+              description: "Ошибка сохранения файла",
+              variant: "destructive",
+            })
           }
         }, 500)
         
