@@ -54,7 +54,8 @@ Thumbs.db
 *.swo
 
 # local data
-uploads/
+public/uploads/*
+!public/uploads/hero-bg.webp
 temp/
 cache/
 
