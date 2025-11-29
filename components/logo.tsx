@@ -69,18 +69,12 @@ export function Logo({ siteName = "ПростоБюро", className = "" }: Logo
 
   useEffect(() => {
     fetchLogoConfig()
-    
-    // Обновляем настройки каждые 2 секунды
-    const interval = setInterval(fetchLogoConfig, 2000)
-    return () => clearInterval(interval)
+    // Убрали interval - настройки загружаются один раз при монтировании
   }, [])
 
   if (!logoConfig.show) {
     return null
   }
-
-  // Добавляем timestamp для избежания кэширования изображений
-  const imageUrl = logoConfig.imageUrl ? `${logoConfig.imageUrl}?t=${Date.now()}` : ""
 
   return (
     <Link href="/" className={`flex items-center space-x-2 ${className}`}>
@@ -88,11 +82,10 @@ export function Logo({ siteName = "ПростоБюро", className = "" }: Logo
         <>
           <div className="relative h-12 w-12">
             <Image
-              src={imageUrl}
+              src={logoConfig.imageUrl}
               alt={logoConfig.text || siteName}
               fill
               className="object-contain rounded-lg"
-              unoptimized={true} // Отключаем оптимизацию Next.js для избежания кэширования
               onError={(e) => {
                 console.error("Logo: Image failed to load:", logoConfig.imageUrl)
                 // Fallback to text logo if image fails
