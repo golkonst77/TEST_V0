@@ -1,11 +1,12 @@
 /**
  * @file: components/AnimatedContent.tsx
- * @description: Анимированный wrapper для появления контента при скролле (GSAP + ScrollTrigger)
- * @dependencies: gsap, gsap/ScrollTrigger, React
+ * @description: Легкий анимированный wrapper с CSS (без GSAP) для предотвращения CLS
+ * @dependencies: React, Intersection Observer
  * @created: 2024-06-13
+ * @updated: 2025-11-29 - Заменено на CSS для улучшения производительности
  */
 
-import { useRef, useEffect, ReactNode } from 'react'
+import { useRef, useEffect, ReactNode, useState } from 'react'
 
 interface AnimatedContentProps {
   children: ReactNode
@@ -28,86 +29,54 @@ function AnimatedContent({
   direction = 'vertical',
   reverse = false,
   duration = 0.8,
-  ease = 'power3.out',
-  initialOpacity = 0,
   animateOpacity = true,
-  scale = 1,
   threshold = 0.1,
   delay = 0,
-  onComplete,
 }: AnimatedContentProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
     
-    // Динамическая загрузка GSAP только на клиенте
-    let gsap: any = null
-    let ScrollTrigger: any = null
-    
-    try {
-      gsap = require('gsap')
-      ScrollTrigger = require('gsap/ScrollTrigger')
-      gsap.registerPlugin(ScrollTrigger)
-    } catch (error) {
-      console.warn('GSAP не загружен:', error)
-      return
-    }
-    
-    if (!gsap || !ScrollTrigger) return
-    
     const el = ref.current
     if (!el) return
 
-    const axis = direction === 'horizontal' ? 'x' : 'y'
-    const offset = reverse ? -distance : distance
-    const startPct = (1 - threshold) * 100
-
-    gsap.set(el, {
-      [axis]: offset,
-      scale,
-      opacity: animateOpacity ? initialOpacity : 1,
-    })
-
-    gsap.to(el, {
-      [axis]: 0,
-      scale: 1,
-      opacity: 1,
-      duration,
-      ease,
-      delay,
-      onComplete,
-      scrollTrigger: {
-        trigger: el,
-        start: `top ${startPct}%`,
-        toggleActions: 'play none none none',
-        once: true,
+    // Используем Intersection Observer вместо GSAP
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true)
+            observer.disconnect()
+          }
+        })
       },
-    })
+      { threshold }
+    )
 
-    return () => {
-      if (ScrollTrigger && ScrollTrigger.getAll) {
-        ScrollTrigger.getAll().forEach((t: any) => t.kill())
-      }
-      if (gsap && gsap.killTweensOf) {
-        gsap.killTweensOf(el)
-      }
-    }
-  }, [
-    distance,
-    direction,
-    reverse,
-    duration,
-    ease,
-    initialOpacity,
-    animateOpacity,
-    scale,
-    threshold,
-    delay,
-    onComplete,
-  ])
+    observer.observe(el)
 
-  return <div ref={ref}>{children}</div>
+    return () => observer.disconnect()
+  }, [threshold])
+
+  // Генерируем transform на основе направления
+  const translateAxis = direction === 'horizontal' ? 'X' : 'Y'
+  const translateValue = reverse ? -distance : distance
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        transform: isVisible ? 'translate3d(0, 0, 0)' : `translate${translateAxis}(${translateValue}px)`,
+        opacity: isVisible ? 1 : (animateOpacity ? 0 : 1),
+        transition: `transform ${duration}s cubic-bezier(0.4, 0, 0.2, 1) ${delay}s, opacity ${duration}s cubic-bezier(0.4, 0, 0.2, 1) ${delay}s`,
+        willChange: 'transform, opacity',
+      }}
+    >
+      {children}
+    </div>
+  )
 }
 
 export default AnimatedContent 

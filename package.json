@@ -1,6 +1,6 @@
 {
   "name": "prostoburo",
-  "version": "1.0.42",
+  "version": "1.0.43",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -38,7 +38,6 @@
     "date-fns": "4.1.0",
     "dotenv": "^17.0.1",
     "embla-carousel-react": "latest",
-    "gsap": "^3.13.0",
     "immer": "latest",
     "input-otp": "latest",
     "isomorphic-fetch": "^3.0.0",
