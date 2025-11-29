@@ -75,9 +75,7 @@ export function Footer() {
         <div className="mt-4 w-full bg-gray-200 text-gray-800 py-4 px-2 text-center rounded">
           <div className="font-bold mb-1 text-sm">НАШ САЙТ ИСПОЛЬЗУЕТ ФАЙЛЫ COOKIE.</div>
           <div className="text-xs leading-snug">
-            Продолжая использовать этот сайт, вы соглашаетесь на их использование. Запретить обработку Cookies можно в настройках Вашего браузера.<br />
-            Для получения дополнительной информации, пожалуйста, ознакомьтесь с нашей{' '}
-            <button onClick={() => setOpen(true)} className="underline hover:text-blue-400">Политикой конфиденциальности</button>.
+            Продолжая использовать этот сайт, вы соглашаетесь на их использование. Запретить обработку Cookies можно в настройках Вашего браузера.
           </div>
         </div>
 
