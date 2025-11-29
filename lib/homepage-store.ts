@@ -114,10 +114,20 @@ export function updateHeroConfig(newConfig: Partial<HeroConfig>): HeroConfig {
   }
   
   try {
-    writeFileSync(DATA_FILE, JSON.stringify(updatedConfig, null, 2))
-    console.log("Настройки сохранены в файл")
+    // Проверяем что директория data существует
+    const dataDir = join(process.cwd(), 'data')
+    const fs = require('fs')
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true })
+      console.log("Создана директория data/")
+    }
+    
+    // Сохраняем конфигурацию
+    writeFileSync(DATA_FILE, JSON.stringify(updatedConfig, null, 2), 'utf8')
+    console.log("✅ Настройки успешно сохранены в файл:", DATA_FILE)
   } catch (error) {
-    console.error("Ошибка сохранения настроек:", error)
+    console.error("❌ Ошибка сохранения настроек в файл:", error)
+    throw new Error(`Не удалось сохранить настройки: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
   
   console.log("Новые настройки:", updatedConfig)
