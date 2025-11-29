@@ -87,7 +87,7 @@ const defaultConfig: HeroConfig = {
       show: true
     }
   ],
-  background: { image: '/uploads/1752577122792_hero-bg.jpg', overlay: 0 },
+  background: { image: '/uploads/hero-bg.webp', overlay: 0 },
   layout: {
     alignment: 'center',
     maxWidth: 'max-w-4xl',

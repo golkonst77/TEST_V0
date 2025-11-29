@@ -48,7 +48,7 @@ export default function RootLayout({
         `}} />
         
         {/* Preload критического изображения Hero для улучшения LCP */}
-        <link rel="preload" href="/uploads/1752577122792_hero-bg.jpg" as="image" fetchPriority="high" />
+        <link rel="preload" href="/uploads/hero-bg.webp" as="image" fetchPriority="high" />
         
         {/* Preconnect к внешним ресурсам для ускорения */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
