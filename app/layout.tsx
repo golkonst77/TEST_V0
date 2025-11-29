@@ -40,6 +40,16 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
+        {/* Inline Critical CSS для мгновенной отрисовки */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          body { margin: 0; font-family: Arial, sans-serif; }
+          .hero-section { min-height: 600px; position: relative; }
+          @media (min-width: 768px) { .hero-section { min-height: 100vh; } }
+        `}} />
+        
+        {/* Preload критического изображения Hero для улучшения LCP */}
+        <link rel="preload" href="/uploads/1752577122792_hero-bg.jpg" as="image" fetchPriority="high" />
+        
         {/* Preconnect к внешним ресурсам для ускорения */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -47,8 +57,11 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://qbjcdftphxredexkwsui.supabase.co" />
       </head>
       <body className={inter.className}>
+          {/* Критический контент (выше fold) */}
           <Header />
           {children}
+          
+          {/* Не-критический контент (ниже fold) - загружается позже */}
           <Footer />
           <ContactForm />
           <HiddenAdminAccess />
