@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export const ADMIN_CREDENTIALS = {
   username: "admin",
-  password: "prostoburo2024",
+  password: process.env.ADMIN_PASSWORD || "admin123", // Используем из .env.local
 }
 
 // Простая функция для создания токена без JWT библиотеки
