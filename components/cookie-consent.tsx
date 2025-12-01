@@ -220,6 +220,7 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
           </div>
         </div>
       </div>
+      </div>
 
       {/* Settings Modal */}
       {showModal && (
