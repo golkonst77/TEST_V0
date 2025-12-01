@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
+import ReactMarkdown from "react-markdown"
 
 interface ConsentSettings {
   essential: boolean
@@ -17,6 +19,8 @@ interface CookieConsentProps {
 export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
   const [showBanner, setShowBanner] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [showPolicyModal, setShowPolicyModal] = useState(false)
+  const [policyText, setPolicyText] = useState("")
   const [settings, setSettings] = useState<ConsentSettings>({
     essential: true,
     analytics: false, // ВАЖНО: opt-in согласие по требованию ФЗ-152
@@ -34,6 +38,14 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
         loadYandexMetrika()
       }
     }
+  }, [])
+
+  // Загружаем текст политики конфиденциальности
+  useEffect(() => {
+    fetch("/policy.md")
+      .then(res => res.text())
+      .then(setPolicyText)
+      .catch(() => setPolicyText("Ошибка загрузки политики."))
   }, [])
 
   const getConsent = (): ConsentSettings | null => {
@@ -176,12 +188,12 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
                 улучшения услуг и соблюдения требований законодательства РФ.
                 <br />
                 Подробнее см.{' '}
-                <a 
-                  href="/policy" 
+                <button 
+                  onClick={() => setShowPolicyModal(true)}
                   className="text-[#2180A2] font-medium hover:text-[#1d748f] hover:underline transition-colors"
                 >
                   Политику конфиденциальности
-                </a>.
+                </button>.
               </div>
               
               {/* Чекбокс для явного согласия */}
@@ -353,6 +365,18 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
           </div>
         </div>
       )}
+
+      {/* Policy Modal */}
+      <Dialog open={showPolicyModal} onOpenChange={setShowPolicyModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Политика конфиденциальности</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto text-left text-sm">
+            <ReactMarkdown>{policyText}</ReactMarkdown>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <style jsx global>{`
         @keyframes slide-up {
