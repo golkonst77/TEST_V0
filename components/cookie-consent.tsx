@@ -19,7 +19,7 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
   const [showModal, setShowModal] = useState(false)
   const [settings, setSettings] = useState<ConsentSettings>({
     essential: true,
-    analytics: true,
+    analytics: false, // ВАЖНО: opt-in согласие по требованию ФЗ-152
     marketing: false,
   })
 
@@ -115,14 +115,17 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
   }
 
   const acceptAll = async () => {
+    // Сохраняем согласие на основе выбора пользователя в баннере
     const consents = {
       essential: true,
-      analytics: true,
-      marketing: true
+      analytics: settings.analytics, // Берём из state чекбокса
+      marketing: settings.marketing
     }
     await setConsent(consents)
     setShowBanner(false)
-    loadYandexMetrika()
+    if (settings.analytics) {
+      loadYandexMetrika()
+    }
   }
 
   const rejectAll = async () => {
@@ -140,7 +143,7 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
   const openModal = () => {
     const consent = getConsent() || {
       essential: true,
-      analytics: true,
+      analytics: false, // opt-in по умолчанию
       marketing: false
     }
     setSettings(consent)
@@ -162,31 +165,46 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
     <>
       {/* Cookie Banner */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t-4 border-[#2180A2] shadow-[0_-4px_12px_rgba(0,0,0,0.1)] p-5 z-[9999] animate-slide-up">
-        <div className="max-w-7xl mx-auto flex items-center gap-5 flex-wrap">
-          <div className="flex-1 min-w-[250px]">
-            <div className="font-semibold text-base text-[#134252] mb-2">
-              🍪 Согласие на обработку данных и аналитику
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-start gap-5 flex-wrap">
+            <div className="flex-1 min-w-[250px]">
+              <div className="font-semibold text-base text-[#134252] mb-2">
+                🍪 Согласие на обработку данных и аналитику
+              </div>
+              <div className="text-sm text-gray-600 leading-relaxed mb-3">
+                Мы используем <strong>Яндекс.Метрику</strong> и cookie-файлы для анализа работы сайта, 
+                улучшения услуг и соблюдения требований законодательства РФ.
+                <br />
+                Подробнее см.{' '}
+                <a 
+                  href="/policy" 
+                  className="text-[#2180A2] font-medium hover:text-[#1d748f] hover:underline transition-colors"
+                >
+                  Политику конфиденциальности
+                </a>.
+              </div>
+              
+              {/* Чекбокс для явного согласия */}
+              <label className="flex items-start gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded-md transition-colors">
+                <input
+                  type="checkbox"
+                  checked={settings.analytics}
+                  onChange={(e) => setSettings({...settings, analytics: e.target.checked})}
+                  className="mt-0.5 w-4 h-4 text-[#2180A2] bg-gray-100 border-gray-300 rounded focus:ring-[#2180A2] focus:ring-2"
+                />
+                <span className="text-sm text-gray-700">
+                  Я согласен на использование аналитических cookies (Яндекс.Метрика) для улучшения работы сайта
+                </span>
+              </label>
             </div>
-            <div className="text-sm text-gray-600 leading-relaxed">
-              Мы используем <strong>Яндекс.Метрику</strong> и cookie-файлы для анализа работы сайта, 
-              улучшения услуг и соблюдения требований законодательства РФ.
-              <br />
-              Подробнее см.{' '}
-              <a 
-                href="/policy" 
-                className="text-[#2180A2] font-medium hover:text-[#1d748f] hover:underline transition-colors"
+            
+            <div className="flex gap-2 flex-wrap items-start">
+              <button
+                onClick={acceptAll}
+                className="px-5 py-2.5 bg-[#2180A2] text-white rounded-md text-sm font-medium hover:bg-[#1d748f] transition-all whitespace-nowrap"
               >
-                Политику конфиденциальности
-              </a>.
-            </div>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={acceptAll}
-              className="px-5 py-2.5 bg-[#2180A2] text-white rounded-md text-sm font-medium hover:bg-[#1d748f] transition-all whitespace-nowrap"
-            >
-              Согласен
-            </button>
+                Сохранить выбор
+              </button>
             <button
               onClick={openModal}
               className="px-5 py-2.5 bg-transparent text-[#2180A2] border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-100 hover:border-[#2180A2] transition-all whitespace-nowrap"
