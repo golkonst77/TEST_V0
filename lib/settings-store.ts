@@ -1,9 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 
-// Явно загружаем переменные окружения из .env.local
-if (typeof window === 'undefined') {
-  require('dotenv').config({ path: '.env.local' })
-}
+// Next.js автоматически загружает .env файлы, явный вызов не нужен
 
 // Общее хранилище настроек для всего приложения
 export interface SiteSettings {
