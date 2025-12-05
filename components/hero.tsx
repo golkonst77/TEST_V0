@@ -112,7 +112,7 @@ export function Hero() {
           if (data.hero) {
             setConfig(data.hero)
           } else {
-            setConfig(data)
+          setConfig(data)
           }
         }
       } catch (error) {

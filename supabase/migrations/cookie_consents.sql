@@ -62,3 +62,6 @@ CREATE POLICY "Service can insert cookie consents"
   WITH CHECK (true);
 
 
+
+
+

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-// Явно загружаем переменные окружения из .env.local
-require('dotenv').config({ path: '.env.local' })
+// Next.js автоматически загружает .env файлы
 
 // Проверяем наличие переменных окружения
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL

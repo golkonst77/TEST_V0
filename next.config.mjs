@@ -38,7 +38,6 @@ const nextConfig = {
         ...config.optimization,
         moduleIds: 'deterministic',
         runtimeChunk: 'single',
-        usedExports: true,
         sideEffects: false,
         splitChunks: {
           chunks: 'all',

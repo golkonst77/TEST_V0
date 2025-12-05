@@ -136,7 +136,7 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
     await setConsent(consents)
     setShowBanner(false)
     if (settings.analytics) {
-      loadYandexMetrika()
+    loadYandexMetrika()
     }
   }
 
@@ -179,20 +179,20 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t-4 border-[#2180A2] shadow-[0_-4px_12px_rgba(0,0,0,0.1)] p-5 z-[9999] animate-slide-up">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-start gap-5 flex-wrap">
-            <div className="flex-1 min-w-[250px]">
-              <div className="font-semibold text-base text-[#134252] mb-2">
-                🍪 Согласие на обработку данных и аналитику
-              </div>
+          <div className="flex-1 min-w-[250px]">
+            <div className="font-semibold text-base text-[#134252] mb-2">
+              🍪 Согласие на обработку данных и аналитику
+            </div>
               <div className="text-sm text-gray-600 leading-relaxed mb-3">
-                Мы используем <strong>Яндекс.Метрику</strong> и cookie-файлы для анализа работы сайта, 
-                улучшения услуг и соблюдения требований законодательства РФ.
-                <br />
-                Подробнее см.{' '}
+              Мы используем <strong>Яндекс.Метрику</strong> и cookie-файлы для анализа работы сайта, 
+              улучшения услуг и соблюдения требований законодательства РФ.
+              <br />
+              Подробнее см.{' '}
                 <button 
                   onClick={() => setShowPolicyModal(true)}
-                  className="text-[#2180A2] font-medium hover:text-[#1d748f] hover:underline transition-colors"
-                >
-                  Политику конфиденциальности
+                className="text-[#2180A2] font-medium hover:text-[#1d748f] hover:underline transition-colors"
+              >
+                Политику конфиденциальности
                 </button>.
               </div>
               
@@ -211,12 +211,12 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
             </div>
             
             <div className="flex gap-2 flex-wrap items-start">
-              <button
-                onClick={acceptAll}
-                className="px-5 py-2.5 bg-[#2180A2] text-white rounded-md text-sm font-medium hover:bg-[#1d748f] transition-all whitespace-nowrap"
-              >
+            <button
+              onClick={acceptAll}
+              className="px-5 py-2.5 bg-[#2180A2] text-white rounded-md text-sm font-medium hover:bg-[#1d748f] transition-all whitespace-nowrap"
+            >
                 Сохранить выбор
-              </button>
+            </button>
             <button
               onClick={openModal}
               className="px-5 py-2.5 bg-transparent text-[#2180A2] border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-100 hover:border-[#2180A2] transition-all whitespace-nowrap"
@@ -230,8 +230,8 @@ export function CookieConsent({ ymId = '45860892' }: CookieConsentProps) {
               Отклонить
             </button>
           </div>
+          </div>
         </div>
-      </div>
       </div>
 
       {/* Settings Modal */}
