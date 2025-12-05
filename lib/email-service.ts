@@ -52,7 +52,11 @@ export async function sendEmail({
           tls: {
             // Игнорируем ошибки самоподписанных сертификатов
             rejectUnauthorized: false
-          }
+          },
+          // Таймауты для предотвращения зависания на продакшне
+          connectionTimeout: 10000, // 10 секунд на подключение
+          greetingTimeout: 10000,   // 10 секунд на приветствие
+          socketTimeout: 15000      // 15 секунд на операции
         })
       : nodemailer.createTransport({
           service: 'gmail',
