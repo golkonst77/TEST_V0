@@ -1,7 +1,8 @@
 import nodemailer from 'nodemailer'
 
 /**
- * Отправляет email через Yandex.Mail или Gmail (fallback)
+ * Отправляет email через Resend API (приоритет) или Yandex SMTP (fallback)
+ * Resend работает через HTTP API — не требует открытых SMTP портов
  * @param to - Email получателя
  * @param subject - Тема письма
  * @param html - HTML содержимое
@@ -27,95 +28,30 @@ export async function sendEmail({
       throw new Error('Отсутствуют обязательные поля: to, subject')
     }
 
-    // Получаем настройки Yandex
+    // Приоритет 1: Resend API (работает через HTTP, не требует SMTP)
+    const resendApiKey = process.env.RESEND_API_KEY
+    if (resendApiKey) {
+      console.log('🚀 [EMAIL] Используем Resend API (HTTP)...')
+      return await sendViaResend({ to, subject, html, text, apiKey: resendApiKey })
+    }
+
+    // Приоритет 2: Yandex SMTP
     const yandexEmail = process.env.YANDEX_EMAIL
     const yandexPassword = process.env.YANDEX_PASSWORD
-
-    const usingYandex = Boolean(yandexEmail && yandexPassword)
-
-    console.log('🔧 [EMAIL] Настройки SMTP:', {
-      usingYandex,
-      yandexEmail: yandexEmail ? `${yandexEmail.substring(0, 5)}...` : 'не установлен',
-      yandexPassword: yandexPassword ? '***' : 'не установлен'
-    })
-
-    // Создаем транспортер
-    // Используем порт 587 (STARTTLS) - чаще открыт на серверах чем 465
-    const transporter = usingYandex
-      ? nodemailer.createTransport({
-          host: 'smtp.yandex.ru',
-          port: 587,
-          secure: false, // STARTTLS
-          auth: {
-            user: yandexEmail as string,
-            pass: yandexPassword as string
-          },
-          tls: {
-            // Игнорируем ошибки самоподписанных сертификатов
-            rejectUnauthorized: false
-          },
-          // Таймауты для предотвращения зависания на продакшне
-          connectionTimeout: 10000, // 10 секунд на подключение
-          greetingTimeout: 10000,   // 10 секунд на приветствие
-          socketTimeout: 15000      // 15 секунд на операции
-        })
-      : nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.EMAIL_USER || 'your-email@gmail.com',
-            pass: process.env.EMAIL_PASS || 'your-app-password'
-          },
-          tls: {
-            rejectUnauthorized: false
-          }
-        })
-
-    // Настройки письма
-    const mailOptions = {
-      from: usingYandex ? (yandexEmail as string) : (process.env.EMAIL_USER || 'your-email@gmail.com'),
-      to: to,
-      subject: subject,
-      html: html,
-      text: text || html.replace(/<[^>]*>/g, '') // Убираем HTML теги для текстовой версии
+    if (yandexEmail && yandexPassword) {
+      console.log('📮 [EMAIL] Используем Yandex SMTP...')
+      return await sendViaYandex({ to, subject, html, text, email: yandexEmail, password: yandexPassword })
     }
 
-    console.log('📤 [EMAIL] Отправляем письмо...', {
-      from: mailOptions.from,
-      to: mailOptions.to,
-      subject: mailOptions.subject
-    })
+    // Нет настроенных провайдеров
+    throw new Error('Не настроен ни один email провайдер. Добавьте RESEND_API_KEY или YANDEX_EMAIL/YANDEX_PASSWORD')
 
-    // Отправляем email
-    const info = await transporter.sendMail(mailOptions)
-
-    console.log('✅ [EMAIL] Email отправлен успешно:', {
-      messageId: info.messageId,
-      response: info.response
-    })
-
-    return {
-      success: true,
-      messageId: info.messageId
-    }
   } catch (error) {
     console.error('❌ [EMAIL] Ошибка отправки email:', error)
     
-    // Детальная информация об ошибке
     let errorMessage = 'Неизвестная ошибка'
     if (error instanceof Error) {
       errorMessage = error.message
-      console.error('❌ [EMAIL] Детали ошибки:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      })
-    }
-    
-    // Если это ошибка nodemailer, выводим больше информации
-    if (error && typeof error === 'object' && 'code' in error) {
-      console.error('❌ [EMAIL] Код ошибки nodemailer:', (error as any).code)
-      console.error('❌ [EMAIL] Ответ сервера:', (error as any).response)
-      console.error('❌ [EMAIL] Команда:', (error as any).command)
     }
     
     return {
@@ -125,3 +61,115 @@ export async function sendEmail({
   }
 }
 
+/**
+ * Отправка через Resend API (HTTP, без SMTP)
+ */
+async function sendViaResend({
+  to,
+  subject,
+  html,
+  text,
+  apiKey
+}: {
+  to: string
+  subject: string
+  html: string
+  text?: string
+  apiKey: string
+}): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  try {
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+    
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [to],
+        subject: subject,
+        html: html,
+        text: text || html.replace(/<[^>]*>/g, '')
+      })
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      console.error('❌ [RESEND] Ошибка:', data)
+      throw new Error(data.message || `HTTP ${response.status}`)
+    }
+
+    console.log('✅ [RESEND] Email отправлен:', data)
+    return {
+      success: true,
+      messageId: data.id
+    }
+  } catch (error) {
+    console.error('❌ [RESEND] Ошибка:', error)
+    throw error
+  }
+}
+
+/**
+ * Отправка через Yandex SMTP
+ */
+async function sendViaYandex({
+  to,
+  subject,
+  html,
+  text,
+  email,
+  password
+}: {
+  to: string
+  subject: string
+  html: string
+  text?: string
+  email: string
+  password: string
+}): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.yandex.ru',
+    port: 587,
+    secure: false,
+    auth: {
+      user: email,
+      pass: password
+    },
+    tls: {
+      rejectUnauthorized: false
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000
+  })
+
+  const mailOptions = {
+    from: email,
+    to: to,
+    subject: subject,
+    html: html,
+    text: text || html.replace(/<[^>]*>/g, '')
+  }
+
+  console.log('📤 [YANDEX] Отправляем письмо...', {
+    from: mailOptions.from,
+    to: mailOptions.to,
+    subject: mailOptions.subject
+  })
+
+  const info = await transporter.sendMail(mailOptions)
+
+  console.log('✅ [YANDEX] Email отправлен:', {
+    messageId: info.messageId,
+    response: info.response
+  })
+
+  return {
+    success: true,
+    messageId: info.messageId
+  }
+}
