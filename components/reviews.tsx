@@ -119,14 +119,15 @@ export function Reviews() {
         if (data.success && Array.isArray(data.reviews)) {
           const fetched = data.reviews
           setReviews(fetched)
-          // Пересчитать агрегаты локально
+          // Используем total из API для общего количества отзывов
           if (fetched.length > 0) {
             const avg = fetched.reduce((s: number, r: any) => s + (r.rating || 5), 0) / fetched.length
             setAverageRating(Number(avg.toFixed(1)))
-            setTotalReviews(fetched.length)
+            // total из API — это общее количество всех отзывов
+            setTotalReviews(data.total || fetched.length)
           } else {
             setAverageRating(5.0)
-            setTotalReviews(0)
+            setTotalReviews(data.total || 0)
           }
           setPage(0)
           return
@@ -140,14 +141,14 @@ export function Reviews() {
         if (data.success && Array.isArray(data.reviews)) {
           const fetched = data.reviews
           setReviews(fetched)
-          // Пересчитать агрегаты локально
+          // Используем total из API для общего количества отзывов
           if (fetched.length > 0) {
             const avg = fetched.reduce((s: number, r: any) => s + (r.rating || 5), 0) / fetched.length
             setAverageRating(Number(avg.toFixed(1)))
-            setTotalReviews(fetched.length)
+            setTotalReviews(data.total || fetched.length)
           } else {
             setAverageRating(5.0)
-            setTotalReviews(0)
+            setTotalReviews(data.total || 0)
           }
           setPage(0)
         } else {
