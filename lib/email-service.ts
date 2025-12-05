@@ -40,11 +40,12 @@ export async function sendEmail({
     })
 
     // Создаем транспортер
+    // Используем порт 587 (STARTTLS) - чаще открыт на серверах чем 465
     const transporter = usingYandex
       ? nodemailer.createTransport({
           host: 'smtp.yandex.ru',
-          port: 465,
-          secure: true,
+          port: 587,
+          secure: false, // STARTTLS
           auth: {
             user: yandexEmail as string,
             pass: yandexPassword as string

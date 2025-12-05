@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Помечаем route как динамический (использует request.url)
+export const dynamic = 'force-dynamic'
+
 // Next.js автоматически загружает .env файлы
 
 // Проверяем, подключен ли Supabase
