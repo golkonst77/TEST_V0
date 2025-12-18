@@ -204,19 +204,15 @@ export function Hero() {
                 <Button 
                   size="lg" 
                   onClick={handleCruiseClick}
-                  className="w-full sm:w-auto justify-center text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-base md:text-lg px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 border-2 border-blue-500 hover:border-blue-400"
+                  className="relative overflow-hidden w-full sm:w-auto justify-center text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-base md:text-lg px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 border-2 border-blue-500 hover:border-blue-400"
                   style={{
                     boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
                   }}
                 >
-                  <span className="flex flex-col items-center gap-1 leading-none">
-                    <span className="flex items-center justify-center w-full">
-                      <PistolIcon className="h-3.5 w-3.5 opacity-90" />
-                    </span>
+                  <span className="inline-flex items-center justify-center gap-2 leading-none">
+                    <PistolIcon className="h-4 w-4 opacity-90" />
                     <span className="leading-tight">{buttonText}</span>
-                    <span className="flex items-center justify-center w-full">
-                      <PistolIcon className="h-3.5 w-3.5 opacity-90 scale-x-[-1]" />
-                    </span>
+                    <PistolIcon className="h-4 w-4 opacity-90 scale-x-[-1]" />
                   </span>
                 </Button>
               </div>

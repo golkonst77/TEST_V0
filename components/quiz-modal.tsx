@@ -4,6 +4,7 @@
 // Дата включения: 2025-09-04
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { useContactForm } from "@/hooks/use-contact-form"
 import { useToast } from "@/hooks/use-toast"
-import { ArrowRight, ArrowLeft, Gift, Phone, X } from "lucide-react"
+import { ArrowRight, ArrowLeft, X } from "lucide-react"
 import InputMask from 'react-input-mask'
 import { sendYandexMetric, YANDEX_METRICS_EVENTS } from "@/utils/yandex-metrics"
 
@@ -97,7 +98,7 @@ function QuizSidebar({
   getBonusCount,
   bonuses,
   handleSubmit,
-  phone,
+  canSubmit,
   isSubmitting
 }: {
   canProceed: boolean,
@@ -108,7 +109,7 @@ function QuizSidebar({
   getBonusCount: () => number,
   bonuses: string[],
   handleSubmit: () => void,
-  phone: string,
+  canSubmit: boolean,
   isSubmitting: boolean
 }) {
   return (
@@ -148,13 +149,13 @@ function QuizSidebar({
         {isPhoneStep ? (
           <Button
             onClick={handleSubmit}
-            disabled={!phone.trim() || isSubmitting}
+            disabled={!canSubmit || isSubmitting}
             className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-full mt-4 py-4 rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 border-2 border-orange-400 hover:border-orange-300"
             style={{
               boxShadow: '0 10px 25px rgba(249, 115, 22, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
             }}
           >
-            {isSubmitting ? "Отправляем..." : "🎁 Получить предложение"}
+            {isSubmitting ? "Отправляем..." : "Получить коммерческое предложение и подарок"}
           </Button>
         ) : null}
       </div>
@@ -171,56 +172,6 @@ function QuizSidebar({
       ) : null}
     </div>
   )
-}
-
-// Добавим функцию отправки WhatsApp с улучшенной обработкой ошибок
-async function sendWhatsAppMessage(phone: string, message: string) {
-  try {
-    // phone теперь вся маска, извлекаем только цифры
-    const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
-    if (cleanPhone.length !== 11) {
-      console.error('[WHATSAPP] Неверный формат номера:', phone);
-      throw new Error('Неверный формат номера телефона');
-    }
-    
-    console.log('[WHATSAPP] Отправляем сообщение на номер:', cleanPhone);
-    
-    const response = await fetch('https://gate.whapi.cloud/messages/text', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer K9edm63ZcOVma3QQQZy4vQM7JQOSI1RF',
-      },
-      body: JSON.stringify({
-        to: cleanPhone,
-        body: message,
-      }),
-    });
-    
-    const responseText = await response.text();
-    console.log('[WHATSAPP] Ответ от сервера:', responseText);
-    console.log('[WHATSAPP] Статус:', response.status);
-    
-    if (!response.ok) {
-      console.error('[WHATSAPP] Ошибка отправки:', response.status, responseText);
-      throw new Error(`Ошибка отправки WhatsApp: ${response.status}`);
-    }
-    
-    try {
-      const result = JSON.parse(responseText);
-      if (!result.sent) {
-        console.error('[WHATSAPP] Сообщение не отправлено:', result);
-        throw new Error('Сообщение не было отправлено');
-      }
-      console.log('[WHATSAPP] Сообщение успешно отправлено:', result);
-    } catch (parseError) {
-      console.error('[WHATSAPP] Ошибка парсинга ответа:', parseError);
-      throw new Error('Ошибка обработки ответа сервера');
-    }
-  } catch (error) {
-    console.error('[WHATSAPP] Ошибка при отправке сообщения:', error);
-    throw error;
-  }
 }
 
 // Определяем тип бизнеса на основе ответов
@@ -241,79 +192,18 @@ const getBusinessType = (answers: QuizAnswer[]): "ip" | "ooo" | "both" => {
   return businessTypeAnswer === "ip" ? "ip" : "ooo"
 }
 
-// Обновляем функцию отправки документа с улучшенной обработкой ошибок
-async function sendWhatsAppDocument(phone: string, quiz_result: "ip" | "ooo" | "both", caption: string) {
-  console.log('[QUIZ] Начинаем отправку PDF:', { phone, quiz_result, caption });
-  
-  // phone теперь вся маска, извлекаем только цифры
-  const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
-  if (cleanPhone.length !== 11) {
-    console.error('[QUIZ] Неверный формат номера:', phone);
-    throw new Error('Неверный формат номера телефона');
-  }
-  
-  try {
-    // Получаем подходящий чек-лист
-    const checklistResponse = await fetch('/api/get-checklist', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ quiz_result }),
-    });
-    
-    if (!checklistResponse.ok) {
-      const errorText = await checklistResponse.text();
-      console.error('[QUIZ] Ошибка получения чек-листа:', errorText);
-      throw new Error(`Ошибка получения чек-листа: ${checklistResponse.status}`);
-    }
-    
-    const { checklist } = await checklistResponse.json();
-    
-    if (!checklist) {
-      console.error('[QUIZ] Чек-лист не найден для результата:', quiz_result);
-      throw new Error('Чек-лист не найден');
-    }
-    
-    console.log('[QUIZ] Получен чек-лист:', checklist);
-    
-    // Отправляем чек-лист через WhatsApp
-    const response = await fetch('/api/send-whatsapp-document', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        phone: cleanPhone,
-        filePath: checklist.file_url,
-        caption: caption,
-      }),
-    });
-    
-    const result = await response.json();
-    
-    if (!response.ok) {
-      console.error('[QUIZ] Ошибка отправки файла:', result);
-      throw new Error(`Ошибка отправки файла: ${response.status}`);
-    }
-
-    console.log('[QUIZ] Файл успешно отправлен:', result);
-  } catch (error) {
-    console.error('[QUIZ] Ошибка при отправке файла:', error);
-    throw error;
-  }
-}
-
 export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange?: (open: boolean) => void } = {}) {
   const { isOpen, closeContactForm } = useContactForm()
   const { toast } = useToast()
+  const router = useRouter()
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState<QuizAnswer[]>([])
+  const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
-  const [wantChecklist, setWantChecklist] = useState<boolean>(true)
+  const [consentPd, setConsentPd] = useState<boolean>(false)
+  const [giftPdfFilename, setGiftPdfFilename] = useState<string>("Kak_vibrat_buh_kompany.pdf")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showThanks, setShowThanks] = useState(false)
-  const [coupon, setCoupon] = useState<string | null>(null)
 
   const totalSteps = questions.length + 1 // +1 for phone step
   const progress = ((currentStep + 1) / totalSteps) * 100
@@ -360,142 +250,92 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
   }
 
   const handleSubmit = async () => {
-    if (!phone.trim()) return
+    const trimmedEmail = email.trim()
 
-    console.log('🚀 [QUIZ] Начинаем отправку квиза...')
-    console.log('📱 [QUIZ] Телефон:', phone.trim())
-    console.log('📝 [QUIZ] Ответы:', answers)
-    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
+      toast({
+        title: "Проверьте email",
+        description: "Введите корректный email.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!consentPd) {
+      toast({
+        title: "Нужно согласие",
+        description: "Подтвердите согласие на обработку персональных данных.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    const cleanedPhone = phone.replace(/\D/g, "")
+    if (cleanedPhone.length > 0 && cleanedPhone.length < 10) {
+      toast({
+        title: "Проверьте телефон",
+        description: "Телефон указан не полностью (можно оставить поле пустым).",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsSubmitting(true)
-    let whatsappSent = false
-    let documentSent = false
-    
+
     try {
       const discount = calculateDiscount()
-      const code = `PROSTOBURO-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-      const fullCoupon = `${code}-${discount}`
-      
-      // Определяем тип бизнеса
       const businessType = getBusinessType(answers)
-      
-      // Купон больше не сохраняем в БД — отправляем админу по email вместе с номером телефона
 
-      // ✅ ВКЛЮЧЕНО: Отправка WhatsApp-сообщения клиенту
-      try {
-        await sendWhatsAppMessage(phone, `Здравствуйте, спасибо за интерес к нашей компании. Вам купон на скидку ${fullCoupon}. Также Вам бесплатная консультация 30 минут и СКИДКА 50% на первый месяц обслуживания! Если есть вопросы — пишите прямо здесь, ответим оперативно.`)
-        whatsappSent = true
-        console.log('✅ WhatsApp сообщение отправлено успешно')
-      } catch (error) {
-        console.error('❌ Ошибка отправки WhatsApp сообщения:', error)
-        // Создаем ссылку для ручной отправки
-        const cleanPhone = '7' + phone.replace(/\D/g, '').slice(1, 11);
-        const message = `Здравствуйте, спасибо за интерес к нашей компании. Вам купон на скидку ${fullCoupon}. Также Вам бесплатная консультация 30 минут и СКИДКА 50% на первый месяц обслуживания! Если есть вопросы — пишите прямо здесь, ответим оперативно.`;
-        const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-        
-        // Открываем WhatsApp в новой вкладке
-        window.open(whatsappUrl, '_blank');
-        whatsappSent = true;
-        console.log('🔗 Открыта ссылка WhatsApp для ручной отправки:', whatsappUrl);
+      const quizData = {
+        answers,
+        discount,
+        businessType,
       }
-      
-      // ✅ ВКЛЮЧЕНО: Отправка PDF-файла с чек-листом
-      if (wantChecklist) {
-        try {
-          await sendWhatsAppDocument(phone, businessType, `Ваш чек-лист. Спасибо за интерес к ПростоБюро!`)
-          documentSent = true
-          console.log('✅ WhatsApp документ отправлен успешно')
-        } catch (error) {
-          console.error('❌ Ошибка отправки WhatsApp документа:', error)
-          // Не прерываем выполнение
-        }
+
+      const res = await fetch('/api/quiz-lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          phone: phone.trim() || null,
+          quizData,
+          giftPdfFilename,
+        }),
+      })
+
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(text || `HTTP ${res.status}`)
       }
-      
-      // Отправляем событие в Яндекс.Метрику
+
+      // Отправляем событие в Яндекс.Метрику (сохраняем существующую цель завершения)
       try {
         sendYandexMetric(YANDEX_METRICS_EVENTS.QUIZ_COMPLETED, {
-          discount: discount,
+          discount,
           business_type: businessType,
+          email: trimmedEmail,
           phone: phone.trim(),
-          coupon: fullCoupon
         })
       } catch (error) {
         console.error('Ошибка отправки в Яндекс.Метрику:', error)
-        // Не критично
       }
 
-      // Отправляем уведомление администратору
-      console.log('🚀 [QUIZ] Начинаем отправку уведомления администратору...', {
-        phone: phone.trim(),
-        discount: discount,
-        businessType: businessType,
-        coupon: fullCoupon,
-        answersCount: answers.length
-      })
-      
-      try {
-        console.log('📡 [QUIZ] Вызываем API /api/admin/notify-quiz-completion...')
-        const notifyResponse = await fetch('/api/admin/notify-quiz-completion', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            phone: phone.trim(),
-            discount: discount,
-            businessType: businessType,
-            coupon: fullCoupon,
-            answers: answers
-          }),
-        })
-        
-        console.log('📡 [QUIZ] Получен ответ от API:', notifyResponse.status, notifyResponse.statusText)
-        
-        if (!notifyResponse.ok) {
-          const errorData = await notifyResponse.json()
-          throw new Error(`API ответил с ошибкой: ${notifyResponse.status} - ${JSON.stringify(errorData)}`)
-        }
-        
-        const notifyResult = await notifyResponse.json()
-        console.log('✅ [QUIZ] Уведомление администратору отправлено успешно:', notifyResult)
-      } catch (error) {
-        console.error('❌ [QUIZ] Ошибка отправки уведомления администратору:', error)
-        // Не критично для основного функционала
-      }
-      
-      setCoupon(fullCoupon)
       setShowThanks(true)
-      
-      // Отправляем цель в Яндекс.Метрику
-      if (typeof window !== 'undefined' && (window as any).ym) {
-        try {
-          (window as any).ym(45860892, 'reachGoal', 'quiz_completed', {
-            phone: phone.trim(),
-            discount: discount,
-            businessType: businessType,
-            coupon: fullCoupon
-          })
-          console.log('✅ [METRIKA] Цель "quiz_completed" отправлена в Яндекс.Метрику')
-        } catch (error) {
-          console.error('❌ [METRIKA] Ошибка отправки цели в Яндекс.Метрику:', error)
-        }
-      }
-      
-      // Reset form
+
+      // Reset form + закрываем квиз
       setCurrentStep(0)
       setAnswers([])
+      setEmail("")
       setPhone("")
-      setWantChecklist(true)
+      setConsentPd(false)
+      setGiftPdfFilename("Kak_vibrat_buh_kompany.pdf")
       closeContactForm()
-      
-      // Нейтральное уведомление об успехе (мы больше не сохраняем купон в БД)
-      toast({
-        title: "Заявка принята",
-        description: "Купон показан на экране. Мы свяжемся с вами в ближайшее время.",
-        variant: "default",
-      })
     } catch (error) {
       console.error('Критическая ошибка при отправке:', error)
-      const errorMessage = error instanceof Error ? error.message : "Попробуйте еще раз или свяжитесь с нами по телефону."
+      const errorMessage = error instanceof Error ? error.message : "Попробуйте еще раз."
       toast({
         title: "Ошибка отправки",
         description: errorMessage,
@@ -513,6 +353,12 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
   ) || false
 
   const isPhoneStep = currentStep >= questions.length
+
+  const canSubmit = (() => {
+    const trimmedEmail = email.trim()
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return Boolean(trimmedEmail && emailRegex.test(trimmedEmail) && consentPd)
+  })()
 
   // Auto-advance for single choice questions
   useEffect(() => {
@@ -539,9 +385,13 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
     }
   }
 
-  const handleCheckedChange = (checked: CheckboxPrimitive.CheckedState) => {
-    setWantChecklist(checked === true || checked === 'indeterminate')
-  }
+  useEffect(() => {
+    if (!showThanks) return
+    const t = window.setTimeout(() => {
+      router.push('/')
+    }, 3000)
+    return () => window.clearTimeout(t)
+  }, [router, showThanks])
 
   return (
     <>
@@ -662,40 +512,68 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                     <div className="flex-1 min-h-0 overflow-y-auto px-0 pt-2 pb-0 text-center max-w-lg mx-auto w-full flex flex-col items-stretch justify-start">
                                              <h2 className="text-2xl font-bold mb-2 text-gray-900">Последний шаг!</h2>
                        <p className="text-base text-gray-600 mb-4 leading-relaxed">
-                         Оставьте номер телефона и мы отправим персональное предложение со скидкой {" "}
+                         Оставьте email, и мы отправим персональное коммерческое предложение со скидкой {" "}
                          <span className="font-bold text-cyan-500">{calculateDiscount().toLocaleString()} ₽</span>
-                         <br />
-                         <span className="text-sm font-medium text-green-600">Сообщение отправлено в WhatsApp!</span>
-                         <br />
-                         <span className="text-sm font-medium text-green-600">Мы свяжемся с вами в ближайшее время!</span>
                        </p>
-                      <InputMask
-                        mask="+7 (999) 999-99-99"
-                        value={phone}
-                        onChange={e => setPhone(e.target.value)}
-                      >
-                        {(inputProps) => (
+
+                      <div className="space-y-3">
+                        <div className="text-left">
+                          <Label htmlFor="email" className="text-sm text-gray-700">Email</Label>
                           <Input
-                            {...inputProps}
-                            id="phone"
-                            type="tel"
-                            placeholder="+7 (___) ___-__-__"
-                            className="text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="name@example.com"
+                            className="mt-1 text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
                           />
-                        )}
-                      </InputMask>
-                      <div className="mb-4">
-                        <div className="flex items-center space-x-2 mt-4">
+                        </div>
+
+                        <div className="text-left">
+                          <Label htmlFor="phone" className="text-sm text-gray-700">Телефон (необязательно)</Label>
+                          <InputMask
+                            mask="+7 (999) 999-99-99"
+                            value={phone}
+                            onChange={e => setPhone(e.target.value)}
+                          >
+                            {(inputProps) => (
+                              <Input
+                                {...inputProps}
+                                id="phone"
+                                type="tel"
+                                placeholder="+7 (___) ___-__-__"
+                                className="mt-1 text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
+                              />
+                            )}
+                          </InputMask>
+                        </div>
+
+                        <div className="flex items-start space-x-2 mt-2 text-left">
                           <Checkbox
-                            id="checklist"
-                            checked={wantChecklist}
-                            onCheckedChange={handleCheckedChange}
-                            className="mt-1 text-green-600 border-2 border-green-300 w-5 h-5"
+                            id="consent-pd"
+                            checked={consentPd}
+                            onCheckedChange={(checked) => setConsentPd(checked === true || checked === 'indeterminate')}
+                            className="mt-1 text-cyan-600 border-2 border-cyan-300 w-5 h-5"
                           />
-                          <Label htmlFor="checklist" className="cursor-pointer leading-relaxed text-gray-700">
-                            <span className="text-lg mr-3">🎁</span>
-                            <span className="font-bold text-green-700">Ваш подарок:</span> Чек-лист с полезной информацией для вашего бизнеса
+                          <Label htmlFor="consent-pd" className="cursor-pointer leading-relaxed text-gray-700">
+                            Я даю согласие на обработку персональных данных
                           </Label>
+                        </div>
+
+                        <div className="mt-3 text-left">
+                          <Label className="text-sm text-gray-700">Подарок (чек-лист)</Label>
+                          <select
+                            value={giftPdfFilename}
+                            onChange={(e) => setGiftPdfFilename(e.target.value)}
+                            className="mt-1 w-full border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm px-3 py-3 text-sm bg-white"
+                          >
+                            <option value="Kak_vibrat_buh_kompany.pdf">Как выбрать бух. компанию</option>
+                            <option value="Kak-izbezhat-blokirovki-scheta.pdf">Как избежать блокировки счёта</option>
+                            <option value="Sravnenie-IP-i-OOO-Chto-vybrat-dlya-vashego-biznesa.pdf">Сравнение ИП и ООО</option>
+                            <option value="Vosstanovlenie-buhgalterskogo-ucheta.pdf">Восстановление бухучета</option>
+                            <option value="Buhgalterskoe-soprovozhdenie-ProstoByuro.pdf">Бухгалтерское сопровождение</option>
+                            <option value="none">Не нужен чек-лист</option>
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -720,7 +598,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                 getBonusCount={getBonusCount}
                 bonuses={bonuses}
                 handleSubmit={handleSubmit}
-                phone={phone}
+                canSubmit={canSubmit}
                 isSubmitting={isSubmitting}
               />
             </div>
@@ -735,14 +613,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
         <DialogContent className="max-w-md p-8 text-center flex flex-col items-center justify-center">
           <button onClick={() => setShowThanks(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"><X className="w-6 h-6" /></button>
           <h2 className="text-2xl font-bold mb-4 text-green-700">Спасибо за уделенное время!</h2>
-          <p className="text-base text-gray-700 mb-4">Ваш купон сохранен! Сообщение отправлено в WhatsApp.<br/>Мы свяжемся с вами в ближайшее время!<br/>Хорошего дня!</p>
-          {coupon && (
-            <div className="bg-gray-100 rounded-xl p-4 mb-4 w-full">
-              <div className="text-sm text-gray-500 mb-1">Ваш купон на скидку:</div>
-              <div className="text-lg font-mono font-bold text-purple-700 mb-1 select-all">{coupon}</div>
-              <Button size="sm" variant="outline" onClick={() => {navigator.clipboard.writeText(coupon)}}>Скопировать</Button>
-            </div>
-          )}
+          <p className="text-base text-gray-700 mb-4">Коммерческое предложение и подарок отправлены на ваш email, проверьте почту</p>
           <Button onClick={() => setShowThanks(false)} className="mt-2 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl">Закрыть</Button>
         </DialogContent>
       </Dialog>

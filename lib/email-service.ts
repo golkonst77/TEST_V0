@@ -1,5 +1,11 @@
 import nodemailer from 'nodemailer'
 
+type EmailAttachment = {
+  filename: string
+  content: string | Buffer
+  contentType?: string
+}
+
 /**
  * Отправляет email через Resend API (приоритет) или Yandex SMTP (fallback)
  * Resend работает через HTTP API — не требует открытых SMTP портов
@@ -13,12 +19,14 @@ export async function sendEmail({
   to,
   subject,
   html,
-  text
+  text,
+  attachments
 }: {
   to: string
   subject: string
   html: string
   text?: string
+  attachments?: EmailAttachment[]
 }): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
     console.log('📧 [EMAIL] Начинаем отправку email...', { to, subject })
@@ -32,7 +40,7 @@ export async function sendEmail({
     const resendApiKey = process.env.RESEND_API_KEY
     if (resendApiKey) {
       console.log('🚀 [EMAIL] Используем Resend API (HTTP)...')
-      return await sendViaResend({ to, subject, html, text, apiKey: resendApiKey })
+      return await sendViaResend({ to, subject, html, text, attachments, apiKey: resendApiKey })
     }
 
     // Приоритет 2: Yandex SMTP
@@ -40,7 +48,7 @@ export async function sendEmail({
     const yandexPassword = process.env.YANDEX_PASSWORD
     if (yandexEmail && yandexPassword) {
       console.log('📮 [EMAIL] Используем Yandex SMTP...')
-      return await sendViaYandex({ to, subject, html, text, email: yandexEmail, password: yandexPassword })
+      return await sendViaYandex({ to, subject, html, text, attachments, email: yandexEmail, password: yandexPassword })
     }
 
     // Нет настроенных провайдеров
@@ -69,16 +77,33 @@ async function sendViaResend({
   subject,
   html,
   text,
+  attachments,
   apiKey
 }: {
   to: string
   subject: string
   html: string
   text?: string
+  attachments?: EmailAttachment[]
   apiKey: string
 }): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+
+    const resendAttachments = attachments?.map((a) => {
+      const content =
+        typeof a.content === 'string'
+          ? a.content
+          : Buffer.isBuffer(a.content)
+            ? a.content.toString('base64')
+            : Buffer.from(a.content as any).toString('base64')
+
+      return {
+        filename: a.filename,
+        content,
+        content_type: a.contentType || 'application/octet-stream',
+      }
+    })
     
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -91,7 +116,8 @@ async function sendViaResend({
         to: [to],
         subject: subject,
         html: html,
-        text: text || html.replace(/<[^>]*>/g, '')
+        text: text || html.replace(/<[^>]*>/g, ''),
+        ...(resendAttachments?.length ? { attachments: resendAttachments } : {})
       })
     })
 
@@ -121,6 +147,7 @@ async function sendViaYandex({
   subject,
   html,
   text,
+  attachments,
   email,
   password
 }: {
@@ -128,6 +155,7 @@ async function sendViaYandex({
   subject: string
   html: string
   text?: string
+  attachments?: EmailAttachment[]
   email: string
   password: string
 }): Promise<{ success: boolean; messageId?: string; error?: string }> {
@@ -152,7 +180,16 @@ async function sendViaYandex({
     to: to,
     subject: subject,
     html: html,
-    text: text || html.replace(/<[^>]*>/g, '')
+    text: text || html.replace(/<[^>]*>/g, ''),
+    ...(attachments?.length
+      ? {
+          attachments: attachments.map((a) => ({
+            filename: a.filename,
+            content: a.content,
+            contentType: a.contentType,
+          })),
+        }
+      : {}),
   }
 
   console.log('📤 [YANDEX] Отправляем письмо...', {
