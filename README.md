@@ -19,7 +19,7 @@
 
 ### 📊 Статистика
 
-- **Текущая версия**: 1.0.22
+- **Текущая версия**: 1.1.0
 - **API endpoints**: 15+
 - **Компонентов**: 25+
 - **Отзывов**: 39
@@ -101,10 +101,16 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_key
 ADMIN_EMAIL=your-admin@email.com
 
 # Опциональные (для полного функционала)
-EMAIL_FROM=your@yandex.ru
-EMAIL_PASSWORD=your_app_password
+RESEND_API_KEY=your_resend_api_key
+RESEND_FROM_EMAIL=onboarding@resend.dev
+YANDEX_EMAIL=your@yandex.ru
+YANDEX_PASSWORD=your_app_password
 WHATSAPP_API_TOKEN=your_token
 AMOCRM_ACCESS_TOKEN=your_token
+
+# Квиз
+QUIZ_SITE=prostoburo
+QUIZ_GIFT_PDF=Kak_vibrat_buh_kompany.pdf
 ```
 
 #### 4. Настройка базы данных
@@ -335,6 +341,13 @@ npm run version:major  # 1.0.0 → 2.0.0
 3. Создается лид в AmoCRM
 4. Администратору приходит email с данными
 5. Клиенту отправляется купон в WhatsApp
+
+**Актуальный backend flow**:
+1. `POST /api/quiz-lead` сохраняет лид в таблицу `quiz_leads`
+2. Генерирует купон и сохраняет его в таблицу `quiz_coupons` (это отдельная таблица, не `coupons`)
+3. Отправляет 2 письма:
+   - клиенту: HTML + купон + (опционально) PDF чек-лист во вложении
+   - администратору: подробный отчёт + купон
 
 ### ⭐ Система отзывов
 
@@ -677,7 +690,7 @@ chore: обновление зависимостей
 
 ## 📊 Метрики проекта
 
-- **Версия**: 1.0.22
+- **Версия**: 1.1.0
 - **Next.js**: 14.2.16
 - **React**: 18
 - **TypeScript**: 5

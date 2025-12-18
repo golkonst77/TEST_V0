@@ -1,80 +1,43 @@
-# Настройка Email через Nodemailer
+# Настройка Email
 
-## Что мы сделали:
-1. ✅ Установили `nodemailer` - готовый модуль для отправки email
-2. ✅ Создали простой API `/api/send-email` 
-3. ✅ Обновили основной API для использования nodemailer
-4. ✅ Создали тестовую страницу
+Текущая реализация отправки писем находится в `lib/email-service.ts`.
 
-## Настройка Gmail:
+## Провайдеры (приоритет)
 
-### Шаг 1: Включить 2FA в Gmail
-1. Зайдите в настройки Google аккаунта
-2. Включите двухфакторную аутентификацию
+1. **Resend API** (основной)
+2. **Yandex SMTP** (fallback)
 
-### Шаг 2: Создать пароль приложения
-1. В настройках безопасности найдите "Пароли приложений"
-2. Создайте новый пароль для "Почта"
-3. Скопируйте сгенерированный пароль
+Также поддерживаются **вложения** (например, PDF чек-лист для клиента в квизе).
 
-### Шаг 3: Добавить в .env.local
+## Переменные окружения
+
+### Вариант A: Resend (рекомендуется)
+
 ```env
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
+RESEND_API_KEY=your_resend_api_key
+RESEND_FROM_EMAIL=onboarding@resend.dev
 ```
 
-## Тестирование:
+### Вариант B: Yandex SMTP (fallback)
 
-### 1. Откройте тестовую страницу:
-```
-http://localhost:3000/test-email-simple.html
-```
-
-### 2. Нажмите "📧 Тест Nodemailer"
-- Если все настроено правильно - увидите ✅
-- Если ошибка - проверьте EMAIL_USER и EMAIL_PASS
-
-### 3. Нажмите "🎯 Тест основного API"
-- Тестирует полный flow квиза
-- Отправляет реальное уведомление админу
-
-## Альтернативные SMTP серверы:
-
-### Yandex:
-```typescript
-const transporter = nodemailer.createTransporter({
-  service: 'yandex',
-  auth: {
-    user: 'your-email@yandex.ru',
-    pass: 'your-app-password'
-  }
-})
+```env
+YANDEX_EMAIL=your-email@yandex.ru
+YANDEX_PASSWORD=your-app-password
 ```
 
-### Mail.ru:
-```typescript
-const transporter = nodemailer.createTransporter({
-  service: 'mail.ru',
-  auth: {
-    user: 'your-email@mail.ru',
-    pass: 'your-app-password'
-  }
-})
+## Использование в квизе
+
+Endpoint: `POST /api/quiz-lead`
+
+Отправляет 2 письма:
+- **клиенту**: купон + (опционально) PDF чек-лист во вложении
+- **админу**: подробный отчёт + купон
+
+## Тестирование
+
+1. Запусти dev сервер
+```bash
+npm run dev
 ```
 
-### Произвольный SMTP:
-```typescript
-const transporter = nodemailer.createTransporter({
-  host: 'smtp.your-server.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: 'your-email@domain.com',
-    pass: 'your-password'
-  }
-})
-```
-
-## Готово! 🎉
-
-Теперь при завершении квиза админ будет получать email уведомления через простой и надежный nodemailer.
+2. Прогони квиз на сайте, либо отправь запрос на `POST /api/quiz-lead`.

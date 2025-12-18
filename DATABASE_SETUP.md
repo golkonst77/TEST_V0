@@ -21,8 +21,10 @@
 
 #### Таблицы:
 - `newsletter_subscribers` - подписчики рассылки
-- `coupons` - купоны со скидками
+- `coupons` - промокоды/купоны для маркетинга (например, `WELCOME10`)
 - `coupon_usage` - использование купонов
+- `quiz_leads` - лиды из квиза (если используется квиз)
+- `quiz_coupons` - сгенерированные квизом купоны (отдельно от `coupons`)
 
 #### Функции:
 - `create_newsletter_table()` - создание таблицы подписчиков
@@ -56,6 +58,28 @@
 - WELCOME10 (10% скидка)
 - SAVE20 (20% скидка)  
 - FIRST30 (30% скидка)
+
+## Таблица quiz_coupons (квиз)
+
+Если используется endpoint `POST /api/quiz-lead`, нужно создать таблицу `quiz_coupons`:
+
+```sql
+create table if not exists public.quiz_coupons (
+  id uuid default gen_random_uuid() primary key,
+  code varchar(255) unique not null,
+  email varchar(255) not null,
+  phone varchar(255),
+  discount_rub integer not null,
+  business_type varchar(100),
+  site varchar(50),
+  lead_id bigint,
+  created_at timestamptz default now()
+);
+
+create index if not exists idx_quiz_coupons_code on public.quiz_coupons(code);
+create index if not exists idx_quiz_coupons_email on public.quiz_coupons(email);
+create index if not exists idx_quiz_coupons_created_at on public.quiz_coupons(created_at);
+```
 
 ## Проверка работы
 

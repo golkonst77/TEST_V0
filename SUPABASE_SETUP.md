@@ -59,6 +59,17 @@ MAILGUN_DOMAIN=your_domain.com
 
 ## Текущая реализация
 
+## Текущее состояние в проекте
+
+В текущей версии проекта отправка писем выполняется **на сервере Next.js** через `lib/email-service.ts`:
+
+- Resend API (основной)
+- Yandex SMTP (fallback)
+
+Endpoint квиза: `POST /api/quiz-lead`
+
+Он сохраняет лид в `quiz_leads` и купон в `quiz_coupons`, затем отправляет письма клиенту и админу (у клиента может быть PDF во вложении).
+
 ### Edge Function
 - Файл: `supabase/functions/send-email/index.ts`
 - URL: `https://your-project.supabase.co/functions/v1/send-email`
@@ -94,6 +105,20 @@ curl -X POST http://localhost:3000/api/admin/notify-quiz-completion \
       {"questionId": 1, "answer": "ip"},
       {"questionId": 2, "answer": "chaos"}
     ]
+  }'
+
+```
+
+### Тест квиза (актуальный)
+
+```bash
+curl -X POST http://localhost:3000/api/quiz-lead \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "phone": "+7 (953) 123-45-67",
+    "giftPdfFilename": "Kak_vibrat_buh_kompany.pdf",
+    "quizData": {"discount": 10000, "businessType": "ooo", "answers": []}
   }'
 ```
 
