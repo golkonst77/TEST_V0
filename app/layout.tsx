@@ -41,6 +41,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Inline Critical CSS для мгновенной отрисовки */}
         <style dangerouslySetInnerHTML={{ __html: `
           body { margin: 0; font-family: Arial, sans-serif; }
