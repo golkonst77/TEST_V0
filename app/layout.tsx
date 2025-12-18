@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/header"
@@ -31,6 +31,11 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -41,7 +46,6 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Inline Critical CSS для мгновенной отрисовки */}
         <style dangerouslySetInnerHTML={{ __html: `
           body { margin: 0; font-family: Arial, sans-serif; }
