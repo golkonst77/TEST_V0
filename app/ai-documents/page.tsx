@@ -121,11 +121,11 @@ export default function AIDocumentsPage() {
               ИИ-обработка документов
             </h1>
             
-            <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-blue-100 mb-8 w-full max-w-none md:max-w-4xl mx-auto leading-relaxed">
               Революционная система автоматической обработки документов с использованием искусственного интеллекта
             </p>
             
-            <p className="text-lg text-blue-200 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg text-blue-200 w-full max-w-none md:max-w-3xl mx-auto leading-relaxed">
               Наша система на базе ИИ автоматически распознает, классифицирует и обрабатывает ваши документы, 
               значительно ускоряя процесс ведения учета и снижая вероятность ошибок до минимума.
             </p>

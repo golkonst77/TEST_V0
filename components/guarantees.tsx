@@ -50,18 +50,18 @@ export function Guarantees() {
             Укрощение бюрократического зверя
           </h2>
           <div className="flex flex-col items-center gap-2 mb-8">
-            <p className="text-lg md:text-xl text-gray-600 max-w-3xl leading-relaxed text-center">
+            <p className="text-lg md:text-xl text-gray-600 w-full max-w-none md:max-w-3xl leading-relaxed text-center">
               Переводим с языка чиновников на язык бизнеса. Избавляем от бумажного хаоса, чтобы вы могли творить
             </p>
-            <div className="flex flex-col items-start gap-2 mt-4 px-4">
+            <div className="flex flex-col items-center gap-2 mt-4 px-4 w-full">
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg px-4 md:px-6 py-3 mb-4 text-left">
                 <span className="text-sm md:text-base font-medium">
                   Мы являемся авторизованными партнерами Сбербанка, ВТБ, Альфа-Банка
                 </span>
               </div>
-              <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6 mt-4 w-full max-w-2xl">
+              <div className="flex flex-col sm:flex-row items-stretch gap-4 md:gap-6 mt-4 w-full max-w-none md:max-w-2xl">
                 {/* Сбербанк */}
-                <Card className="text-center border-2 border-gray-200 bg-white hover:border-green-300 hover:shadow-lg transition-all duration-200 px-4 md:px-6 py-4 flex-1">
+                <Card className="text-center border-2 border-gray-200 bg-white hover:border-green-300 hover:shadow-lg transition-all duration-200 px-4 md:px-6 py-4 w-full sm:flex-1">
                   <CardHeader className="pb-2">
                     <div className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-lg mx-auto mb-3 bg-green-600 text-white">
                       <svg width="24" height="24" className="md:w-8 md:h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -72,7 +72,7 @@ export function Guarantees() {
                   </CardHeader>
                 </Card>
                 {/* ВТБ */}
-                <Card className="text-center border-2 border-gray-200 bg-white hover:border-blue-300 hover:shadow-lg transition-all duration-200 px-4 md:px-6 py-4 flex-1">
+                <Card className="text-center border-2 border-gray-200 bg-white hover:border-blue-300 hover:shadow-lg transition-all duration-200 px-4 md:px-6 py-4 w-full sm:flex-1">
                   <CardHeader className="pb-2">
                     <div className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-lg mx-auto mb-3 bg-blue-600 text-white">
                       <svg width="24" height="24" className="md:w-8 md:h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -83,7 +83,7 @@ export function Guarantees() {
                   </CardHeader>
                 </Card>
                 {/* Альфа-Банк */}
-                <Card className="text-center border-2 border-gray-200 bg-white hover:border-red-300 hover:shadow-lg transition-all duration-200 px-4 md:px-6 py-4 flex-1">
+                <Card className="text-center border-2 border-gray-200 bg-white hover:border-red-300 hover:shadow-lg transition-all duration-200 px-4 md:px-6 py-4 w-full sm:flex-1">
                   <CardHeader className="pb-2">
                     <div className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-lg mx-auto mb-3 bg-red-600 text-white">
                       <svg width="24" height="24" className="md:w-8 md:h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -146,7 +146,7 @@ export function AIDocuments() {
           <p className="text-xl text-blue-100 mb-4">
             Автоматическая обработка и анализ документов с помощью искусственного интеллекта
           </p>
-          <p className="text-lg text-blue-200 max-w-4xl mx-auto">
+          <p className="text-lg text-blue-200 w-full max-w-none md:max-w-4xl mx-auto">
             Наша система на базе ИИ автоматически распознает, классифицирует и обрабатывает ваши документы, 
             значительно ускоряя процесс ведения учета и снижая вероятность ошибок.
           </p>

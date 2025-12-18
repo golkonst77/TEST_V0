@@ -214,12 +214,12 @@ export function Calculator() {
                      <h2 className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg mb-4">
              Калькулятор стоимости услуг
            </h2>
-           <p className="text-lg md:text-xl text-white drop-shadow-md max-w-3xl mx-auto leading-relaxed text-center">
+           <p className="text-lg md:text-xl text-white drop-shadow-md w-full max-w-none md:max-w-3xl mx-auto leading-relaxed text-center">
              Рассчитайте стоимость бухгалтерских услуг для вашего бизнеса
            </p>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4">
+        <div className="w-full max-w-none md:max-w-4xl mx-auto px-4">
           <Card className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/60 to-purple-50/70 backdrop-blur-xl shadow-2xl border-0 ring-2 ring-white/50 hover:shadow-3xl transition-all duration-300 rounded-xl">
             {/* Внутренний декоративный фон */}
             <div className="absolute inset-0 z-0 pointer-events-none">

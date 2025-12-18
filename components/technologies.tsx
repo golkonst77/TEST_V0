@@ -96,7 +96,7 @@ export function Technologies() {
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
             Технологии, которые работают на ваш успех
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 w-full max-w-none md:max-w-3xl mx-auto">
             Мы используем самые современные решения для автоматизации бухгалтерского учета
           </p>
         </div>
@@ -138,7 +138,7 @@ export function Technologies() {
         <div className="mt-16 text-center">
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">Готовы к цифровой трансформации?</h3>
-            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
+            <p className="text-blue-100 mb-6 w-full max-w-none md:max-w-2xl mx-auto">
               Переходите на современные технологии вместе с нами. 
               Автоматизируйте процессы, сократите расходы и получите полный контроль над финансами.
             </p>

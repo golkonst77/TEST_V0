@@ -285,7 +285,7 @@ export function Reviews() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Отзывы наших клиентов
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 w-full max-w-none md:max-w-3xl mx-auto">
             Более {dynamicClients}+ довольных клиентов доверяют нам свою бухгалтерию
           </p>
         </div>
