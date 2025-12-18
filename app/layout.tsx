@@ -9,6 +9,7 @@ import { HiddenAdminAccess } from "@/components/hidden-admin-access"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "sonner"
 import { CookieConsent } from "@/components/cookie-consent"
+import { AusnBlobButton } from "@/components/AusnBlobButton"
 
 const inter = Inter({ 
   subsets: ["latin", "cyrillic"],
@@ -61,6 +62,7 @@ export default function RootLayout({
       <body className={inter.className}>
           {/* Критический контент (выше fold) */}
           <Header />
+          <AusnBlobButton />
           {children}
           
           {/* Не-критический контент (ниже fold) - загружается позже */}
