@@ -102,6 +102,17 @@ export function Hero() {
   const [config, setConfig] = useState<HeroConfig>(defaultConfig)
   const { handleCruiseClick } = useCruiseClick()
 
+  const PistolIcon = ({ className }: { className?: string }) => (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M3 10.5c0-.55.45-1 1-1h9.5c.55 0 1 .45 1 1v2.25c0 .28.22.5.5.5H17c.55 0 1 .45 1 1v2.25c0 .28.22.5.5.5H21c.55 0 1 .45 1 1v1c0 .55-.45 1-1 1h-5c-.55 0-1-.45-1-1v-1.5c0-.28-.22-.5-.5-.5H12c-.55 0-1-.45-1-1v-1.5c0-.28-.22-.5-.5-.5H7.5c-.28 0-.5.22-.5.5V18c0 .55-.45 1-1 1H4c-.55 0-1-.45-1-1v-7.5z" />
+    </svg>
+  )
+
   useEffect(() => {
     // Загружаем конфигурацию из админки
     const fetchConfig = async () => {
@@ -198,7 +209,15 @@ export function Hero() {
                     boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
                   }}
                 >
-                  {buttonText}
+                  <span className="flex flex-col items-center gap-1 leading-none">
+                    <span className="flex items-center justify-center w-full">
+                      <PistolIcon className="h-3.5 w-3.5 opacity-90" />
+                    </span>
+                    <span className="leading-tight">{buttonText}</span>
+                    <span className="flex items-center justify-center w-full">
+                      <PistolIcon className="h-3.5 w-3.5 opacity-90 scale-x-[-1]" />
+                    </span>
+                  </span>
                 </Button>
               </div>
             )}
