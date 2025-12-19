@@ -22,6 +22,136 @@ export type QuizFinalStepHandle = {
 
 type GiftOption = { value: string; label: string }
 
+type UtmPayload = {
+  utm_source?: string | null
+  utm_medium?: string | null
+  utm_campaign?: string | null
+  utm_content?: string | null
+  utm_term?: string | null
+}
+
+type NormalizedLeadPayload = {
+  site: SiteKind
+  email: string
+  phone?: string
+  lead: {
+    name?: string
+    tax_regime?: string
+    monthly_revenue?: number
+    employees_count?: number
+    city?: string
+    source?: string
+  } & UtmPayload
+  raw_quiz_answers?: any
+  giftPdfFilename?: string
+}
+
+const UTM_STORAGE_KEY = "pb_utm"
+
+function readUtmFromStorage(): UtmPayload {
+  if (typeof window === "undefined") return {}
+  try {
+    const raw = window.localStorage.getItem(UTM_STORAGE_KEY)
+    if (!raw) return {}
+    const parsed = JSON.parse(raw)
+    return (parsed && typeof parsed === "object" ? parsed : {}) as UtmPayload
+  } catch {
+    return {}
+  }
+}
+
+function writeUtmToStorage(utm: UtmPayload) {
+  if (typeof window === "undefined") return
+  try {
+    window.localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm))
+  } catch {
+    // ignore
+  }
+}
+
+function persistUtmFromUrlOnce() {
+  if (typeof window === "undefined") return
+  try {
+    const params = new URLSearchParams(window.location.search)
+    const fromUrl: UtmPayload = {
+      utm_source: params.get("utm_source"),
+      utm_medium: params.get("utm_medium"),
+      utm_campaign: params.get("utm_campaign"),
+      utm_content: params.get("utm_content"),
+      utm_term: params.get("utm_term"),
+    }
+
+    const hasAny = Object.values(fromUrl).some((v) => typeof v === "string" && v.length > 0)
+    if (!hasAny) return
+
+    const existing = readUtmFromStorage()
+    const merged: UtmPayload = {
+      utm_source: fromUrl.utm_source || existing.utm_source || null,
+      utm_medium: fromUrl.utm_medium || existing.utm_medium || null,
+      utm_campaign: fromUrl.utm_campaign || existing.utm_campaign || null,
+      utm_content: fromUrl.utm_content || existing.utm_content || null,
+      utm_term: fromUrl.utm_term || existing.utm_term || null,
+    }
+    writeUtmToStorage(merged)
+  } catch {
+    // ignore
+  }
+}
+
+function safeNumber(v: unknown): number | undefined {
+  if (typeof v === "number" && Number.isFinite(v)) return v
+  if (typeof v === "string") {
+    const n = Number(v)
+    if (Number.isFinite(n)) return n
+  }
+  return undefined
+}
+
+function mapQuizDataToLead(site: SiteKind, quizData: any): NormalizedLeadPayload["lead"] {
+  const lead: NormalizedLeadPayload["lead"] = {}
+
+  // Минимальная/безопасная нормализация: оставляем то, что уже есть в quizData.
+  // Для AUSN можно заранее проставить налоговый режим.
+  if (site === "ausn") {
+    lead.tax_regime = typeof quizData?.tax_regime === "string" ? quizData.tax_regime : "АУСН"
+  } else if (typeof quizData?.tax_regime === "string") {
+    lead.tax_regime = quizData.tax_regime
+  }
+
+  if (typeof quizData?.city === "string") lead.city = quizData.city
+  if (typeof quizData?.name === "string") lead.name = quizData.name
+
+  const monthlyRevenue = safeNumber(quizData?.monthly_revenue)
+  if (monthlyRevenue !== undefined) lead.monthly_revenue = monthlyRevenue
+
+  const employeesCount = safeNumber(quizData?.employees_count)
+  if (employeesCount !== undefined) lead.employees_count = employeesCount
+
+  // Попытка извлечь некоторые значения из массива answers (если есть)
+  const answers = Array.isArray(quizData?.answers) ? quizData.answers : []
+  if (site === "ausn") {
+    // В ausn квизе: id=2 выручка (категория), id=3 работники
+    const revenueAnswer = answers.find((a: any) => a?.questionId === 2)?.answer
+    if (typeof revenueAnswer === "string") {
+      const map: Record<string, number> = {
+        revenue_lt_60: 60000000,
+        revenue_60_272_5: 272500000,
+        revenue_272_5_490_5: 490500000,
+        revenue_gt_490_5: 490500000,
+      }
+      if (map[revenueAnswer] !== undefined) lead.monthly_revenue = map[revenueAnswer]
+    }
+
+    const empAnswer = answers.find((a: any) => a?.questionId === 3)?.answer
+    if (typeof empAnswer === "string") {
+      if (empAnswer === "emp_le_5") lead.employees_count = 5
+      if (empAnswer === "emp_gt_5") lead.employees_count = 6
+    }
+  }
+
+  return lead
+}
+
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
@@ -57,6 +187,10 @@ export const QuizFinalStep = forwardRef<
   ref
 ) {
   const { toast } = useToast()
+
+  useEffect(() => {
+    persistUtmFromUrlOnce()
+  }, [])
 
   const texts = useMemo(() => {
     return {
@@ -148,18 +282,27 @@ export const QuizFinalStep = forwardRef<
     setIsSubmitting(true)
 
     try {
+      const utm = readUtmFromStorage()
+      const lead = {
+        ...mapQuizDataToLead(site, quizData),
+        ...utm,
+      }
+
+      const payload: NormalizedLeadPayload = {
+        site,
+        email: trimmedEmail,
+        ...(trimmedPhone ? { phone: trimmedPhone } : {}),
+        lead,
+        raw_quiz_answers: quizData,
+        giftPdfFilename,
+      }
+
       const res = await fetch("/api/quiz-lead", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          site,
-          email: trimmedEmail,
-          phone: trimmedPhone,
-          giftPdfFilename,
-          quizData,
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (!res.ok) {

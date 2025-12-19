@@ -6,6 +6,165 @@ import path from 'path'
 import { sendEmail } from '@/lib/email-service'
 import { getSettings } from '@/lib/settings-store'
 
+type UtmPayload = {
+  utm_source?: string | null
+  utm_medium?: string | null
+  utm_campaign?: string | null
+  utm_content?: string | null
+  utm_term?: string | null
+}
+
+type NormalizedLead = {
+  site: string
+  email: string
+  phone: string | null
+  lead: {
+    name?: string
+    tax_regime?: string
+    monthly_revenue?: number
+    employees_count?: number
+    city?: string
+    source?: string
+  } & UtmPayload
+  raw_quiz_answers: any
+  giftPdfFilename?: string | null
+}
+
+// TODO: сюда подключим amoCRM API (создание контакта и сделки).
+async function syncToAmoCrm(normalizedLead: NormalizedLead): Promise<void> {
+  console.log('[amoCRM stub] syncToAmoCrm payload:', normalizedLead)
+}
+
+function normalizeUtm(v: unknown): string | null {
+  if (typeof v !== 'string') return null
+  const t = v.trim()
+  return t ? t : null
+}
+
+function normalizeSiteToSource(site: string): string {
+  const v = (site || '').toLowerCase()
+  if (v === 'ausn') return 'ausn_site'
+  return 'main_site'
+}
+
+function toOptionalNumber(v: unknown): number | null {
+  if (typeof v === 'number' && Number.isFinite(v)) return v
+  if (typeof v === 'string') {
+    const n = Number(v)
+    if (Number.isFinite(n)) return n
+  }
+  return null
+}
+
+function normalizeIncomingPayload(body: any): NormalizedLead {
+  const email = typeof body?.email === 'string' ? body.email.trim() : ''
+  const phoneRaw = typeof body?.phone === 'string' ? body.phone.trim() : ''
+
+  const requestedSite = typeof body?.site === 'string' ? body.site.trim() : ''
+  const normalizeSite = (value: string): string => {
+    if (!value) return ''
+    const v = value.toLowerCase()
+    if (v === 'main') return 'prostoburo'
+    if (v === 'ausn') return 'ausn'
+    return value
+  }
+  const site = normalizeSite(requestedSite) || process.env.QUIZ_SITE || 'prostoburo'
+
+  const legacyQuizData = body?.quizData
+  const raw_quiz_answers = body?.raw_quiz_answers ?? legacyQuizData
+
+  const incomingLead = (body?.lead && typeof body.lead === 'object') ? body.lead : {}
+
+  const lead: NormalizedLead['lead'] = {
+    name: typeof incomingLead?.name === 'string' ? incomingLead.name : undefined,
+    tax_regime: typeof incomingLead?.tax_regime === 'string' ? incomingLead.tax_regime : undefined,
+    monthly_revenue: typeof incomingLead?.monthly_revenue === 'number' ? incomingLead.monthly_revenue : undefined,
+    employees_count: typeof incomingLead?.employees_count === 'number' ? incomingLead.employees_count : undefined,
+    city: typeof incomingLead?.city === 'string' ? incomingLead.city : undefined,
+    source: typeof incomingLead?.source === 'string' && incomingLead.source ? incomingLead.source : normalizeSiteToSource(site),
+    utm_source: normalizeUtm(incomingLead?.utm_source),
+    utm_medium: normalizeUtm(incomingLead?.utm_medium),
+    utm_campaign: normalizeUtm(incomingLead?.utm_campaign),
+    utm_content: normalizeUtm(incomingLead?.utm_content),
+    utm_term: normalizeUtm(incomingLead?.utm_term),
+  }
+
+  const giftPdfFilename = typeof body?.giftPdfFilename === 'string' ? body.giftPdfFilename.trim() : null
+
+  return {
+    site,
+    email,
+    phone: phoneRaw || null,
+    lead,
+    raw_quiz_answers,
+    giftPdfFilename,
+  }
+}
+
+async function insertLeadWithFallback({
+  supabase,
+  normalized,
+  normalizedPhone,
+}: {
+  supabase: any
+  normalized: NormalizedLead
+  normalizedPhone: string | null
+}): Promise<{ leadId: number | null }> {
+  // Primary: new schema (columns + raw_quiz_answers)
+  try {
+    const { data: lead, error } = await supabase
+      .from('quiz_leads')
+      .insert([
+        {
+          site: normalized.site,
+          email: normalized.email,
+          phone: normalizedPhone,
+          tax_regime: normalized.lead.tax_regime ?? null,
+          monthly_revenue: toOptionalNumber(normalized.lead.monthly_revenue),
+          employees_count: toOptionalNumber(normalized.lead.employees_count),
+          city: normalized.lead.city ?? null,
+          source: normalized.lead.source ?? null,
+          utm_source: normalizeUtm(normalized.lead.utm_source),
+          utm_medium: normalizeUtm(normalized.lead.utm_medium),
+          utm_campaign: normalizeUtm(normalized.lead.utm_campaign),
+          utm_content: normalizeUtm(normalized.lead.utm_content),
+          utm_term: normalizeUtm(normalized.lead.utm_term),
+          raw_quiz_answers: normalized.raw_quiz_answers,
+        },
+      ])
+      .select('id')
+      .single()
+
+    if (!error) {
+      return { leadId: typeof lead?.id === 'number' ? lead.id : null }
+    }
+
+    console.error('[quiz-lead] Failed to insert lead (new schema), will try legacy schema:', error)
+  } catch (e) {
+    console.error('[quiz-lead] Exception inserting lead (new schema), will try legacy schema:', e)
+  }
+
+  // Fallback: legacy schema
+  const { data: lead, error: insertError } = await supabase
+    .from('quiz_leads')
+    .insert([
+      {
+        email: normalized.email,
+        phone: normalizedPhone,
+        quiz_data: normalized.raw_quiz_answers,
+        site: normalized.site,
+      },
+    ])
+    .select('id')
+    .single()
+
+  if (insertError) {
+    throw insertError
+  }
+
+  return { leadId: typeof lead?.id === 'number' ? lead.id : null }
+}
+
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
@@ -183,11 +342,11 @@ async function saveCouponWithRetries({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const email = typeof body?.email === 'string' ? body.email.trim() : ''
-    const phone = typeof body?.phone === 'string' ? body.phone.trim() : ''
-    const quizData = body?.quizData
-    const requestedSite = typeof body?.site === 'string' ? body.site.trim() : ''
-    const giftPdfFilename = typeof body?.giftPdfFilename === 'string' ? body.giftPdfFilename.trim() : null
+    const normalized = normalizeIncomingPayload(body)
+    const email = normalized.email
+    const phone = normalized.phone || ''
+    const quizData = normalized.raw_quiz_answers
+    const giftPdfFilename = normalized.giftPdfFilename || null
 
     if (!email || !isValidEmail(email)) {
       return NextResponse.json({ success: false, error: 'INVALID_EMAIL' }, { status: 400 })
@@ -228,15 +387,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const normalizeSite = (value: string): string => {
-      if (!value) return ''
-      const v = value.toLowerCase()
-      if (v === 'main') return 'prostoburo'
-      if (v === 'ausn') return 'ausn'
-      return value
-    }
-
-    const site = normalizeSite(requestedSite) || process.env.QUIZ_SITE || 'prostoburo'
+    const site = normalized.site
 
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
@@ -246,20 +397,11 @@ export async function POST(request: NextRequest) {
     const couponCode = generateCouponCode(discount, site)
 
     const giftPdf = giftPdfFilename === 'none' ? null : await loadGiftPdfAttachment(giftPdfFilename)
-    const { data: lead, error: insertError } = await supabase
-      .from('quiz_leads')
-      .insert([
-        {
-          email,
-          phone: normalizedPhone,
-          quiz_data: quizData,
-          site,
-        },
-      ])
-      .select('id')
-      .single()
-
-    if (insertError) {
+    let leadId: number | null = null
+    try {
+      const res = await insertLeadWithFallback({ supabase, normalized, normalizedPhone })
+      leadId = res.leadId
+    } catch (insertError) {
       console.error('[quiz-lead] Failed to insert lead into Supabase:', insertError)
       return NextResponse.json(
         {
@@ -268,10 +410,10 @@ export async function POST(request: NextRequest) {
           ...(shouldExposeDebugDetails()
             ? {
                 details: {
-                  message: insertError.message,
-                  code: (insertError as any).code,
-                  hint: (insertError as any).hint,
-                  details: (insertError as any).details,
+                  message: (insertError as any)?.message || String(insertError),
+                  code: (insertError as any)?.code,
+                  hint: (insertError as any)?.hint,
+                  details: (insertError as any)?.details,
                 },
               }
             : {}),
@@ -280,7 +422,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const leadId = lead?.id
+    try {
+      await syncToAmoCrm(normalized)
+    } catch (e) {
+      console.error('[quiz-lead] syncToAmoCrm failed (non-blocking):', e)
+    }
 
     const { saved: couponSaved, errorDetails: couponSaveErrorDetails } = await saveCouponWithRetries({
       supabase,
@@ -317,8 +463,8 @@ export async function POST(request: NextRequest) {
                 <div style="margin-top:10px;font-size:12px;color:#475569">
                   Покажите этот код менеджеру — мы проверим его и применим скидку.
                 </div>
-                <div style="margin-top:8px;font-size:11px;color:#64748b">
-                  при заключении договора не менее чем 6 месяцев
+                <div style="margin-top:10px;font-size:12px;color:#0f172a;font-weight:700">
+                  Условие: скидка действует при заключении договора не менее чем на 6 месяцев
                 </div>
               </div>
             </div>
@@ -353,10 +499,27 @@ export async function POST(request: NextRequest) {
         </div>
       `.trim()
 
+      const text = `
+Спасибо за интерес к нашей компании! Ваш подарок готов!
+
+Скидочный купон
+Скидка: ${Number.isFinite(discount) ? discount.toLocaleString('ru-RU') : discount} ₽
+Ваш код: ${couponCode}
+Покажите этот код менеджеру — мы проверим его и применим скидку.
+Условие: скидка действует при заключении договора не менее чем на 6 месяцев
+
+${giftPdf ? 'PDF чек-лист во вложении к письму.' : 'Чек-лист не выбран.'}
+
+Email: ${email}
+${normalizedPhone ? `Телефон: ${normalizedPhone}` : ''}
+${leadId ? `ID заявки: ${leadId}` : ''}
+      `.trim()
+
       const emailResult = await sendEmail({
         to: email,
         subject,
         html,
+        text,
         attachments: giftPdf ? [giftPdf] : undefined,
       })
 
@@ -410,7 +573,8 @@ ${prettyJson}
 ⏰ Время: ${new Date().toLocaleString('ru-RU')}
       `.trim()
 
-      const subject = `🎯 Квиз: ${email}${normalizedPhone ? ` — ${normalizedPhone}` : ''} — купон ${couponCode}`
+      const siteLabel = String(site || '').toUpperCase()
+      const subject = `🎯 [${siteLabel}] Квиз: ${email}${normalizedPhone ? ` — ${normalizedPhone}` : ''} — купон ${couponCode}`
       const html = notificationText.replace(/\n/g, '<br>')
 
       const emailResult = await sendEmail({
