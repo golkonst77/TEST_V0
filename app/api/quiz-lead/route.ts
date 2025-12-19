@@ -16,6 +16,31 @@ function isLikelyValidPhone(phone: string): boolean {
   return digits.length === 0 || digits.length >= 10
 }
 
+function normalizePhone(phone: string): string | null {
+  const raw = (phone || '').trim()
+  if (!raw) return null
+
+  const digits = raw.replace(/\D/g, '')
+  if (!digits) return null
+
+  // RU normalization: assume +7 for 10 digits, or convert leading 8 -> +7
+  if (digits.length === 10) {
+    return `+7${digits}`
+  }
+
+  if (digits.length === 11) {
+    if (digits.startsWith('8')) return `+7${digits.slice(1)}`
+    if (digits.startsWith('7')) return `+${digits}`
+  }
+
+  // Fallback: keep as international E.164-like if possible
+  if (digits.length >= 11 && digits.length <= 15) {
+    return `+${digits}`
+  }
+
+  return raw
+}
+
 function getQuestionText(questionId: number): string {
   const questions: { [key: number]: string } = {
     1: 'Статус бизнеса',
@@ -161,6 +186,7 @@ export async function POST(request: NextRequest) {
     const email = typeof body?.email === 'string' ? body.email.trim() : ''
     const phone = typeof body?.phone === 'string' ? body.phone.trim() : ''
     const quizData = body?.quizData
+    const requestedSite = typeof body?.site === 'string' ? body.site.trim() : ''
     const giftPdfFilename = typeof body?.giftPdfFilename === 'string' ? body.giftPdfFilename.trim() : null
 
     if (!email || !isValidEmail(email)) {
@@ -170,6 +196,8 @@ export async function POST(request: NextRequest) {
     if (!isLikelyValidPhone(phone)) {
       return NextResponse.json({ success: false, error: 'INVALID_PHONE' }, { status: 400 })
     }
+
+    const normalizedPhone = normalizePhone(phone)
 
     if (quizData == null) {
       return NextResponse.json({ success: false, error: 'MISSING_QUIZ_DATA' }, { status: 400 })
@@ -200,7 +228,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const site = process.env.QUIZ_SITE || 'prostoburo'
+    const normalizeSite = (value: string): string => {
+      if (!value) return ''
+      const v = value.toLowerCase()
+      if (v === 'main') return 'prostoburo'
+      if (v === 'ausn') return 'ausn'
+      return value
+    }
+
+    const site = normalizeSite(requestedSite) || process.env.QUIZ_SITE || 'prostoburo'
 
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
@@ -215,7 +251,7 @@ export async function POST(request: NextRequest) {
       .insert([
         {
           email,
-          phone: phone || null,
+          phone: normalizedPhone,
           quiz_data: quizData,
           site,
         },
@@ -249,7 +285,7 @@ export async function POST(request: NextRequest) {
     const { saved: couponSaved, errorDetails: couponSaveErrorDetails } = await saveCouponWithRetries({
       supabase,
       email,
-      phone,
+      phone: normalizedPhone || '',
       leadId: typeof leadId === 'number' ? leadId : null,
       site,
       discount,
@@ -281,9 +317,29 @@ export async function POST(request: NextRequest) {
                 <div style="margin-top:10px;font-size:12px;color:#475569">
                   Покажите этот код менеджеру — мы проверим его и применим скидку.
                 </div>
+                <div style="margin-top:8px;font-size:11px;color:#64748b">
+                  при заключении договора не менее чем 6 месяцев
+                </div>
               </div>
             </div>
           </div>
+
+          <div style="max-width:520px;margin:18px auto 8px auto;padding:0">
+            <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;padding:14px 14px 12px 14px;box-shadow:0 8px 18px rgba(15,23,42,0.06)">
+              <div style="font-size:14px;font-weight:700;color:#0f172a;text-align:center;margin-bottom:10px">Бонусы в подарок:</div>
+              <div style="display:flex;gap:10px;justify-content:center;align-items:stretch">
+                <div style="flex:1;min-width:0;background:#bbf7d0;border-radius:14px;padding:12px 10px;text-align:center">
+                  <div style="width:44px;height:44px;margin:0 auto 8px auto;border-radius:999px;background:#f97316;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700">🎁</div>
+                  <div style="font-size:13px;font-weight:800;color:#0f172a;line-height:1.2">Бесплатная консультация<br/>30 минут</div>
+                </div>
+                <div style="flex:1;min-width:0;background:#bbf7d0;border-radius:14px;padding:12px 10px;text-align:center">
+                  <div style="width:44px;height:44px;margin:0 auto 8px auto;border-radius:999px;background:#06b6d4;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700">💡</div>
+                  <div style="font-size:13px;font-weight:800;color:#0f172a;line-height:1.2">1 месяц<br/>юридического сопровождения<br/>в подарок</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           ${giftPdf ? '<p>PDF чек-лист во вложении к письму.</p>' : '<p>Чек-лист не выбран.</p>'}
           <p>
             Сайт ПростоБюро: <a href="https://prostoburo.com" target="_blank" rel="noopener noreferrer">https://prostoburo.com</a>
@@ -291,7 +347,7 @@ export async function POST(request: NextRequest) {
           <hr />
           <p><b>Контакты:</b></p>
           <p><b>Email:</b> ${email}</p>
-          ${phone ? `<p><b>Телефон:</b> ${phone}</p>` : ''}
+          ${normalizedPhone ? `<p><b>Телефон:</b> ${normalizedPhone}</p>` : ''}
           ${leadId ? `<p><b>ID заявки:</b> ${leadId}</p>` : ''}
           <p>Если письмо пришло по ошибке — просто проигнорируйте его.</p>
         </div>
@@ -331,7 +387,7 @@ export async function POST(request: NextRequest) {
 Новый клиент завершил квиз!
 
 📧 Email: ${email}
-${phone ? `📱 Телефон: ${phone}` : '📱 Телефон: не указан'}
+${normalizedPhone ? `📱 Телефон: ${normalizedPhone}` : '📱 Телефон: не указан'}
 💰 Скидка: ${Number.isFinite(discount) ? discount.toLocaleString('ru-RU') : discount} ₽
 ${businessType ? `🏢 Тип бизнеса: ${businessType}` : '🏢 Тип бизнеса: —'}
 🎟️ Купон: ${couponCode}${couponSaved ? '' : ' (НЕ СОХРАНЕН В БД)'}
@@ -354,7 +410,7 @@ ${prettyJson}
 ⏰ Время: ${new Date().toLocaleString('ru-RU')}
       `.trim()
 
-      const subject = `🎯 Квиз: ${email}${phone ? ` — ${phone}` : ''} — купон ${couponCode}`
+      const subject = `🎯 Квиз: ${email}${normalizedPhone ? ` — ${normalizedPhone}` : ''} — купон ${couponCode}`
       const html = notificationText.replace(/\n/g, '<br>')
 
       const emailResult = await sendEmail({

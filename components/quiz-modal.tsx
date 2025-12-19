@@ -3,19 +3,16 @@
 // ✅ WhatsApp отправка включена обратно
 // Дата включения: 2025-09-04
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRef, useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { useContactForm } from "@/hooks/use-contact-form"
-import { useToast } from "@/hooks/use-toast"
 import { ArrowRight, ArrowLeft, X } from "lucide-react"
-import InputMask from 'react-input-mask'
 import { sendYandexMetric, YANDEX_METRICS_EVENTS } from "@/utils/yandex-metrics"
+import { QuizFinalStep, type QuizFinalStepHandle } from "@/components/quiz/QuizFinalStep"
 
 // CSS анимация для мигающей карточки скидки
 const discountCardAnimation = `
@@ -25,6 +22,14 @@ const discountCardAnimation = `
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       border: 1px solid #e5e7eb;
     }
+
+  useEffect(() => {
+    if (!showThanks) return
+    const t = window.setTimeout(() => {
+      window.location.href = '/'
+    }, 3000)
+    return () => window.clearTimeout(t)
+  }, [showThanks])
     50% {
       background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
       box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.2), 0 4px 6px -2px rgba(6, 182, 212, 0.1);
@@ -92,23 +97,23 @@ const bonuses = ["Бесплатная консультация", "Дополн�
 function QuizSidebar({
   canProceed,
   handleNext,
+  handleSubmit,
   isPhoneStep,
   currentQuestion,
   calculateDiscount,
   getBonusCount,
   bonuses,
-  handleSubmit,
   canSubmit,
-  isSubmitting
+  isSubmitting,
 }: {
   canProceed: boolean,
   handleNext: () => void,
+  handleSubmit: () => void,
   isPhoneStep: boolean,
   currentQuestion: any,
   calculateDiscount: () => number,
   getBonusCount: () => number,
   bonuses: string[],
-  handleSubmit: () => void,
   canSubmit: boolean,
   isSubmitting: boolean
 }) {
@@ -145,17 +150,17 @@ function QuizSidebar({
             ))}
           </div>
         </div>
-        {/* Вместо блока 'Ваша экономия' — кнопка 'Получить предложение' на последнем шаге */}
         {isPhoneStep ? (
           <Button
             onClick={handleSubmit}
             disabled={!canSubmit || isSubmitting}
-            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-full mt-4 py-4 rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 border-2 border-orange-400 hover:border-orange-300"
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-full mt-4 rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 border-2 border-orange-400 hover:border-orange-300 whitespace-normal leading-tight text-center min-h-[96px] py-6"
             style={{
-              boxShadow: '0 10px 25px rgba(249, 115, 22, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              boxShadow:
+                '0 10px 25px rgba(249, 115, 22, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
             }}
           >
-            {isSubmitting ? "Отправляем..." : "Получить коммерческое предложение и подарок"}
+            {isSubmitting ? "Отправляем..." : "ПОЛУЧИТЬ ПОДАРОК И КУПОН"}
           </Button>
         ) : null}
       </div>
@@ -194,15 +199,11 @@ const getBusinessType = (answers: QuizAnswer[]): "ip" | "ooo" | "both" => {
 
 export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange?: (open: boolean) => void } = {}) {
   const { isOpen, closeContactForm } = useContactForm()
-  const { toast } = useToast()
-  const router = useRouter()
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState<QuizAnswer[]>([])
-  const [email, setEmail] = useState("")
-  const [phone, setPhone] = useState("")
-  const [consentPd, setConsentPd] = useState<boolean>(false)
-  const [giftPdfFilename, setGiftPdfFilename] = useState<string>("Kak_vibrat_buh_kompany.pdf")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const finalStepRef = useRef<QuizFinalStepHandle | null>(null)
+  const [canFinalSubmit, setCanFinalSubmit] = useState(false)
+  const [isFinalSubmitting, setIsFinalSubmitting] = useState(false)
   const [showThanks, setShowThanks] = useState(false)
 
   const totalSteps = questions.length + 1 // +1 for phone step
@@ -249,101 +250,10 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
     }
   }
 
-  const handleSubmit = async () => {
-    const trimmedEmail = email.trim()
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
-      toast({
-        title: "Проверьте email",
-        description: "Введите корректный email.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (!consentPd) {
-      toast({
-        title: "Нужно согласие",
-        description: "Подтвердите согласие на обработку персональных данных.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    const cleanedPhone = phone.replace(/\D/g, "")
-    if (cleanedPhone.length > 0 && cleanedPhone.length < 10) {
-      toast({
-        title: "Проверьте телефон",
-        description: "Телефон указан не полностью (можно оставить поле пустым).",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsSubmitting(true)
-
-    try {
-      const discount = calculateDiscount()
-      const businessType = getBusinessType(answers)
-
-      const quizData = {
-        answers,
-        discount,
-        businessType,
-      }
-
-      const res = await fetch('/api/quiz-lead', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: trimmedEmail,
-          phone: phone.trim() || null,
-          quizData,
-          giftPdfFilename,
-        }),
-      })
-
-      if (!res.ok) {
-        const text = await res.text()
-        throw new Error(text || `HTTP ${res.status}`)
-      }
-
-      // Отправляем событие в Яндекс.Метрику (сохраняем существующую цель завершения)
-      try {
-        sendYandexMetric(YANDEX_METRICS_EVENTS.QUIZ_COMPLETED, {
-          discount,
-          business_type: businessType,
-          email: trimmedEmail,
-          phone: phone.trim(),
-        })
-      } catch (error) {
-        console.error('Ошибка отправки в Яндекс.Метрику:', error)
-      }
-
-      setShowThanks(true)
-
-      // Reset form + закрываем квиз
-      setCurrentStep(0)
-      setAnswers([])
-      setEmail("")
-      setPhone("")
-      setConsentPd(false)
-      setGiftPdfFilename("Kak_vibrat_buh_kompany.pdf")
-      closeContactForm()
-    } catch (error) {
-      console.error('Критическая ошибка при отправке:', error)
-      const errorMessage = error instanceof Error ? error.message : "Попробуйте еще раз."
-      toast({
-        title: "Ошибка отправки",
-        description: errorMessage,
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
+  const quizData = {
+    answers,
+    discount: calculateDiscount(),
+    businessType: getBusinessType(answers),
   }
 
   const currentQuestion = questions[currentStep]
@@ -353,12 +263,6 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
   ) || false
 
   const isPhoneStep = currentStep >= questions.length
-
-  const canSubmit = (() => {
-    const trimmedEmail = email.trim()
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return Boolean(trimmedEmail && emailRegex.test(trimmedEmail) && consentPd)
-  })()
 
   // Auto-advance for single choice questions
   useEffect(() => {
@@ -384,14 +288,6 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
       );
     }
   }
-
-  useEffect(() => {
-    if (!showThanks) return
-    const t = window.setTimeout(() => {
-      router.push('/')
-    }, 3000)
-    return () => window.clearTimeout(t)
-  }, [router, showThanks])
 
   return (
     <>
@@ -508,83 +404,40 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                     </div>
                   </>
                 ) : (
-                  <div className="flex flex-col h-[600px] min-h-0">
-                    <div className="flex-1 min-h-0 overflow-y-auto px-0 pt-2 pb-0 text-center max-w-lg mx-auto w-full flex flex-col items-stretch justify-start">
-                                             <h2 className="text-2xl font-bold mb-2 text-gray-900">Последний шаг!</h2>
-                       <p className="text-base text-gray-600 mb-4 leading-relaxed">
-                         Оставьте email, и мы отправим персональное коммерческое предложение со скидкой {" "}
-                         <span className="font-bold text-cyan-500">{calculateDiscount().toLocaleString()} ₽</span>
-                       </p>
+                  <QuizFinalStep
+                    ref={finalStepRef}
+                    site="main"
+                    quizData={quizData}
+                    uiTexts={{
+                      subtitle: `Оставьте email, и мы отправим персональное коммерческое предложение со скидкой ${calculateDiscount().toLocaleString()} ₽`,
+                    }}
+                    defaultGiftPdfFilename="Kak_vibrat_buh_kompany.pdf"
+                    onStateChange={({ canSubmit, isSubmitting }) => {
+                      setCanFinalSubmit(canSubmit)
+                      setIsFinalSubmitting(isSubmitting)
+                    }}
+                    onSuccess={({ email, phone, quizData }) => {
+                      try {
+                        sendYandexMetric(YANDEX_METRICS_EVENTS.QUIZ_COMPLETED, {
+                          discount: quizData?.discount,
+                          business_type: quizData?.businessType,
+                          email,
+                          phone,
+                        })
+                      } catch (error) {
+                        console.error('Ошибка отправки в Яндекс.Метрику:', error)
+                      }
 
-                      <div className="space-y-3">
-                        <div className="text-left">
-                          <Label htmlFor="email" className="text-sm text-gray-700">Email</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="name@example.com"
-                            className="mt-1 text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
-                          />
-                        </div>
+                      setShowThanks(true)
 
-                        <div className="text-left">
-                          <Label htmlFor="phone" className="text-sm text-gray-700">Телефон (необязательно)</Label>
-                          <InputMask
-                            mask="+7 (999) 999-99-99"
-                            value={phone}
-                            onChange={e => setPhone(e.target.value)}
-                          >
-                            {(inputProps) => (
-                              <Input
-                                {...inputProps}
-                                id="phone"
-                                type="tel"
-                                placeholder="+7 (___) ___-__-__"
-                                className="mt-1 text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
-                              />
-                            )}
-                          </InputMask>
-                        </div>
-
-                        <div className="flex items-start space-x-2 mt-2 text-left">
-                          <Checkbox
-                            id="consent-pd"
-                            checked={consentPd}
-                            onCheckedChange={(checked) => setConsentPd(checked === true || checked === 'indeterminate')}
-                            className="mt-1 text-cyan-600 border-2 border-cyan-300 w-5 h-5"
-                          />
-                          <Label htmlFor="consent-pd" className="cursor-pointer leading-relaxed text-gray-700">
-                            Я даю согласие на обработку персональных данных
-                          </Label>
-                        </div>
-
-                        <div className="mt-3 text-left">
-                          <Label className="text-sm text-gray-700">Подарок (чек-лист)</Label>
-                          <select
-                            value={giftPdfFilename}
-                            onChange={(e) => setGiftPdfFilename(e.target.value)}
-                            className="mt-1 w-full border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm px-3 py-3 text-sm bg-white"
-                          >
-                            <option value="Kak_vibrat_buh_kompany.pdf">Как выбрать бух. компанию</option>
-                            <option value="Kak-izbezhat-blokirovki-scheta.pdf">Как избежать блокировки счёта</option>
-                            <option value="Sravnenie-IP-i-OOO-Chto-vybrat-dlya-vashego-biznesa.pdf">Сравнение ИП и ООО</option>
-                            <option value="Vosstanovlenie-buhgalterskogo-ucheta.pdf">Восстановление бухучета</option>
-                            <option value="Buhgalterskoe-soprovozhdenie-ProstoByuro.pdf">Бухгалтерское сопровождение</option>
-                            <option value="none">Не нужен чек-лист</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                                         <div className="shrink-0 bg-white pt-2 pb-2">
-                       <div className="bg-gray-50 rounded-2xl p-4 text-center mt-2">
-                         <p className="text-xs font-bold text-gray-900 uppercase tracking-wide">
-                           БЕЗОПАСНО И КОНФИДЕНЦИАЛЬНО
-                         </p>
-                       </div>
-                     </div>
-                  </div>
+                      // Reset form + закрываем квиз
+                      setCurrentStep(0)
+                      setAnswers([])
+                      setCanFinalSubmit(false)
+                      setIsFinalSubmitting(false)
+                      closeContactForm()
+                    }}
+                  />
                 )}
               </div>
 
@@ -592,29 +445,39 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
               <QuizSidebar
                 canProceed={canProceed}
                 handleNext={handleNext}
+                handleSubmit={() => finalStepRef.current?.submit()}
                 isPhoneStep={isPhoneStep}
                 currentQuestion={currentQuestion}
                 calculateDiscount={calculateDiscount}
                 getBonusCount={getBonusCount}
                 bonuses={bonuses}
-                handleSubmit={handleSubmit}
-                canSubmit={canSubmit}
-                isSubmitting={isSubmitting}
+                canSubmit={canFinalSubmit && !showThanks}
+                isSubmitting={isFinalSubmitting || showThanks}
               />
             </div>
           </div>
         </div>
         </DialogContent>
       </Dialog>
+
       {/* Модалка благодарности */}
       <Dialog open={showThanks} onOpenChange={setShowThanks}>
         <DialogTitle className="sr-only">Благодарность за прохождение квиза</DialogTitle>
-        <DialogDescription className="sr-only">Ваш купон сохранен, мы свяжемся с вами</DialogDescription>
+        <DialogDescription className="sr-only">Коммерческое предложение и подарок отправлены</DialogDescription>
         <DialogContent className="max-w-md p-8 text-center flex flex-col items-center justify-center">
-          <button onClick={() => setShowThanks(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"><X className="w-6 h-6" /></button>
+          <button
+            onClick={() => setShowThanks(false)}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
+          >
+            <X className="w-6 h-6" />
+          </button>
           <h2 className="text-2xl font-bold mb-4 text-green-700">Спасибо за уделенное время!</h2>
-          <p className="text-base text-gray-700 mb-4">Коммерческое предложение и подарок отправлены на ваш email, проверьте почту</p>
-          <Button onClick={() => setShowThanks(false)} className="mt-2 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl">Закрыть</Button>
+          <p className="text-base text-gray-700 mb-4">
+            Коммерческое предложение и подарок отправлены на ваш email, проверьте почту
+          </p>
+          <Button onClick={() => setShowThanks(false)} className="mt-2 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl">
+            Закрыть
+          </Button>
         </DialogContent>
       </Dialog>
     </>
