@@ -75,18 +75,31 @@ function normalizeIncomingPayload(body: any): NormalizedLead {
 
   const incomingLead = (body?.lead && typeof body.lead === 'object') ? body.lead : {}
 
+  // Backward/loose compatibility:
+  // some clients may send lead fields on top-level instead of inside `lead`.
+  const leadLike = (key: string) => (incomingLead as any)?.[key] ?? (body as any)?.[key]
+
   const lead: NormalizedLead['lead'] = {
-    name: typeof incomingLead?.name === 'string' ? incomingLead.name : undefined,
-    tax_regime: typeof incomingLead?.tax_regime === 'string' ? incomingLead.tax_regime : undefined,
-    monthly_revenue: typeof incomingLead?.monthly_revenue === 'number' ? incomingLead.monthly_revenue : undefined,
-    employees_count: typeof incomingLead?.employees_count === 'number' ? incomingLead.employees_count : undefined,
-    city: typeof incomingLead?.city === 'string' ? incomingLead.city : undefined,
-    source: typeof incomingLead?.source === 'string' && incomingLead.source ? incomingLead.source : normalizeSiteToSource(site),
-    utm_source: normalizeUtm(incomingLead?.utm_source),
-    utm_medium: normalizeUtm(incomingLead?.utm_medium),
-    utm_campaign: normalizeUtm(incomingLead?.utm_campaign),
-    utm_content: normalizeUtm(incomingLead?.utm_content),
-    utm_term: normalizeUtm(incomingLead?.utm_term),
+    name: typeof leadLike('name') === 'string' ? String(leadLike('name')) : undefined,
+    tax_regime: typeof leadLike('tax_regime') === 'string' ? String(leadLike('tax_regime')) : undefined,
+    monthly_revenue: ((): number | undefined => {
+      const n = toOptionalNumber(leadLike('monthly_revenue'))
+      return n == null ? undefined : n
+    })(),
+    employees_count: ((): number | undefined => {
+      const n = toOptionalNumber(leadLike('employees_count'))
+      return n == null ? undefined : n
+    })(),
+    city: typeof leadLike('city') === 'string' ? String(leadLike('city')) : undefined,
+    source:
+      (typeof leadLike('source') === 'string' && String(leadLike('source')).trim())
+        ? String(leadLike('source')).trim()
+        : normalizeSiteToSource(site),
+    utm_source: normalizeUtm(leadLike('utm_source')),
+    utm_medium: normalizeUtm(leadLike('utm_medium')),
+    utm_campaign: normalizeUtm(leadLike('utm_campaign')),
+    utm_content: normalizeUtm(leadLike('utm_content')),
+    utm_term: normalizeUtm(leadLike('utm_term')),
   }
 
   const giftPdfFilename = typeof body?.giftPdfFilename === 'string' ? body.giftPdfFilename.trim() : null
@@ -110,28 +123,67 @@ async function insertLeadWithFallback({
   normalized: NormalizedLead
   normalizedPhone: string | null
 }): Promise<{ leadId: number | null }> {
+  const isMissingColumnOrTable = (err: any): boolean => {
+    const code = err?.code
+    const msg = String(err?.message || '')
+    const details = String(err?.details || '')
+
+    // Postgres:
+    //  - 42703 undefined_column
+    //  - 42P01 undefined_table
+    if (code === '42703' || code === '42P01') return true
+
+    // Supabase sometimes returns only message/details
+    if (/column .* does not exist/i.test(msg) || /column .* does not exist/i.test(details)) return true
+    if (/relation .* does not exist/i.test(msg) || /relation .* does not exist/i.test(details)) return true
+
+    return false
+  }
+
   // Primary: new schema (columns + raw_quiz_answers)
   try {
+    const newSchemaInsertRow = {
+      site: normalized.site,
+      email: normalized.email,
+      phone: normalizedPhone,
+      tax_regime: normalized.lead.tax_regime ?? null,
+      monthly_revenue: toOptionalNumber(normalized.lead.monthly_revenue),
+      employees_count: toOptionalNumber(normalized.lead.employees_count),
+      city: normalized.lead.city ?? null,
+      source: normalized.lead.source ?? null,
+      utm_source: normalizeUtm(normalized.lead.utm_source),
+      utm_medium: normalizeUtm(normalized.lead.utm_medium),
+      utm_campaign: normalizeUtm(normalized.lead.utm_campaign),
+      utm_content: normalizeUtm(normalized.lead.utm_content),
+      utm_term: normalizeUtm(normalized.lead.utm_term),
+      raw_quiz_answers: normalized.raw_quiz_answers,
+      // Backward compatibility: some existing prod tables keep quiz_data NOT NULL.
+      // Keep it in sync with raw_quiz_answers until we drop/relax constraint.
+      quiz_data: normalized.raw_quiz_answers,
+    }
+
+    if (shouldExposeDebugDetails()) {
+      console.log('[quiz-lead] insert (new schema) row preview:', {
+        site: newSchemaInsertRow.site,
+        email: newSchemaInsertRow.email,
+        phone: newSchemaInsertRow.phone,
+        tax_regime: newSchemaInsertRow.tax_regime,
+        monthly_revenue: newSchemaInsertRow.monthly_revenue,
+        employees_count: newSchemaInsertRow.employees_count,
+        city: newSchemaInsertRow.city,
+        source: newSchemaInsertRow.source,
+        utm_source: newSchemaInsertRow.utm_source,
+        utm_medium: newSchemaInsertRow.utm_medium,
+        utm_campaign: newSchemaInsertRow.utm_campaign,
+        utm_content: newSchemaInsertRow.utm_content,
+        utm_term: newSchemaInsertRow.utm_term,
+        has_raw_quiz_answers: newSchemaInsertRow.raw_quiz_answers != null,
+      })
+    }
+
     const { data: lead, error } = await supabase
       .from('quiz_leads')
-      .insert([
-        {
-          site: normalized.site,
-          email: normalized.email,
-          phone: normalizedPhone,
-          tax_regime: normalized.lead.tax_regime ?? null,
-          monthly_revenue: toOptionalNumber(normalized.lead.monthly_revenue),
-          employees_count: toOptionalNumber(normalized.lead.employees_count),
-          city: normalized.lead.city ?? null,
-          source: normalized.lead.source ?? null,
-          utm_source: normalizeUtm(normalized.lead.utm_source),
-          utm_medium: normalizeUtm(normalized.lead.utm_medium),
-          utm_campaign: normalizeUtm(normalized.lead.utm_campaign),
-          utm_content: normalizeUtm(normalized.lead.utm_content),
-          utm_term: normalizeUtm(normalized.lead.utm_term),
-          raw_quiz_answers: normalized.raw_quiz_answers,
-        },
-      ])
+      .insert([newSchemaInsertRow])
       .select('id')
       .single()
 
@@ -139,8 +191,29 @@ async function insertLeadWithFallback({
       return { leadId: typeof lead?.id === 'number' ? lead.id : null }
     }
 
-    console.error('[quiz-lead] Failed to insert lead (new schema), will try legacy schema:', error)
+    if (!isMissingColumnOrTable(error)) {
+      // Don't silently fallback: otherwise we'll keep losing CRM fields even when columns exist.
+      console.error('[quiz-lead] Failed to insert lead (new schema) - NOT falling back:', {
+        message: (error as any)?.message,
+        code: (error as any)?.code,
+        hint: (error as any)?.hint,
+        details: (error as any)?.details,
+      })
+      throw error
+    }
+
+    console.error('[quiz-lead] Failed to insert lead (new schema), will try legacy schema:', {
+      message: (error as any)?.message,
+      code: (error as any)?.code,
+      hint: (error as any)?.hint,
+      details: (error as any)?.details,
+    })
   } catch (e) {
+    if (!isMissingColumnOrTable(e)) {
+      console.error('[quiz-lead] Exception inserting lead (new schema) - NOT falling back:', e)
+      throw e
+    }
+
     console.error('[quiz-lead] Exception inserting lead (new schema), will try legacy schema:', e)
   }
 
@@ -343,6 +416,25 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const normalized = normalizeIncomingPayload(body)
+
+    if (shouldExposeDebugDetails()) {
+      console.log('[quiz-lead] incoming payload keys:', Object.keys(body || {}))
+      console.log('[quiz-lead] incoming payload preview:', {
+        site: body?.site,
+        email: body?.email,
+        phone: body?.phone,
+        leadKeys: body?.lead && typeof body.lead === 'object' ? Object.keys(body.lead) : null,
+        has_raw_quiz_answers: body?.raw_quiz_answers != null,
+        has_legacy_quizData: body?.quizData != null,
+      })
+      console.log('[quiz-lead] normalized preview:', {
+        site: normalized.site,
+        email: normalized.email,
+        phone: normalized.phone,
+        lead: normalized.lead,
+        has_raw_quiz_answers: normalized.raw_quiz_answers != null,
+      })
+    }
     const email = normalized.email
     const phone = normalized.phone || ''
     const quizData = normalized.raw_quiz_answers

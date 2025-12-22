@@ -15,7 +15,7 @@ export function VersionBadge() {
   useEffect(() => {
     const fetchVersion = async () => {
       try {
-        const response = await fetch('/version.json')
+        const response = await fetch('/api/version')
         if (response.ok) {
           const data = await response.json()
           setVersionInfo(data)
