@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "sonner"
 import { CookieConsent } from "@/components/cookie-consent"
 import { AusnBlobButton } from "@/components/AusnBlobButton"
+import { RiskBlobButton } from "@/components/RiskBlobButton"
 
 const inter = Inter({ 
   subsets: ["latin", "cyrillic"],
@@ -69,6 +70,7 @@ export default function RootLayout({
           {/* Критический контент (выше fold) */}
           <Header />
           <AusnBlobButton />
+          <RiskBlobButton />
           {children}
           
           {/* Не-критический контент (ниже fold) - загружается позже */}
