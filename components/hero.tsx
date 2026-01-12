@@ -120,11 +120,10 @@ export function Hero() {
         const response = await fetch("/api/homepage")
         if (response.ok) {
           const data = await response.json()
-          if (data.hero) {
-            setConfig(data.hero)
-          } else {
-          setConfig(data)
-          }
+          const heroConfig = data.hero || data
+          console.log("Hero: Загружена конфигурация:", heroConfig)
+          console.log("Hero: Путь к фону:", heroConfig.background?.image)
+          setConfig(heroConfig)
         }
       } catch (error) {
         console.error("Hero: Ошибка загрузки конфигурации:", error)
@@ -155,8 +154,14 @@ export function Hero() {
   return (
     <section 
       className="relative min-h-[600px] md:min-h-screen flex items-center justify-center px-4 md:px-8 overflow-hidden"
+      style={{
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
     >
-      {/* Оптимизированное фоновое изображение через Next.js Image */}
+      {/* Оптимизированное фоновое изображение через Next.js Image (fallback на CSS background) */}
       {backgroundImage && (
         <Image
           src={backgroundImage}
@@ -168,6 +173,11 @@ export function Hero() {
           className="object-cover"
           style={{
             zIndex: 0,
+          }}
+          onError={(e) => {
+            // Если Next.js Image не загрузился, используем CSS background
+            console.warn('Hero background image failed to load, using CSS fallback')
+            e.currentTarget.style.display = 'none'
           }}
         />
       )}

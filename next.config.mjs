@@ -11,6 +11,10 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
+    // Разрешаем неоптимизированные изображения для локальных путей
+    unoptimized: false,
+    // Домены для внешних изображений (если нужны)
+    remotePatterns: [],
   },
   // Оптимизация минификации
   swcMinify: true,
@@ -30,6 +34,10 @@ const nextConfig = {
   poweredByHeader: false, // Убрать X-Powered-By header
   // Оптимизация production
   productionBrowserSourceMaps: false,
+  // Настройки для работы с блокировкой Google Fonts на сервере
+  env: {
+    NEXT_FONT_GOOGLE_TIMEOUT: '10000', // Увеличиваем таймаут до 10 секунд
+  },
   // Настройки webpack для production
   webpack: (config, { isServer }) => {
     if (!isServer) {
