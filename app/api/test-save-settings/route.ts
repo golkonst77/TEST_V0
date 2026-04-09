@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       id: 1,
       site_name: "ПростоБюро",
       site_description: "Профессиональные бухгалтерские услуги",
-      phone: "+7 953 330-17-77",
+      phone: "+7 999 000-00-00",
       email: "test@prostoburo.ru",
       address: "г. Калуга",
       telegram: "https://t.me/prostoburo",

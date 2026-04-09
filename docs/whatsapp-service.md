@@ -24,7 +24,7 @@ Content-Type: application/json
 ```
 
 ### Номер отправителя
-- **WhatsApp Business**: 79533301777
+- **WhatsApp Business**: 79990000000
 - **Страна**: Россия
 - **Статус**: Подтвержден и активен
 

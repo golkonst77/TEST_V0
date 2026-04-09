@@ -134,8 +134,17 @@ export function Hero() {
   }, [])
 
   // Значения по умолчанию для безопасности
-  const backgroundImage = config.background?.image || ''
+  const backgroundImage = config.background?.image || '/uploads/hero-bg.webp'
   const overlayOpacity = (config.background?.overlay || 10) / 100
+  
+  // Отладочная информация
+  useEffect(() => {
+    if (backgroundImage) {
+      console.log('Hero: Используется фон:', backgroundImage)
+    } else {
+      console.warn('Hero: Фон не найден, используется fallback')
+    }
+  }, [backgroundImage])
   const badge = config.badge || { text: 'Защищаем ваш бизнес', show: true }
   const title = config.title || { text: 'Ваш личный', highlightText: 'щит' }
   const description = config.description || 'Профессиональные бухгалтерские услуги'
@@ -151,36 +160,22 @@ export function Hero() {
     paddingX: 20
   }
 
+  // Убеждаемся, что путь к изображению правильный
+  const bgImageUrl = backgroundImage 
+    ? (backgroundImage.startsWith('/') ? backgroundImage : `/${backgroundImage}`)
+    : '/uploads/hero-bg.webp'
+
   return (
     <section 
       className="relative min-h-[600px] md:min-h-screen flex items-center justify-center px-4 md:px-8 overflow-hidden"
       style={{
-        backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
+        backgroundImage: `url(${bgImageUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        backgroundColor: '#f3f4f6', // Fallback цвет
       }}
     >
-      {/* Оптимизированное фоновое изображение через Next.js Image (fallback на CSS background) */}
-      {backgroundImage && (
-        <Image
-          src={backgroundImage}
-          alt="Hero background"
-          fill
-          priority
-          quality={85}
-          sizes="100vw"
-          className="object-cover"
-          style={{
-            zIndex: 0,
-          }}
-          onError={(e) => {
-            // Если Next.js Image не загрузился, используем CSS background
-            console.warn('Hero background image failed to load, using CSS fallback')
-            e.currentTarget.style.display = 'none'
-          }}
-        />
-      )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-white/0 z-10" />
       <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-8 md:py-12">
         <div className="relative z-10 w-full flex justify-start">

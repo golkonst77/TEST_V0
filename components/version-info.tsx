@@ -47,11 +47,11 @@ export function VersionInfo() {
   if (!versionInfo) {
     return (
       <div className="text-sm text-black text-center mt-2 font-medium">
-        <span className="font-mono">v1.0.2</span>
+        <span className="font-mono">v1.1.7</span>
         <span className="mx-1">•</span>
-        <span className="font-mono">build 102</span>
+        <span className="font-mono">build 117</span>
         <span className="mx-1">•</span>
-        <span className="text-gray-600">2025-09-04</span>
+        <span className="text-gray-600">2026-04-09</span>
       </div>
     )
   }

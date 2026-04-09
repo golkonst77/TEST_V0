@@ -57,7 +57,7 @@ const defaultConfig: HeaderConfig = {
     imageUrl: "",
   },
   phone: {
-    number: "+7 953 777 77 77",
+    number: "",
     show: true,
   },
   social: {
@@ -104,7 +104,7 @@ export default function HeaderEditor() {
               imageUrl: settings.logoImageUrl || "",
             },
             phone: {
-              number: settings.phone || "+7 953 330-17-77",
+              number: settings.phone || "",
               show: true,
             },
             social: {

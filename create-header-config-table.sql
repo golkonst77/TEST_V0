@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS header_config (
         "imageUrl": ""
       },
       "phone": {
-        "number": "+7 953 330-17-77",
+        "number": "+7 999 000-00-00",
         "show": true
       },
       "social": {
@@ -92,7 +92,7 @@ VALUES (1, '{
       "imageUrl": ""
     },
     "phone": {
-      "number": "+7 953 330-17-77",
+      "number": "+7 999 000-00-00",
       "show": true
     },
     "social": {

@@ -62,21 +62,6 @@ export default function AdminContactsPage() {
           })
         }
 
-        // Получаем данные из settings для синхронизации
-        const headerResponse = await fetch("/api/admin/settings")
-        if (headerResponse.ok) {
-          const headerData = await headerResponse.json()
-          const header = headerData.header
-          if (header) {
-            setContacts(prev => ({
-              ...prev,
-              phone: header.phone?.number || prev.phone,
-              telegram: header.social?.telegram || prev.telegram,
-              vk: header.social?.vk || prev.vk
-            }))
-          }
-        }
-
         setMessage("Контактная информация загружена")
       } catch (error) {
         setMessage("Ошибка загрузки контактной информации")
@@ -108,28 +93,7 @@ export default function AdminContactsPage() {
         }),
       })
 
-      // Синхронизируем с header
-      const headerResponse = await fetch("/api/admin/settings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          header: {
-            phone: {
-              number: contacts.phone,
-              show: true
-            },
-            social: {
-              telegram: contacts.telegram,
-              vk: contacts.vk,
-              show: true
-            }
-          }
-        }),
-      })
-
-      if (settingsResponse.ok && headerResponse.ok) {
+      if (settingsResponse.ok) {
         setMessage("Контактная информация сохранена")
       } else {
         setMessage("Не удалось сохранить контактную информацию")
@@ -188,7 +152,7 @@ export default function AdminContactsPage() {
                   id="phone"
                   value={contacts.phone}
                   onChange={(e) => setContacts({ ...contacts, phone: e.target.value })}
-                  placeholder="+7 953 777 77 77"
+                  placeholder="+7 (___) ___-__-__"
                   className="h-8 text-sm mt-1"
                 />
               </div>

@@ -1,11 +1,20 @@
 import { NextResponse } from "next/server"
 import { getSettings } from "@/lib/settings-store"
 
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
 export async function GET() {
   try {
     const settings = await getSettings()
     console.log("Public API - returning settings:", settings)
-    return NextResponse.json(settings)
+    return NextResponse.json(settings, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    })
   } catch (error) {
     console.error("Error fetching public settings:", error)
     
@@ -13,7 +22,7 @@ export async function GET() {
     const fallbackSettings = {
       siteName: "Просто Бюро",
       siteDescription: "Бухгалтерские услуги",
-      phone: "+7953 330-17-77",
+      phone: "+7 999 000-00-00",
       email: "urist40@gmail.com",
       address: "Калуга, Дзержинского 37, офис 20",
       telegram: "@prostoburo",
@@ -41,6 +50,12 @@ export async function GET() {
       }
     }
     
-    return NextResponse.json(fallbackSettings)
+    return NextResponse.json(fallbackSettings, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    })
   }
 }

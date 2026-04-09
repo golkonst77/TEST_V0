@@ -23,18 +23,29 @@ export function Contacts() {
   const { handleCruiseClick } = useCruiseClick()
 
   useEffect(() => {
-    fetch('/api/settings')
+    const controller = new AbortController()
+
+    fetch('/api/settings', {
+      cache: "no-store",
+      signal: controller.signal,
+    })
       .then(res => res.json())
       .then(data => setSettings(data))
-      .catch(err => console.error('Ошибка загрузки настроек:', err))
+      .catch(err => {
+        if (!(err instanceof Error && err.name === "AbortError")) {
+          console.error('Ошибка загрузки настроек:', err)
+        }
+      })
+
+    return () => controller.abort()
   }, [])
 
   const contactInfo = [
     {
       icon: Phone,
       title: 'Телефон',
-      value: settings?.phone || '+7953 330-17-77',
-      href: `tel:${settings?.phone?.replace(/\s/g, '') || '+79533301777'}`,
+      value: settings?.phone || '+7 999 000-00-00',
+      href: `tel:${settings?.phone?.replace(/\s/g, '') || '+79990000000'}`,
       color: 'text-blue-400'
     },
     {

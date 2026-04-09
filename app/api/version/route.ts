@@ -24,9 +24,9 @@ export async function GET() {
     
     // Fallback версия
     return NextResponse.json({
-      version: '1.0.19',
-      build: '1019',
-      date: '2025-11-28',
+      version: '1.1.7',
+      build: '117',
+      date: '2026-04-09',
       description: 'Fallback version'
     })
   }

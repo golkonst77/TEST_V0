@@ -15,7 +15,7 @@ export default function AdminUsersPage() {
       id: 1, 
       name: "Константин Голубев", 
       email: "golkonst@gmail.com", 
-      phone: "+7 953 777 77 77",
+      phone: "+7 999 000 00 01",
       role: "admin", 
       status: "active", 
       avatar: "",

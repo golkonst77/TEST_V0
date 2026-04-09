@@ -471,7 +471,7 @@ AMOCRM_PIPELINE_ID=your_pipeline_id
 
 ```typescript
 {
-  phone: "+79537777777",
+  phone: "+79990000000",
   discount: "30%",
   businessType: "ИП",
   couponCode: "IP30",

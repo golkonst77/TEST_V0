@@ -16,6 +16,8 @@ const inter = Inter({
   subsets: ["latin", "cyrillic"],
   display: 'swap', // Оптимизация загрузки шрифта
   preload: true,
+  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'], // Fallback на системные шрифты
+  adjustFontFallback: true, // Автоматическая настройка fallback
 })
 
 export const metadata: Metadata = {

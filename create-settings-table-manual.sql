@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS settings (
   id INTEGER PRIMARY KEY DEFAULT 1,
   site_name VARCHAR(255) DEFAULT 'ПростоБюро',
   site_description TEXT DEFAULT 'Профессиональные бухгалтерские услуги',
-  phone VARCHAR(50) DEFAULT '+7 953 330-17-77',
+  phone VARCHAR(50) DEFAULT '+7 999 000-00-00',
   email VARCHAR(255) DEFAULT 'info@prostoburo.ru',
   address TEXT DEFAULT 'г. Калуга',
   telegram VARCHAR(255) DEFAULT 'https://t.me/prostoburo',
@@ -26,7 +26,7 @@ CREATE INDEX IF NOT EXISTS idx_settings_id ON settings(id);
 
 -- Вставка начальных данных
 INSERT INTO settings (id, site_name, site_description, phone, email, address, telegram, vk, maintenance_mode, analytics_enabled, quiz_mode, working_hours)
-VALUES (1, 'ПростоБюро', 'Профессиональные бухгалтерские услуги', '+7 953 330-17-77', 'info@prostoburo.ru', 'г. Калуга', 'https://t.me/prostoburo', 'https://m.vk.com/buh_urist?from=groups', false, true, 'custom', '{"monday_friday": "9:00 - 18:00", "saturday": "10:00 - 15:00", "sunday": "Выходной"}'::jsonb)
+VALUES (1, 'ПростоБюро', 'Профессиональные бухгалтерские услуги', '+7 999 000-00-00', 'info@prostoburo.ru', 'г. Калуга', 'https://t.me/prostoburo', 'https://m.vk.com/buh_urist?from=groups', false, true, 'custom', '{"monday_friday": "9:00 - 18:00", "saturday": "10:00 - 15:00", "sunday": "Выходной"}'::jsonb)
 ON CONFLICT (id) DO NOTHING;
 
 -- Создание функции для обновления updated_at
