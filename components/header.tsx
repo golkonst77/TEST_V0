@@ -39,6 +39,8 @@ export const Header = () => {
   const pathname = usePathname()
   const { isSectionVisible } = useHomepageSections()
   const deviceType = useDeviceType()
+  const phone = settings?.phone?.trim() || ""
+  const phoneHref = phone ? `tel:${phone.replace(/\s/g, "")}` : undefined
 
   useEffect(() => {
     const controller = new AbortController()
@@ -120,11 +122,11 @@ export const Header = () => {
           {/* Быстрые контакты: телефон, Telegram, VK */}
           <div className="flex items-center space-x-4">
             <a
-              href={`tel:${settings?.phone?.replace(/\s/g, '') || '+79990000000'}`}
+              href={phoneHref}
               className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
             >
               <Phone className="h-4 w-4" />
-              <span className="hidden xl:inline">{settings?.phone || '+7 999 000-00-00'}</span>
+              <span className="hidden xl:inline">{phone}</span>
             </a>
             <a
               href="https://t.me/prostoburo"
@@ -167,11 +169,11 @@ export const Header = () => {
                ))}
               <div className="pt-4 border-t">
                 <a
-                  href={`tel:${settings?.phone?.replace(/\s/g, '') || '+79990000000'}`}
+                  href={phoneHref}
                   className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <Phone className="h-4 w-4" />
-                  <span>{settings?.phone || '+7 999 000-00-00'}</span>
+                  <span>{phone}</span>
                 </a>
                 <a
                   href="https://t.me/prostoburo"

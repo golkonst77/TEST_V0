@@ -100,6 +100,7 @@ const defaultConfig: HeroConfig = {
 
 export function Hero() {
   const [config, setConfig] = useState<HeroConfig>(defaultConfig)
+  const [isConfigLoaded, setIsConfigLoaded] = useState(false)
   const { handleCruiseClick } = useCruiseClick()
 
   const PistolIcon = ({ className }: { className?: string }) => (
@@ -114,10 +115,15 @@ export function Hero() {
   )
 
   useEffect(() => {
+    const controller = new AbortController()
+
     // Загружаем конфигурацию из админки
     const fetchConfig = async () => {
       try {
-        const response = await fetch("/api/homepage")
+        const response = await fetch("/api/homepage", {
+          cache: "no-store",
+          signal: controller.signal,
+        })
         if (response.ok) {
           const data = await response.json()
           const heroConfig = data.hero || data
@@ -126,11 +132,16 @@ export function Hero() {
           setConfig(heroConfig)
         }
       } catch (error) {
-        console.error("Hero: Ошибка загрузки конфигурации:", error)
+        if (!(error instanceof Error && error.name === "AbortError")) {
+          console.error("Hero: Ошибка загрузки конфигурации:", error)
+        }
+      } finally {
+        setIsConfigLoaded(true)
       }
     }
 
     fetchConfig()
+    return () => controller.abort()
   }, [])
 
   // Значения по умолчанию для безопасности
@@ -164,6 +175,10 @@ export function Hero() {
   const bgImageUrl = backgroundImage 
     ? (backgroundImage.startsWith('/') ? backgroundImage : `/${backgroundImage}`)
     : '/uploads/hero-bg.webp'
+
+  if (!isConfigLoaded) {
+    return <section className="relative min-h-[600px] md:min-h-screen bg-gray-100" />
+  }
 
   return (
     <section 
