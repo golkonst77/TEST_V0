@@ -43,10 +43,10 @@ const DATA_FILE = join(process.cwd(), 'data', 'homepage.json')
 // Настройки по умолчанию
 const defaultHeroConfig: HeroConfig = {
   badge: { text: "Защищаем ваш бизнес от налоговых рисков", show: true },
-  title: { text: "Ваш личный", highlightText: "щит" },
+  title: { text: "Бухгалтерия на аутсорсе без", highlightText: "ошибок и штрафов" },
   description:
-    "Пока вы строите свою империю, мы защищаем её тылы от проверок, штрафов и бумажной волокиты. Спокойно занимайтесь завоеванием мира.",
-  button: { text: "Хочу на круиз без штрафов", show: true },
+    "Берём на себя ведение бухгалтерии, отчётность и налоги. Снижаем нагрузку на бизнес и помогаем экономить до 50%.",
+  button: { text: "Получить бесплатную консультацию", show: true },
   features: [
     {
       id: "expensive",

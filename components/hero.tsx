@@ -56,11 +56,11 @@ const iconMap = {
 const defaultConfig: HeroConfig = {
   badge: { text: 'Защищаем ваш бизнес', show: true },
   title: {
-    text: 'ПростоБюро — бухгалтерия, с которой вы спокойно едете к своей мечте на',
-    highlightText: 'круиз контроле!'
+    text: 'Бухгалтерия на аутсорсе без',
+    highlightText: 'ошибок и штрафов'
   },
-  description: 'Полный аутсорсинг бухгалтерии для ИП и ООО. Всё прозрачно, вовремя и без головной боли — ведение, отчётность, налоги, консультации и юридическое сопровождение.',
-  button: { text: 'Хочу на круиз без штрафов', show: true },
+  description: 'Берём на себя ведение бухгалтерии, отчётность и налоги. Снижаем нагрузку на бизнес и помогаем экономить до 50%.',
+  button: { text: 'Получить бесплатную консультацию', show: true },
   features: [
     {
       id: 'cruise-control',
@@ -202,7 +202,7 @@ export function Hero() {
                   variant="secondary" 
                   className="px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium bg-sky-200 text-sky-700 border-sky-300 shadow-md hover:bg-sky-300 hover:border-sky-400"
                 >
-                  Мы защищаем ваш бизнес
+                  {badge.text}
                 </Badge>
               </div>
             )}
@@ -210,7 +210,7 @@ export function Hero() {
             {/* Title */}
             <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 md:mb-6 leading-tight text-white text-left">
               {title.text}{" "}
-              <span className="text-blue-400">{title.highlightText}</span>
+              {title.highlightText ? <span className="text-blue-400">{title.highlightText}</span> : null}
             </h1>
 
             {/* Description */}
