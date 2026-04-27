@@ -19,33 +19,20 @@ export function useHomepageSections() {
       setLoading(true)
       setError(null)
       
-      const response = await fetch('/api/homepage-sections')
+      const response = await fetch('/api/homepage-sections', { cache: "no-store" })
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       
       const config = await response.json()
+      console.log("HOMEPAGE SECTIONS LOADED", config)
       setSectionsConfig(config)
     } catch (err) {
       console.error('Error fetching sections config:', err)
       setError(err instanceof Error ? err.message : 'Unknown error')
       
-      // Fallback к дефолтной конфигурации
-      const defaultConfig: SectionsConfig = {
-        hero: { desktop: 'published', mobile: 'published' },
-        about: { desktop: 'published', mobile: 'published' },
-        services: { desktop: 'published', mobile: 'published' },
-        calculator: { desktop: 'published', mobile: 'published' },
-        pricing: { desktop: 'published', mobile: 'published' },
-        reviews: { desktop: 'published', mobile: 'published' },
-        guarantees: { desktop: 'published', mobile: 'published' },
-        faq: { desktop: 'published', mobile: 'published' },
-        news: { desktop: 'published', mobile: 'published' },
-        contacts: { desktop: 'published', mobile: 'published' },
-        technologies: { desktop: 'published', mobile: 'published' },
-        'ai-documents': { desktop: 'published', mobile: 'published' }
-      }
-      setSectionsConfig(defaultConfig)
+      // Не маскируем ошибку дефолтами — иначе выключение секций не работает
+      setSectionsConfig({})
     } finally {
       setLoading(false)
     }
@@ -57,7 +44,7 @@ export function useHomepageSections() {
 
   const isSectionVisible = (sectionKey: string, deviceType: 'desktop' | 'mobile' = 'desktop'): boolean => {
     const section = sectionsConfig[sectionKey]
-    if (!section) return true // Если секция не найдена, показываем по умолчанию
+    if (!section) return true // если ключа нет в конфиге — показываем (но это видно по логам выше)
     
     return section[deviceType] === 'published'
   }

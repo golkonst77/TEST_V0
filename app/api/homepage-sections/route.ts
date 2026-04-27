@@ -2,9 +2,14 @@ import { NextResponse } from 'next/server'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
 export async function GET() {
   try {
     const configPath = join(process.cwd(), 'data', 'homepage-sections.json')
+    console.log("READING HOMEPAGE SECTIONS FROM", configPath)
     const configContent = await readFile(configPath, 'utf-8')
     const config = JSON.parse(configContent)
     
@@ -14,7 +19,13 @@ export async function GET() {
     )
     
     if (isNewFormat) {
-      return NextResponse.json(config)
+      return NextResponse.json(config, {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      })
     }
     
     // Преобразуем старый формат в новый
@@ -28,7 +39,13 @@ export async function GET() {
       }
     })
     
-    return NextResponse.json(newConfig)
+    return NextResponse.json(newConfig, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    })
   } catch (error) {
     console.error('Error reading sections config:', error)
     
@@ -48,6 +65,12 @@ export async function GET() {
       'ai-documents': { desktop: 'published', mobile: 'published' }
     }
     
-    return NextResponse.json(defaultConfig)
+    return NextResponse.json(defaultConfig, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    })
   }
 } 

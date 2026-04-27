@@ -64,19 +64,36 @@ export default function HomePage() {
 
   const deviceTypeForVisibility = deviceType === 'tablet' ? 'desktop' : deviceType
 
+  const check = (sectionKey: string) => {
+    const visible = isSectionVisible(sectionKey, deviceTypeForVisibility)
+    console.log("SECTION CHECK", sectionKey, visible, deviceTypeForVisibility)
+    return visible
+  }
+
   return (
     <main id="home-page" className="min-h-screen">
-      {isSectionVisible('hero', deviceTypeForVisibility) && <Hero />}
-      {isSectionVisible('guarantees', deviceTypeForVisibility) && <Guarantees />}
-      {isSectionVisible('services', deviceTypeForVisibility) && <Services showTitle />}
-      {isSectionVisible('technologies', deviceTypeForVisibility) && <Technologies />}
-      {isSectionVisible('ai-documents', deviceTypeForVisibility) && <AIDocuments />}
-      {isSectionVisible('pricing', deviceTypeForVisibility) && <PricingSection />}
-      {isSectionVisible('faq', deviceTypeForVisibility) && <FAQ />}
-      {isSectionVisible('calculator', deviceTypeForVisibility) && <Calculator />}
-      {isSectionVisible('reviews', deviceTypeForVisibility) && <Reviews />}
-      {isSectionVisible('news', deviceTypeForVisibility) && <News />}
-      {isSectionVisible('contacts', deviceTypeForVisibility) && <Contacts />}
+      {check('hero') && <Hero />}
+      {check('guarantees') && <Guarantees />}
+      {check('services') && <Services showTitle />}
+      {check('technologies') && <Technologies />}
+      {check('ai-documents') && <AIDocuments />}
+      {check('pricing') && <PricingSection />}
+      {check('faq') && <FAQ />}
+      {check('calculator') && <Calculator />}
+      {check('reviews') && (
+        <>
+          <section className="bg-white/60">
+            <div className="max-w-6xl mx-auto px-6 py-6">
+              <p className="text-sm text-gray-600 text-center">
+                Работаем по договору, всегда на связи и отвечаем за результат
+              </p>
+            </div>
+          </section>
+          <Reviews />
+        </>
+      )}
+      {check('news') && <News />}
+      {check('contacts') && <Contacts />}
     </main>
   )
 }

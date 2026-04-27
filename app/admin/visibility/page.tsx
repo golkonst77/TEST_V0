@@ -44,6 +44,8 @@ export default function AdminVisibilityPage() {
   const [sectionsConfig, setSectionsConfig] = useState<SectionsConfig>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [lastSaved, setLastSaved] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchSectionsConfig()
@@ -78,8 +80,11 @@ export default function AdminVisibilityPage() {
   }
 
   const saveConfig = async () => {
+    console.log("VISIBILITY SAVE START")
     setSaving(true)
+    setSaveError(null)
     try {
+      console.log("VISIBILITY SAVE PAYLOAD", sectionsConfig)
       const response = await fetch("/api/admin/visibility", {
         method: "POST",
         headers: {
@@ -88,14 +93,28 @@ export default function AdminVisibilityPage() {
         body: JSON.stringify(sectionsConfig),
       })
 
-      if (response.ok) {
-        toast.success("Настройки видимости сохранены")
-      } else {
-        toast.error("Ошибка сохранения настроек")
+      const data = await response.json().catch(() => null)
+      console.log("VISIBILITY SAVE RESPONSE", data)
+
+      const success = response.ok && data?.success !== false
+      if (success) {
+        const savedAt = typeof data?.savedAt === "string" ? data.savedAt : null
+        setLastSaved(savedAt ? new Date(savedAt).toLocaleTimeString() : new Date().toLocaleTimeString())
+        toast.success("Видимость секций сохранена")
+        return
       }
+
+      const message =
+        (typeof data?.message === "string" && data.message) ||
+        (typeof data?.error === "string" && data.error) ||
+        "Не удалось сохранить настройки"
+      setSaveError(message)
+      toast.error("Ошибка сохранения", { description: message })
     } catch (error) {
+      console.error("VISIBILITY SAVE ERROR", error)
+      setSaveError("Ошибка соединения с сервером")
       console.error("Error saving config:", error)
-      toast.error("Ошибка сохранения настроек")
+      toast.error("Ошибка соединения с сервером")
     } finally {
       setSaving(false)
     }
@@ -140,8 +159,9 @@ export default function AdminVisibilityPage() {
             ) : (
               <Save className="h-4 w-4 mr-2" />
             )}
-            Сохранить
+            {saving ? "Сохраняем..." : "Сохранить"}
           </Button>
+          {lastSaved ? <span className="text-xs text-gray-600">Сохранено в {lastSaved}</span> : null}
         </div>
 
         {/* Основная карточка с настройками */}
