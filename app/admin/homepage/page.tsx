@@ -63,15 +63,31 @@ export default function HomepageEditor() {
     fetchConfig()
   }, [])
 
+  useEffect(() => {
+    console.log("CONFIG UPDATED", config)
+  }, [config])
+
   const fetchConfig = async () => {
     try {
-      const response = await fetch("/api/admin/homepage")
+      const response = await fetch("/api/admin/homepage", { cache: "no-store" })
       if (response.ok) {
         const data = await response.json()
         setConfig(data.hero)
+      } else {
+        const errorData = await response.json().catch(() => null)
+        toast({
+          title: "Ошибка",
+          description: errorData?.message || "Не удалось загрузить настройки",
+          variant: "destructive",
+        })
       }
     } catch (error) {
       console.error("Ошибка загрузки конфигурации:", error)
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить настройки",
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
     }
@@ -82,43 +98,84 @@ export default function HomepageEditor() {
 
     setSaving(true)
     try {
+      console.log("SENDING FULL CONFIG", config)
+      console.log("SENDING FEATURES", config.features)
+      console.log("SAVE PAYLOAD", JSON.stringify({ hero: config }, null, 2))
+
       const response = await fetch("/api/admin/homepage", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hero: config }),
       })
 
-      if (response.ok) {
-        setLastSaved(new Date().toLocaleTimeString())
+      const data = await response.json().catch(() => null)
+      console.log("API RESPONSE", data)
+
+      if (!response.ok) {
+        toast({
+          title: "Ошибка сохранения",
+          description: data?.message || "Не удалось сохранить настройки",
+          variant: "destructive",
+        })
+        return
+      }
+
+      setLastSaved(new Date().toLocaleTimeString())
+      if (data?.hero) setConfig(data.hero)
+      toast({
+        title: "Сохранено",
+        description: "Настройки главной страницы сохранены",
+      })
+
+      try {
+        const publicRes = await fetch(`/api/homepage?afterSave=${Date.now()}`, { cache: "no-store" })
+        const publicData = await publicRes.json().catch(() => null)
+        console.log("PUBLIC API AFTER SAVE", publicData)
+      } catch (e) {
+        console.error("PUBLIC API AFTER SAVE (fetch failed)", e)
       }
     } catch (error) {
       console.error("Ошибка при сохранении:", error)
+      toast({
+        title: "Ошибка сохранения",
+        description: "Не удалось сохранить настройки",
+        variant: "destructive",
+      })
     } finally {
       setSaving(false)
     }
   }
 
   const updateConfig = (path: string, value: any) => {
-    if (!config) return
+    setConfig((prev) => {
+      if (!prev) return prev
 
-    const newConfig = { ...config }
-    const keys = path.split(".")
-    let current: any = newConfig
+      const keys = path.split(".")
+      const next: any = { ...prev }
+      let currNext: any = next
+      let currPrev: any = prev
 
-    for (let i = 0; i < keys.length - 1; i++) {
-      current = current[keys[i]]
-    }
-    current[keys[keys.length - 1]] = value
+      for (let i = 0; i < keys.length - 1; i++) {
+        const k = keys[i]
+        currNext[k] = { ...currPrev[k] }
+        currNext = currNext[k]
+        currPrev = currPrev[k]
+      }
 
-    setConfig(newConfig)
+      currNext[keys[keys.length - 1]] = value
+      return next as HeroConfig
+    })
   }
 
   const updateFeature = (index: number, field: string, value: any) => {
-    if (!config) return
-
-    const newFeatures = [...config.features]
-    newFeatures[index] = { ...newFeatures[index], [field]: value }
-    setConfig({ ...config, features: newFeatures })
+    console.log("FEATURE CHANGE", index, field, value)
+    setConfig((prev) => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        features: prev.features.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
+      }
+    })
   }
 
   const handleImageUpload = async (file: File) => {
@@ -263,8 +320,9 @@ export default function HomepageEditor() {
           </Button>
           <Button onClick={saveConfig} disabled={saving} size="sm">
             <Save className="h-4 w-4 mr-2" />
-            {saving ? "Сохранение..." : "Сохранить"}
+            {saving ? "Сохраняем..." : "Сохранить"}
           </Button>
+          {lastSaved ? <span className="text-xs text-gray-600">Сохранено в {lastSaved}</span> : null}
         </div>
       }
     >

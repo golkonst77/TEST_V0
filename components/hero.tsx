@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
@@ -52,55 +51,10 @@ const iconMap = {
   Shield,
 }
 
-// Дефолтная конфигурация с правильным путем к WebP
-const defaultConfig: HeroConfig = {
-  badge: { text: 'Защищаем ваш бизнес', show: true },
-  title: {
-    text: 'Бухгалтерия на аутсорсе без',
-    highlightText: 'ошибок и штрафов'
-  },
-  description: 'Берём на себя ведение бухгалтерии, отчётность и налоги. Снижаем нагрузку на бизнес и помогаем экономить до 50%.',
-  button: { text: 'Получить бесплатную консультацию', show: true },
-  features: [
-    {
-      id: 'cruise-control',
-      title: 'Круиз-контроль:',
-      description: 'Мы следим за сроками, вы — за ростом',
-      icon: 'CheckCircle',
-      color: 'blue',
-      show: true
-    },
-    {
-      id: 'communication',
-      title: 'На связи:',
-      description: 'Личный бухгалтер в Telegram или WhatsApp',
-      icon: 'MessageCircle',
-      color: 'green',
-      show: true
-    },
-    {
-      id: 'no-risks',
-      title: 'Без рисков:',
-      description: 'Защита от штрафов и проверок',
-      icon: 'Shield',
-      color: 'orange',
-      show: true
-    }
-  ],
-  background: { image: '/uploads/hero-bg.webp', overlay: 0 },
-  layout: {
-    alignment: 'center',
-    maxWidth: 'max-w-4xl',
-    marginLeft: 0,
-    marginTop: 0,
-    marginBottom: 0,
-    paddingX: 60
-  }
-}
-
 export function Hero() {
-  const [config, setConfig] = useState<HeroConfig>(defaultConfig)
+  const [config, setConfig] = useState<HeroConfig | null>(null)
   const [isConfigLoaded, setIsConfigLoaded] = useState(false)
+  const [loadError, setLoadError] = useState(false)
   const { handleCruiseClick } = useCruiseClick()
 
   const PistolIcon = ({ className }: { className?: string }) => (
@@ -124,16 +78,15 @@ export function Hero() {
           cache: "no-store",
           signal: controller.signal,
         })
-        if (response.ok) {
-          const data = await response.json()
-          const heroConfig = data.hero || data
-          console.log("Hero: Загружена конфигурация:", heroConfig)
-          console.log("Hero: Путь к фону:", heroConfig.background?.image)
-          setConfig(heroConfig)
-        }
+        if (!response.ok) throw new Error(`Failed to load homepage config: ${response.status}`)
+        const data = await response.json()
+        const heroConfig = (data?.hero ?? data) as HeroConfig
+        console.log("Hero: Загружена конфигурация:", heroConfig)
+        setConfig(heroConfig)
       } catch (error) {
         if (!(error instanceof Error && error.name === "AbortError")) {
           console.error("Hero: Ошибка загрузки конфигурации:", error)
+          setLoadError(true)
         }
       } finally {
         setIsConfigLoaded(true)
@@ -144,40 +97,32 @@ export function Hero() {
     return () => controller.abort()
   }, [])
 
-  // Значения по умолчанию для безопасности
-  const backgroundImage = config.background?.image || '/uploads/hero-bg.webp'
-  const overlayOpacity = (config.background?.overlay || 10) / 100
-  
-  // Отладочная информация
-  useEffect(() => {
-    if (backgroundImage) {
-      console.log('Hero: Используется фон:', backgroundImage)
-    } else {
-      console.warn('Hero: Фон не найден, используется fallback')
-    }
-  }, [backgroundImage])
-  const badge = config.badge || { text: 'Защищаем ваш бизнес', show: true }
-  const title = config.title || { text: 'Ваш личный', highlightText: 'щит' }
-  const description = config.description || 'Профессиональные бухгалтерские услуги'
-  const button = config.button || { text: 'Получить консультацию', show: true }
-  const features = config.features || []
-  const buttonText = button.text?.trim() ? button.text : defaultConfig.button.text
-  const layout = config.layout || {
-    alignment: 'left',
-    maxWidth: 'max-w-2xl',
-    marginLeft: 80,
-    marginTop: 0,
-    marginBottom: 0,
-    paddingX: 20
-  }
-
-  // Убеждаемся, что путь к изображению правильный
-  const bgImageUrl = backgroundImage 
-    ? (backgroundImage.startsWith('/') ? backgroundImage : `/${backgroundImage}`)
-    : '/uploads/hero-bg.webp'
-
   if (!isConfigLoaded) {
     return <section className="relative min-h-[600px] md:min-h-screen bg-gray-100" />
+  }
+
+  if (loadError || !config) {
+    return (
+      <section className="relative min-h-[600px] md:min-h-screen bg-gray-100 flex items-center justify-center px-4 md:px-8">
+        <div className="text-center text-gray-800 font-medium">
+          Ошибка загрузки данных. Обратитесь к администратору
+        </div>
+      </section>
+    )
+  }
+
+  const bgImageUrl = config.background?.image
+    ? (config.background.image.startsWith("/") ? config.background.image : `/${config.background.image}`)
+    : ""
+
+  if (!bgImageUrl || !config.title || !config.description || !config.button || !Array.isArray(config.features)) {
+    return (
+      <section className="relative min-h-[600px] md:min-h-screen bg-gray-100 flex items-center justify-center px-4 md:px-8">
+        <div className="text-center text-gray-800 font-medium">
+          Ошибка загрузки данных. Обратитесь к администратору
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -196,30 +141,30 @@ export function Hero() {
         <div className="relative z-10 w-full flex justify-start">
           <div className="w-full max-w-none md:max-w-4xl text-left px-4">
             {/* Badge */}
-            {badge.show && (
+            {config.badge.show && (
               <div className="mb-4 md:mb-6">
                 <Badge 
                   variant="secondary" 
                   className="px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium bg-sky-200 text-sky-700 border-sky-300 shadow-md hover:bg-sky-300 hover:border-sky-400"
                 >
-                  {badge.text}
+                  {config.badge.text}
                 </Badge>
               </div>
             )}
 
             {/* Title */}
             <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 md:mb-6 leading-tight text-white text-left">
-              {title.text}{" "}
-              {title.highlightText ? <span className="text-blue-400">{title.highlightText}</span> : null}
+              {config.title.text}{" "}
+              {config.title.highlightText ? <span className="text-blue-400">{config.title.highlightText}</span> : null}
             </h1>
 
             {/* Description */}
             <p className="text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed text-gray-800 font-medium w-full max-w-none md:max-w-2xl text-left">
-              {description}
+              {config.description}
             </p>
 
             {/* CTA Button */}
-            {button.show && (
+            {config.button.show && (
               <div className="mb-8 md:mb-12 text-left">
                 <Button 
                   size="lg" 
@@ -229,7 +174,7 @@ export function Hero() {
                     boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
                   }}
                 >
-                  <span className="leading-tight">{buttonText}</span>
+                  <span className="leading-tight">{config.button.text}</span>
                 </Button>
               </div>
             )}
@@ -237,7 +182,7 @@ export function Hero() {
             {/* Features */}
             <div className="w-full mt-8 md:mt-12">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full max-w-none md:max-w-6xl text-left">
-                {features.filter(feature => feature.show).map((feature, idx) => {
+                {config.features.filter(feature => feature.show).map((feature, idx) => {
                   const bgVariants = [
                     'bg-[#FFF8F0]', // самая светлая
                     'bg-[#F5E6D6]', // средняя

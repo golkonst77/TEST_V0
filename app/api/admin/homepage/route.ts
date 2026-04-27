@@ -1,5 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getHeroConfig, updateHeroConfig } from "@/lib/homepage-store"
+import { readFileSync, writeFileSync } from "fs"
+import { join } from "path"
+import { getHeroConfig } from "@/lib/homepage-store"
+
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+export const revalidate = 0
 
 export async function GET() {
   try {
@@ -20,27 +26,35 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
     console.log("API: Получен запрос на обновление:", body)
+    console.log("API RECEIVED BODY", JSON.stringify(body, null, 2))
 
-    if (body.hero) {
-      try {
-        const updatedConfig = updateHeroConfig(body.hero)
-        console.log("API: Настройки обновлены успешно")
+    const updatedConfig = (body && typeof body === "object" && "hero" in body ? (body as any).hero : body) as unknown
 
-        return NextResponse.json({
-          success: true,
-          message: "Настройки главной страницы сохранены",
-          hero: updatedConfig,
-        })
-      } catch (saveError) {
-        console.error("API: Ошибка при сохранении:", saveError)
-        return NextResponse.json({ 
-          success: false, 
-          message: saveError instanceof Error ? saveError.message : "Ошибка сохранения файла" 
-        }, { status: 500 })
-      }
+    if (!updatedConfig || typeof updatedConfig !== "object") {
+      return NextResponse.json({ success: false, message: "Неверные данные" }, { status: 400 })
     }
 
-    return NextResponse.json({ success: false, message: "Неверные данные" }, { status: 400 })
+    const dataDir = join(process.cwd(), "data")
+    const dataFile = join(dataDir, "homepage.json")
+    console.log("PROCESS CWD", process.cwd())
+    console.log("DATA FILE PATH", dataFile)
+
+    const fs = require("fs")
+    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true })
+
+    writeFileSync(dataFile, JSON.stringify(updatedConfig, null, 2), "utf8")
+    console.log("Saved homepage config", updatedConfig)
+
+    const savedRaw = readFileSync(dataFile, "utf8")
+    console.log("SAVED RAW FILE", savedRaw)
+
+    return NextResponse.json({
+      success: true,
+      message: "Настройки главной страницы сохранены",
+      hero: updatedConfig,
+      savedTo: dataFile,
+      savedAt: new Date().toISOString(),
+    })
   } catch (error) {
     console.error("Ошибка сохранения настроек главной страницы:", error)
     return NextResponse.json({ 
