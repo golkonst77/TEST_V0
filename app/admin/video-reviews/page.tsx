@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Upload, Play, Trash2, Star, CheckCircle, XCircle } from 'lucide-react'
+import { useToast } from "@/hooks/use-toast"
 
 interface VideoReview {
   id: number
@@ -32,10 +33,30 @@ export default function VideoReviewsAdmin() {
     video_url: ''
   })
   const [error, setError] = useState('')
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string>("")
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchReviews()
   }, [])
+
+  useEffect(() => {
+    return () => {
+      if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl)
+    }
+  }, [videoPreviewUrl])
+
+  const isAllowedVideoFile = (file: File) => {
+    const name = (file.name || "").toLowerCase()
+    const ext = name.includes(".") ? name.split(".").pop() : ""
+    const allowedExt = ["mp4", "webm", "mov"]
+
+    if (file.type === "video/mp4" || file.type === "video/webm" || file.type === "video/quicktime") return true
+    if (file.type === "" || file.type === "application/octet-stream") {
+      return ext ? allowedExt.includes(ext) : false
+    }
+    return false
+  }
 
   const fetchReviews = async () => {
     try {
@@ -55,13 +76,20 @@ export default function VideoReviewsAdmin() {
     try {
       setUploading(true)
       setError('')
+
+      console.log("VIDEO FILE", file.name, file.type, file.size)
+
+      if (!isAllowedVideoFile(file)) {
+        throw new Error("Видео в поддерживаемом формате и MIME-типе не найдено")
+      }
       
-      const formData = new FormData()
-      formData.append('video', file)
+      const uploadData = new FormData()
+      uploadData.append('video', file)
+      console.log("VIDEO FORMDATA HAS FILE", uploadData.get("video"))
       
       const response = await fetch('/api/upload/video', {
         method: 'POST',
-        body: formData,
+        body: uploadData,
       })
       
       const result = await response.json()
@@ -71,10 +99,13 @@ export default function VideoReviewsAdmin() {
       }
       
       setFormData(prev => ({ ...prev, video_url: result.videoUrl }))
+      toast({ title: "Видео загружено", description: "Файл успешно загружен" })
       
     } catch (error) {
       console.error('Ошибка загрузки видео:', error)
-      setError(error instanceof Error ? error.message : 'Не удалось загрузить видео')
+      const message = error instanceof Error ? error.message : 'Не удалось загрузить видео'
+      setError(message)
+      toast({ title: "Ошибка загрузки видео", description: message, variant: "destructive" })
     } finally {
       setUploading(false)
     }
@@ -103,14 +134,20 @@ export default function VideoReviewsAdmin() {
           text: '',
           video_url: ''
         })
+        if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl)
+        setVideoPreviewUrl("")
         setError('')
+        toast({ title: "Видеоотзыв сохранён" })
         fetchReviews()
       } else {
         const error = await response.json()
-        setError(error.error || 'Ошибка сохранения отзыва')
+        const msg = error.error || 'Ошибка сохранения отзыва'
+        setError(msg)
+        toast({ title: "Ошибка сохранения", description: msg, variant: "destructive" })
       }
     } catch (err) {
       setError('Ошибка сохранения отзыва')
+      toast({ title: "Ошибка сохранения", description: "Ошибка соединения с сервером", variant: "destructive" })
     }
   }
 
@@ -218,10 +255,10 @@ export default function VideoReviewsAdmin() {
             <div>
               <Label>Видео *</Label>
               <div className="mt-2">
-                {formData.video_url ? (
+                {formData.video_url || videoPreviewUrl ? (
                   <div className="space-y-2">
                     <video 
-                      src={formData.video_url} 
+                      src={formData.video_url || videoPreviewUrl} 
                       controls 
                       className="w-full max-w-md h-48 object-cover rounded-lg"
                     />
@@ -229,7 +266,11 @@ export default function VideoReviewsAdmin() {
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => setFormData(prev => ({ ...prev, video_url: '' }))}
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, video_url: '' }))
+                        if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl)
+                        setVideoPreviewUrl("")
+                      }}
                     >
                       Удалить видео
                     </Button>
@@ -253,12 +294,14 @@ export default function VideoReviewsAdmin() {
                     )}
                     <input
                       type="file"
-                      accept="video/*"
+                      accept="video/mp4,video/webm,video/quicktime,video/*"
                       className="hidden"
                       disabled={uploading}
                       onChange={(e) => {
                         const file = e.target.files?.[0]
                         if (file) {
+                          if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl)
+                          setVideoPreviewUrl(URL.createObjectURL(file))
                           handleVideoUpload(file)
                         }
                       }}

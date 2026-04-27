@@ -15,10 +15,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Файл не найден' }, { status: 400 })
     }
 
-    // Проверяем тип файла
-    const allowedTypes = ['video/mp4', 'video/webm', 'video/mov', 'video/avi']
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: 'Неподдерживаемый формат видео' }, { status: 400 })
+    // Проверяем тип файла (учитываем что на некоторых системах type может быть пустым/octet-stream)
+    const nameLower = (file.name || '').toLowerCase()
+    const ext = path.extname(nameLower)
+    const allowedMime = new Set(['video/mp4', 'video/webm', 'video/quicktime'])
+    const allowedExt = new Set(['.mp4', '.webm', '.mov'])
+
+    const mimeOk = file.type && allowedMime.has(file.type)
+    const extOk = allowedExt.has(ext)
+
+    if (!mimeOk) {
+      if (file.type === '' || file.type === 'application/octet-stream') {
+        if (!extOk) {
+          return NextResponse.json({ error: 'Неподдерживаемый формат видео' }, { status: 400 })
+        }
+      } else {
+        return NextResponse.json({ error: 'Неподдерживаемый формат видео' }, { status: 400 })
+      }
     }
 
     // Проверяем размер файла (максимум 100MB)
@@ -37,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Генерируем уникальное имя файла
     const timestamp = Date.now()
-    const fileExtension = path.extname(file.name)
+    const fileExtension = path.extname(file.name) || (file.type === 'video/webm' ? '.webm' : '.mp4')
     const fileName = `video_${timestamp}${fileExtension}`
     const filePath = path.join(uploadDir, fileName)
 
