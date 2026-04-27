@@ -11,6 +11,7 @@ import { Toaster as SonnerToaster } from "sonner"
 import { CookieConsent } from "@/components/cookie-consent"
 import { AusnBlobButton } from "@/components/AusnBlobButton"
 import { RiskBlobButton } from "@/components/RiskBlobButton"
+import { VisibilityGuard } from "@/components/visibility-guard"
 
 const inter = Inter({ 
   subsets: ["latin", "cyrillic"],
@@ -71,8 +72,12 @@ export default function RootLayout({
       <body className={inter.className}>
           {/* Критический контент (выше fold) */}
           <Header />
-          <AusnBlobButton />
-          <RiskBlobButton />
+          <VisibilityGuard sectionKey="ausn-blob">
+            <AusnBlobButton />
+          </VisibilityGuard>
+          <VisibilityGuard sectionKey="risk-blob">
+            <RiskBlobButton />
+          </VisibilityGuard>
           {children}
           
           {/* Не-критический контент (ниже fold) - загружается позже */}

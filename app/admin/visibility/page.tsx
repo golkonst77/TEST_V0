@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Eye, EyeOff, Monitor, Smartphone, Save, RefreshCw } from "lucide-react"
 import { useState, useEffect } from "react"
-import { toast } from "sonner"
+import { useToast } from "@/hooks/use-toast"
 
 interface SectionConfig {
   desktop: 'published' | 'draft'
@@ -38,6 +38,8 @@ const SECTIONS_INFO: SectionInfo[] = [
   { key: 'contacts', title: 'Контакты', description: 'Контактная информация и форма связи', icon: '📞' },
   { key: 'technologies', title: 'Технологии', description: 'Используемые технологии и инструменты', icon: '⚙️' },
   { key: 'ai-documents', title: 'AI Документы', description: 'Искусственный интеллект для работы с документами', icon: '🤖' },
+  { key: 'ausn-blob', title: 'Плашка АУСН', description: 'Плавающая кнопка “АУСН”', icon: '🟣' },
+  { key: 'risk-blob', title: 'Плашка Риски', description: 'Плавающая кнопка “Риски дробления”', icon: '🟪' },
 ]
 
 export default function AdminVisibilityPage() {
@@ -46,6 +48,7 @@ export default function AdminVisibilityPage() {
   const [saving, setSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchSectionsConfig()
@@ -59,11 +62,19 @@ export default function AdminVisibilityPage() {
         const config = await response.json()
         setSectionsConfig(config)
       } else {
-        toast.error("Ошибка загрузки настроек видимости")
+        toast({
+          title: "Ошибка",
+          description: "Не удалось загрузить настройки видимости",
+          variant: "destructive",
+        })
       }
     } catch (error) {
       console.error("Error fetching sections config:", error)
-      toast.error("Ошибка загрузки настроек видимости")
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить настройки видимости",
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
     }
@@ -100,7 +111,10 @@ export default function AdminVisibilityPage() {
       if (success) {
         const savedAt = typeof data?.savedAt === "string" ? data.savedAt : null
         setLastSaved(savedAt ? new Date(savedAt).toLocaleTimeString() : new Date().toLocaleTimeString())
-        toast.success("Видимость секций сохранена")
+        toast({
+          title: "Сохранено",
+          description: "Видимость секций сохранена",
+        })
         return
       }
 
@@ -109,12 +123,19 @@ export default function AdminVisibilityPage() {
         (typeof data?.error === "string" && data.error) ||
         "Не удалось сохранить настройки"
       setSaveError(message)
-      toast.error("Ошибка сохранения", { description: message })
+      toast({
+        title: "Ошибка сохранения",
+        description: message,
+        variant: "destructive",
+      })
     } catch (error) {
       console.error("VISIBILITY SAVE ERROR", error)
       setSaveError("Ошибка соединения с сервером")
-      console.error("Error saving config:", error)
-      toast.error("Ошибка соединения с сервером")
+      toast({
+        title: "Ошибка соединения с сервером",
+        description: "Не удалось сохранить настройки",
+        variant: "destructive",
+      })
     } finally {
       setSaving(false)
     }

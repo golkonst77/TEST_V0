@@ -46,5 +46,13 @@
   "ai-documents": {
     "desktop": "published",
     "mobile": "draft"
+  },
+  "ausn-blob": {
+    "desktop": "published",
+    "mobile": "published"
+  },
+  "risk-blob": {
+    "desktop": "published",
+    "mobile": "published"
   }
 }

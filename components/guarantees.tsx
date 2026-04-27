@@ -4,6 +4,8 @@ import { Shield, Clock, Lock, Users, CheckCircle } from "lucide-react"
 import { AIDocuments } from "@/components/ai-documents"
 import { QuizModal } from "@/components/quiz-modal"
 import { useState } from "react"
+import { useHomepageSections } from "@/hooks/use-homepage-sections"
+import { useDeviceType } from "@/hooks/use-device-type"
 
 const guarantees = [
   {
@@ -42,6 +44,10 @@ const guarantees = [
 
 export function Guarantees() {
   const [quizOpen, setQuizOpen] = useState(false)
+  const { isSectionVisible } = useHomepageSections()
+  const deviceType = useDeviceType()
+  const deviceTypeForVisibility = deviceType === "tablet" ? "desktop" : deviceType
+  const aiVisible = isSectionVisible("ai-documents", deviceTypeForVisibility)
   return (
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
@@ -124,9 +130,11 @@ export function Guarantees() {
         </div>
 
         {/* AI Documents Section */}
-        <div className="mb-16 -mx-4">
-          <AIDocuments />
-        </div>
+        {aiVisible && (
+          <div className="mb-16 -mx-4">
+            <AIDocuments />
+          </div>
+        )}
 
         {/* CTA */}
         <div className="text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-6 md:p-8 mx-4">
