@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+import { NextRequest, NextResponse } from "next/server"
+import { existsSync, mkdirSync, writeFileSync } from "fs"
+import { join, extname } from "path"
 
 export async function POST(request: NextRequest) {
   console.log('=== VIDEO UPLOAD API CALLED ===')
@@ -16,10 +16,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Проверяем тип файла (учитываем что на некоторых системах type может быть пустым/octet-stream)
-    const nameLower = (file.name || '').toLowerCase()
-    const ext = path.extname(nameLower)
-    const allowedMime = new Set(['video/mp4', 'video/webm', 'video/quicktime'])
-    const allowedExt = new Set(['.mp4', '.webm', '.mov'])
+    const nameLower = (file.name || "").toLowerCase()
+    const ext = extname(nameLower)
+    const allowedMime = new Set(["video/mp4", "video/webm", "video/quicktime"])
+    const allowedExt = new Set([".mp4", ".webm", ".mov"])
 
     const mimeOk = file.type && allowedMime.has(file.type)
     const extOk = allowedExt.has(ext)
@@ -40,31 +40,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Файл слишком большой (максимум 100MB)' }, { status: 400 })
     }
 
-    // Создаем директорию для видео, если она не существует
-    const uploadDir = path.join(process.cwd(), 'public', 'videos')
-    try {
-      await mkdir(uploadDir, { recursive: true })
-    } catch (error) {
-      // Директория уже существует
+    // Строго: сохраняем в /public/videos
+    const uploadDir = join(process.cwd(), "public", "videos")
+    if (!existsSync(uploadDir)) {
+      mkdirSync(uploadDir, { recursive: true })
     }
 
     // Генерируем уникальное имя файла
     const timestamp = Date.now()
-    const fileExtension = path.extname(file.name) || (file.type === 'video/webm' ? '.webm' : '.mp4')
+    const fileExtension = ext || ".mp4"
     const fileName = `video_${timestamp}${fileExtension}`
-    const filePath = path.join(uploadDir, fileName)
+    const savePath = join(uploadDir, fileName)
 
     // Сохраняем файл
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filePath, buffer)
+    writeFileSync(savePath, buffer)
 
     // Возвращаем URL для доступа к видео
-    const videoUrl = `/videos/${fileName}`
+    const publicUrl = `/videos/${fileName}`
+
+    console.log("VIDEO SAVE PATH:", savePath)
+    console.log("VIDEO PUBLIC URL:", publicUrl)
     
     return NextResponse.json({ 
       success: true, 
-      videoUrl,
+      url: publicUrl,
+      videoUrl: publicUrl,
       fileName,
       size: file.size 
     })

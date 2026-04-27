@@ -98,7 +98,11 @@ export default function VideoReviewsAdmin() {
         throw new Error(result.error || 'Ошибка загрузки видео')
       }
       
-      setFormData(prev => ({ ...prev, video_url: result.videoUrl }))
+      const videoUrl = result?.url || result?.videoUrl
+      if (!videoUrl || typeof videoUrl !== "string") {
+        throw new Error("Сервер не вернул URL видео")
+      }
+      setFormData(prev => ({ ...prev, video_url: videoUrl }))
       toast({ title: "Видео загружено", description: "Файл успешно загружен" })
       
     } catch (error) {
