@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { existsSync, mkdirSync, writeFileSync } from "fs"
+import { existsSync, mkdirSync, statSync, writeFileSync } from "fs"
 import { join, extname } from "path"
 
 export async function POST(request: NextRequest) {
@@ -60,6 +60,23 @@ export async function POST(request: NextRequest) {
     // Возвращаем URL для доступа к видео
     const publicUrl = `/videos/${fileName}`
 
+    const exists = existsSync(savePath)
+    const sizeOnDisk = exists ? statSync(savePath).size : 0
+
+    if (!exists || sizeOnDisk <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Ошибка сохранения видео файла",
+          savedPath: savePath,
+          publicUrl,
+          exists,
+          size: sizeOnDisk,
+        },
+        { status: 500 },
+      )
+    }
+
     console.log("VIDEO SAVE PATH:", savePath)
     console.log("VIDEO PUBLIC URL:", publicUrl)
     
@@ -67,8 +84,12 @@ export async function POST(request: NextRequest) {
       success: true, 
       url: publicUrl,
       videoUrl: publicUrl,
+      savedPath: savePath,
+      publicUrl,
+      exists: true,
+      size: sizeOnDisk,
       fileName,
-      size: file.size 
+      originalSize: file.size,
     })
 
   } catch (error) {

@@ -33,7 +33,8 @@ export default function VideoReviewsAdmin() {
     video_url: ''
   })
   const [error, setError] = useState('')
-  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string>("")
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string>("")
+  const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string>("")
   const { toast } = useToast()
 
   useEffect(() => {
@@ -42,9 +43,9 @@ export default function VideoReviewsAdmin() {
 
   useEffect(() => {
     return () => {
-      if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl)
+      if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
     }
-  }, [videoPreviewUrl])
+  }, [localPreviewUrl])
 
   const isAllowedVideoFile = (file: File) => {
     const name = (file.name || "").toLowerCase()
@@ -102,13 +103,43 @@ export default function VideoReviewsAdmin() {
       if (!videoUrl || typeof videoUrl !== "string") {
         throw new Error("Сервер не вернул URL видео")
       }
-      setFormData(prev => ({ ...prev, video_url: videoUrl }))
+      console.log("UPLOAD RESULT URL", videoUrl)
+
+      // Проверяем доступность серверного URL перед тем, как подменять preview
+      let ok = false
+      try {
+        const headRes = await fetch(videoUrl, { method: "HEAD", cache: "no-store" })
+        console.log("VIDEO URL CHECK", "HEAD", headRes.status)
+        ok = headRes.ok
+        if (!ok) {
+          const getRes = await fetch(videoUrl, { method: "GET", cache: "no-store" })
+          console.log("VIDEO URL CHECK", "GET", getRes.status)
+          ok = getRes.ok
+        }
+      } catch (e) {
+        console.log("VIDEO URL CHECK", "ERROR", e)
+        ok = false
+      }
+
+      if (ok) {
+        setUploadedVideoUrl(videoUrl)
+        setFormData(prev => ({ ...prev, video_url: videoUrl }))
+        console.log("SERVER VIDEO URL", videoUrl)
+      } else {
+        toast({
+          title: "Видео выбрано",
+          description: "Серверная ссылка пока недоступна",
+          variant: "destructive",
+        })
+      }
       toast({ title: "Видео загружено", description: "Файл успешно загружен" })
       
     } catch (error) {
       console.error('Ошибка загрузки видео:', error)
       const message = error instanceof Error ? error.message : 'Не удалось загрузить видео'
       setError(message)
+      setUploadedVideoUrl("")
+      setFormData(prev => ({ ...prev, video_url: "" }))
       toast({ title: "Ошибка загрузки видео", description: message, variant: "destructive" })
     } finally {
       setUploading(false)
@@ -118,16 +149,22 @@ export default function VideoReviewsAdmin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.name || !formData.text || !formData.video_url) {
+    if (!formData.name || !formData.text || !uploadedVideoUrl) {
       setError('Заполните все обязательные поля')
+      toast({
+        title: "Ошибка сохранения",
+        description: "Сначала загрузите видео и дождитесь доступной серверной ссылки",
+        variant: "destructive",
+      })
       return
     }
     
     try {
+      const payload = { ...formData, video_url: uploadedVideoUrl }
       const response = await fetch('/api/admin/video-reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
       
       if (response.ok) {
@@ -138,8 +175,9 @@ export default function VideoReviewsAdmin() {
           text: '',
           video_url: ''
         })
-        if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl)
-        setVideoPreviewUrl("")
+        setUploadedVideoUrl("")
+        if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
+        setLocalPreviewUrl("")
         setError('')
         toast({ title: "Видеоотзыв сохранён" })
         fetchReviews()
@@ -259,10 +297,12 @@ export default function VideoReviewsAdmin() {
             <div>
               <Label>Видео *</Label>
               <div className="mt-2">
-                {formData.video_url || videoPreviewUrl ? (
+                {localPreviewUrl || uploadedVideoUrl ? (
                   <div className="space-y-2">
+                    {console.log("LOCAL PREVIEW URL", localPreviewUrl)}
+                    {console.log("SERVER VIDEO URL", uploadedVideoUrl)}
                     <video 
-                      src={formData.video_url || videoPreviewUrl} 
+                      src={localPreviewUrl || uploadedVideoUrl} 
                       controls 
                       className="w-full max-w-md h-48 object-cover rounded-lg"
                     />
@@ -272,8 +312,9 @@ export default function VideoReviewsAdmin() {
                       size="sm"
                       onClick={() => {
                         setFormData(prev => ({ ...prev, video_url: '' }))
-                        if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl)
-                        setVideoPreviewUrl("")
+                        setUploadedVideoUrl("")
+                        if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
+                        setLocalPreviewUrl("")
                       }}
                     >
                       Удалить видео
@@ -304,8 +345,12 @@ export default function VideoReviewsAdmin() {
                       onChange={(e) => {
                         const file = e.target.files?.[0]
                         if (file) {
-                          if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl)
-                          setVideoPreviewUrl(URL.createObjectURL(file))
+                          const nextLocal = URL.createObjectURL(file)
+                          console.log("LOCAL PREVIEW URL", nextLocal)
+                          if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
+                          setLocalPreviewUrl(nextLocal)
+                          setUploadedVideoUrl("")
+                          setFormData(prev => ({ ...prev, video_url: "" }))
                           handleVideoUpload(file)
                         }
                       }}
