@@ -176,7 +176,9 @@ export function Reviews() {
 
   const fetchVideoReviews = async () => {
     try {
-      const response = await fetch('/api/video-reviews?random=true&limit=3')
+      const response = await fetch(`/api/video-reviews?random=true&limit=1&t=${Date.now()}`, {
+        cache: 'no-store',
+      })
       if (response.ok) {
         const data = await response.json()
         if (Array.isArray(data.reviews)) {
@@ -199,6 +201,14 @@ export function Reviews() {
     fetchCompanyInfo()
     fetchReviews()
     fetchVideoReviews()
+
+    const videoRotationInterval = window.setInterval(() => {
+      fetchVideoReviews()
+    }, 10000)
+
+    return () => {
+      window.clearInterval(videoRotationInterval)
+    }
   }, [])
 
   const formatDate = (dateString: string) => {

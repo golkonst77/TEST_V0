@@ -1,6 +1,5 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -12,14 +11,6 @@ import { CookieConsent } from "@/components/cookie-consent"
 import { AusnBlobButton } from "@/components/AusnBlobButton"
 import { RiskBlobButton } from "@/components/RiskBlobButton"
 import { VisibilityGuard } from "@/components/visibility-guard"
-
-const inter = Inter({ 
-  subsets: ["latin", "cyrillic"],
-  display: 'swap', // Оптимизация загрузки шрифта
-  preload: true,
-  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'], // Fallback на системные шрифты
-  adjustFontFallback: true, // Автоматическая настройка fallback
-})
 
 export const metadata: Metadata = {
   title: "ПростоБюро - Бухгалтерские услуги в Калуге и по всей России",
@@ -53,7 +44,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Inline Critical CSS для мгновенной отрисовки */}
         <style dangerouslySetInnerHTML={{ __html: `
-          body { margin: 0; font-family: Arial, sans-serif; }
+          body { margin: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
           .hero-section { min-height: 600px; position: relative; }
           @media (min-width: 768px) { .hero-section { min-height: 100vh; } }
         `}} />
@@ -63,13 +54,11 @@ export default function RootLayout({
         <link rel="preload" href="/uploads/1751551383681________.jpg" as="image" />
         
         {/* Preconnect к внешним ресурсам для ускорения */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://mc.yandex.ru" />
         <link rel="dns-prefetch" href="https://qbjcdftphxredexkwsui.supabase.co" />
         <link rel="dns-prefetch" href="https://vercel.com" />
       </head>
-      <body className={inter.className}>
+      <body>
           {/* Критический контент (выше fold) */}
           <Header />
           <VisibilityGuard sectionKey="ausn-blob">
