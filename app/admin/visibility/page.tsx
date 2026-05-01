@@ -57,7 +57,7 @@ export default function AdminVisibilityPage() {
   const fetchSectionsConfig = async () => {
     try {
       setLoading(true)
-      const response = await fetch("/api/homepage-sections")
+      const response = await fetch("/api/homepage-sections", { cache: "no-store" })
       if (response.ok) {
         const config = await response.json()
         setSectionsConfig(config)

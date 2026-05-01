@@ -71,6 +71,7 @@ fi
 CMS_STORAGE_DIR="${CMS_STORAGE_DIR:-$CMS_STORAGE_DIR_DEFAULT}"
 echo "[INFO] Using CMS storage dir: $CMS_STORAGE_DIR"
 mkdir -p "$CMS_STORAGE_DIR"
+export CMS_STORAGE_DIR
 
 if [ -f ".env.local" ]; then
     if grep -q "^CMS_STORAGE_DIR=" ".env.local"; then
@@ -81,6 +82,33 @@ if [ -f ".env.local" ]; then
     fi
     echo "[INFO] CMS_STORAGE_DIR is set in .env.local"
 fi
+
+# Миграция runtime CMS файлов в внешний storage (только если целевой файл отсутствует)
+echo "[INFO] Ensuring CMS runtime files are present in persistent storage..."
+for FILE in "homepage.json" "homepage-sections.json" "pricing-admin.json" "calculator-config.json" "header-config.json"; do
+    TARGET="$CMS_STORAGE_DIR/$FILE"
+    SRC_NEW="$PROJECT_PATH/data/storage/$FILE"
+    SRC_OLD="$PROJECT_PATH/data/$FILE"
+
+    if [ -f "$TARGET" ]; then
+        echo "[INFO] Target exists: $TARGET"
+        continue
+    fi
+
+    if [ -f "$SRC_NEW" ]; then
+        cp "$SRC_NEW" "$TARGET"
+        echo "[INFO] Copied $SRC_NEW -> $TARGET"
+        continue
+    fi
+
+    if [ -f "$SRC_OLD" ]; then
+        cp "$SRC_OLD" "$TARGET"
+        echo "[INFO] Copied $SRC_OLD -> $TARGET"
+        continue
+    fi
+
+    echo "[WARNING] No source file found for $FILE (will rely on API writes)"
+done
 
 # Установка зависимостей
 echo "[INFO] Installing dependencies..."
@@ -120,10 +148,10 @@ echo "[INFO] Restarting PM2 application: $PM2_APP_NAME"
 # Проверка, существует ли приложение в PM2
 if pm2 list | grep -q "$PM2_APP_NAME"; then
     echo "[INFO] Restarting existing PM2 process..."
-    pm2 restart "$PM2_APP_NAME"
+    pm2 restart "$PM2_APP_NAME" --update-env
 else
     echo "[INFO] Starting new PM2 process..."
-    pm2 start npm --name "$PM2_APP_NAME" -- start
+    CMS_STORAGE_DIR="$CMS_STORAGE_DIR" pm2 start npm --name "$PM2_APP_NAME" -- start
 fi
 
 if [ $? -ne 0 ]; then
@@ -140,6 +168,8 @@ echo -e "${GREEN}[SUCCESS] PM2 application restarted${NC}"
 echo ""
 echo "[INFO] PM2 Status:"
 pm2 list
+echo "[INFO] PM2 env check (CMS_STORAGE_DIR):"
+pm2 env "$PM2_APP_NAME" | grep CMS_STORAGE_DIR || echo "[WARNING] CMS_STORAGE_DIR not found in PM2 env"
 
 # Читаем версию из version.json
 if [ -f "public/version.json" ]; then

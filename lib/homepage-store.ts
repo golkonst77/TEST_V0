@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "fs"
 import { join } from "path"
-import { getCmsFileMeta, readCmsJsonOrInit, writeCmsJson } from "@/lib/cms-storage"
+import { getCmsFileMeta, readCmsJsonStrict, writeCmsJson } from "@/lib/cms-storage"
 
 // Хранилище настроек главной страницы
 interface HeroConfig {
@@ -88,7 +88,24 @@ function getDefaultHeroConfig(): HeroConfig {
 }
 
 export async function getHeroConfig() {
-  const { data, source, path } = await readCmsJsonOrInit<HeroConfig>(HOMEPAGE_CONFIG_FILE, getDefaultHeroConfig())
+  let data: HeroConfig
+  let source: "stored" | "legacy-fallback"
+  let path: string
+
+  try {
+    const strict = await readCmsJsonStrict<HeroConfig>(HOMEPAGE_CONFIG_FILE)
+    data = strict.data
+    source = "stored"
+    path = strict.path
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      throw error
+    }
+    data = getDefaultHeroConfig()
+    source = "legacy-fallback"
+    path = LEGACY_DATA_FILE
+  }
+
   if (!isValidHomepageConfig(data)) {
     throw new Error(`Homepage config invalid at ${path}`)
   }

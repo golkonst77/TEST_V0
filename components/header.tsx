@@ -29,12 +29,23 @@ const MENU_ITEMS = [
   { id: 'contacts', title: 'Контакты', href: '/#contacts', isAnchor: true },
 ]
 
+interface HeaderMenuItem {
+  id: string
+  title: string
+  href: string
+  show?: boolean
+  type?: "link" | "dropdown"
+  isAnchor?: boolean
+}
+
 export const Header = () => {
   const { openContactForm } = useContactForm()
   const { handleCruiseClick, modalOpen, setModalOpen, quizUrl } = useCruiseClick()
   const [authOpen, setAuthOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [settings, setSettings] = useState<any>(null)
+  const [dynamicMenuItems, setDynamicMenuItems] = useState<HeaderMenuItem[] | null>(null)
+  const [ctaText, setCtaText] = useState("Получить скидку")
   const router = useRouter()
   const pathname = usePathname()
   const { isSectionVisible } = useHomepageSections()
@@ -46,13 +57,40 @@ export const Header = () => {
     const controller = new AbortController()
     const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/settings', {
-          cache: "no-store",
-          signal: controller.signal,
-        })
-        if (response.ok) {
-          const data = await response.json()
+        const [settingsResponse, headerConfigResponse] = await Promise.all([
+          fetch('/api/settings', {
+            cache: "no-store",
+            signal: controller.signal,
+          }),
+          fetch('/api/header-config', {
+            cache: "no-store",
+            signal: controller.signal,
+          }),
+        ])
+        if (settingsResponse.ok) {
+          const data = await settingsResponse.json()
           setSettings(data)
+        }
+        if (headerConfigResponse.ok) {
+          const headerData = await headerConfigResponse.json()
+          const menu = Array.isArray(headerData?.menuItems)
+            ? headerData.menuItems
+                .filter((item: any) => item && item.show !== false)
+                .map((item: any) => ({
+                  id: String(item.id),
+                  title: String(item.title || ""),
+                  href: String(item.href || "#"),
+                  show: item.show !== false,
+                  type: item.type === "dropdown" ? "dropdown" : "link",
+                  isAnchor: String(item.href || "").startsWith("/#"),
+                }))
+            : null
+          if (menu && menu.length > 0) {
+            setDynamicMenuItems(menu)
+          }
+          if (typeof headerData?.ctaText === "string" && headerData.ctaText.trim().length > 0) {
+            setCtaText(headerData.ctaText)
+          }
         }
       } catch (error) {
         if (!(error instanceof Error && error.name === "AbortError")) {
@@ -65,7 +103,8 @@ export const Header = () => {
   }, [])
 
   // Фильтруем пункты меню на основе настроек видимости секций
-  const visibleMenuItems = MENU_ITEMS.filter(item => {
+  const menuSource = dynamicMenuItems && dynamicMenuItems.length > 0 ? dynamicMenuItems : MENU_ITEMS
+  const visibleMenuItems = menuSource.filter(item => {
     // Преобразуем тип устройства в формат для видимости секций
     const deviceTypeForVisibility = deviceType === 'tablet' ? 'desktop' : deviceType
     return isSectionVisible(item.id, deviceTypeForVisibility)
@@ -145,7 +184,7 @@ export const Header = () => {
               onClick={handleCruiseClick}
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              Получить скидку
+              {ctaText}
             </Button>
             <VersionBadge />
           </div>
@@ -191,7 +230,7 @@ export const Header = () => {
                   }}
                   className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
                 >
-                  Получить скидку
+                  {ctaText}
                 </Button>
               </div>
             </nav>

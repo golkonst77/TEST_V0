@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getCmsFileMeta, readCmsJsonOrInit, writeCmsJson } from "@/lib/cms-storage"
+import { getCmsFileMeta, readCmsJsonStrict, writeCmsJson } from "@/lib/cms-storage"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -166,9 +166,21 @@ function normalizePricingPayload(raw: any): PricingPayload {
 
 export async function GET() {
   try {
-    const { data, source, path } = await readCmsJsonOrInit<PricingPayload>(PRICING_CONFIG_FILE, DEFAULT_PRICING_DATA)
+    let data: PricingPayload
+    let source: "stored" | "default-fallback"
+    let path: string
+    try {
+      const strict = await readCmsJsonStrict<PricingPayload>(PRICING_CONFIG_FILE)
+      data = strict.data
+      source = "stored"
+      path = strict.path
+    } catch (error) {
+      if (process.env.NODE_ENV === "production") throw error
+      data = DEFAULT_PRICING_DATA
+      source = "default-fallback"
+      path = "in-memory-default"
+    }
     const normalized = normalizePricingPayload(data)
-    await writeCmsJson(PRICING_CONFIG_FILE, normalized)
     const meta = await getCmsFileMeta(PRICING_CONFIG_FILE)
     return NextResponse.json({
       ...normalized,

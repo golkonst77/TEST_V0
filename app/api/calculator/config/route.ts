@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getCmsFileMeta, readCmsJsonOrInit, writeCmsJson } from "@/lib/cms-storage"
+import { getCmsFileMeta, readCmsJsonStrict, writeCmsJson } from "@/lib/cms-storage"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -31,7 +31,20 @@ const DEFAULT_CALCULATOR_CONFIG = {
 
 export async function GET() {
   try {
-    const { data, source, path } = await readCmsJsonOrInit(CALCULATOR_CONFIG_FILE, DEFAULT_CALCULATOR_CONFIG)
+    let data: typeof DEFAULT_CALCULATOR_CONFIG
+    let source: "stored" | "default-fallback"
+    let path: string
+    try {
+      const strict = await readCmsJsonStrict<typeof DEFAULT_CALCULATOR_CONFIG>(CALCULATOR_CONFIG_FILE)
+      data = strict.data
+      source = "stored"
+      path = strict.path
+    } catch (error) {
+      if (process.env.NODE_ENV === "production") throw error
+      data = DEFAULT_CALCULATOR_CONFIG
+      source = "default-fallback"
+      path = "in-memory-default"
+    }
     const meta = await getCmsFileMeta(CALCULATOR_CONFIG_FILE)
     return NextResponse.json({
       ...data,

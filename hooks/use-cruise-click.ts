@@ -10,7 +10,7 @@ export const useCruiseClick = () => {
 
   const handleCruiseClick = async () => {
     try {
-      const res = await fetch("/api/settings")
+      const res = await fetch("/api/settings", { cache: "no-store" })
       const settings = await res.json()
       console.log("[CRUISE] settings:", settings)
       

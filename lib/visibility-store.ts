@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "fs"
 import { join } from "path"
-import { getCmsFileMeta, readCmsJsonOrInit, writeCmsJson } from "@/lib/cms-storage"
+import { getCmsFileMeta, readCmsJsonStrict, writeCmsJson } from "@/lib/cms-storage"
 
 export type SectionVisibilityState = "published" | "draft"
 export interface SectionVisibilityConfig {
@@ -60,10 +60,23 @@ function getLegacySectionsConfig(): HomepageSectionsConfig {
 }
 
 export async function getHomepageSectionsConfig() {
-  const { data, source, path } = await readCmsJsonOrInit<HomepageSectionsConfig>(
-    HOMEPAGE_SECTIONS_FILE,
-    getLegacySectionsConfig(),
-  )
+  let source: "stored" | "legacy-fallback"
+  let path: string
+  let data: HomepageSectionsConfig
+  try {
+    const strict = await readCmsJsonStrict<HomepageSectionsConfig>(HOMEPAGE_SECTIONS_FILE)
+    source = "stored"
+    path = strict.path
+    data = strict.data
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      throw error
+    }
+    source = "legacy-fallback"
+    path = LEGACY_HOMEPAGE_SECTIONS_FILE
+    data = getLegacySectionsConfig()
+  }
+
   const normalized = normalizeSectionsConfig(data as unknown as Record<string, unknown>)
   const merged: HomepageSectionsConfig = { ...DEFAULT_HOMEPAGE_SECTIONS, ...normalized }
   const meta = await getCmsFileMeta(HOMEPAGE_SECTIONS_FILE)

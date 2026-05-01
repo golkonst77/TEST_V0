@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getCmsFileMeta, getCmsStorageDir, readCmsJson } from "@/lib/cms-storage"
+import { getCmsStorageDiagnostics, readCmsJson } from "@/lib/cms-storage"
 import { getHomepageSectionsConfig } from "@/lib/visibility-store"
 import { getHeroConfig } from "@/lib/homepage-store"
 
@@ -17,28 +17,34 @@ async function safeRead(fileName: string) {
 
 export async function GET() {
   try {
-    const [sections, hero, sectionsMeta, homepageMeta, calcMeta, pricingMeta, calcData, pricingData] = await Promise.all([
+    const [sections, hero, calcData, pricingData, diagnostics] = await Promise.all([
       getHomepageSectionsConfig(),
       getHeroConfig(),
-      getCmsFileMeta("homepage-sections.json"),
-      getCmsFileMeta("homepage.json"),
-      getCmsFileMeta("calculator-config.json"),
-      getCmsFileMeta("pricing-admin.json"),
       safeRead("calculator-config.json"),
       safeRead("pricing-admin.json"),
+      getCmsStorageDiagnostics([
+        "homepage.json",
+        "homepage-sections.json",
+        "pricing-admin.json",
+        "calculator-config.json",
+        "header-config.json",
+      ]),
     ])
 
     return NextResponse.json(
       {
         success: true,
-        storageDir: getCmsStorageDir(),
+        nodeEnv: diagnostics.nodeEnv,
+        cmsStorageDirEnv: diagnostics.cmsStorageDirEnv,
+        storageDir: diagnostics.resolvedStorageDir,
+        storageDirExists: diagnostics.storageDirExists,
+        storageDirWritable: diagnostics.storageDirWritable,
+        processCwd: diagnostics.processCwd,
+        processPid: process.pid,
+        processPmId: process.env.pm_id || null,
+        processPm2Home: process.env.PM2_HOME || null,
         now: new Date().toISOString(),
-        files: {
-          "homepage-sections.json": sectionsMeta,
-          "homepage.json": homepageMeta,
-          "calculator-config.json": calcMeta,
-          "pricing-admin.json": pricingMeta,
-        },
+        files: diagnostics.files,
         sources: {
           visibility: sections.diagnostics,
           homepage: hero.diagnostics,
@@ -50,6 +56,7 @@ export async function GET() {
         visibility: sections.config,
         calculator: calcData,
         pricing: pricingData,
+        cwd: process.cwd(),
       },
       {
         headers: {

@@ -38,7 +38,7 @@ export default function AdminPricingPage() {
 
   const fetchPricingData = async () => {
     try {
-      const response = await fetch("/api/admin/pricing")
+      const response = await fetch("/api/admin/pricing", { cache: "no-store" })
       const pricingData = await response.json()
       setPlans(pricingData.plans || [])
     } catch (error) {

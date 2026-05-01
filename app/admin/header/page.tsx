@@ -90,9 +90,14 @@ export default function HeaderEditor() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await fetch("/api/admin/settings")
-        if (response.ok) {
-          const settings = await response.json()
+        const [settingsResponse, headerResponse] = await Promise.all([
+          fetch("/api/admin/settings", { cache: "no-store" }),
+          fetch("/api/admin/header-config", { cache: "no-store" }),
+        ])
+        if (settingsResponse.ok) {
+          const settings = await settingsResponse.json()
+          const headerPayload = headerResponse.ok ? await headerResponse.json() : null
+          const persistedHeader = headerPayload?.config || null
           console.log("HeaderEditor: Fetched settings:", settings)
           
           // Преобразуем данные из settings в формат header
@@ -113,53 +118,10 @@ export default function HeaderEditor() {
               show: true,
             },
             ctaButton: {
-              text: "Получить скидку",
+              text: persistedHeader?.ctaText || "Получить скидку",
               show: true,
             },
-            menuItems: [
-              {
-                id: "services",
-                title: "Услуги",
-                href: "/services",
-                show: true,
-                type: "link"
-              },
-              {
-                id: "pricing",
-                title: "Тарифы",
-                href: "/pricing",
-                show: true,
-                type: "link"
-              },
-              {
-                id: "calculator",
-                title: "Калькулятор",
-                href: "/calculator",
-                show: true,
-                type: "link"
-              },
-              {
-                id: "about",
-                title: "О компании",
-                href: "/about",
-                show: true,
-                type: "link"
-              },
-              {
-                id: "blog",
-                title: "Блог",
-                href: "/blog",
-                show: true,
-                type: "link"
-              },
-              {
-                id: "contacts",
-                title: "Контакты",
-                href: "#contacts",
-                show: true,
-                type: "link"
-              },
-            ],
+            menuItems: Array.isArray(persistedHeader?.menuItems) ? persistedHeader.menuItems : defaultConfig.menuItems,
             layout: {
               sticky: true,
               background: "white",
@@ -205,15 +167,30 @@ export default function HeaderEditor() {
       })
 
       if (response.ok) {
+        const menuResponse = await fetch("/api/admin/header-config", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ctaText: config.ctaButton.text,
+            menuItems: config.menuItems,
+          }),
+        })
+
+        if (!menuResponse.ok) {
+          throw new Error("Header menu config save failed")
+        }
+
         console.log("Header configuration saved successfully")
-        // Показываем уведомление об успехе
+        toast.success("Конфигурация шапки сохранена")
       } else {
         console.error("Failed to save header configuration")
-        // Показываем уведомление об ошибке
+        toast.error("Не удалось сохранить конфигурацию шапки")
       }
     } catch (error) {
       console.error("Error saving header configuration:", error)
-      // Показываем уведомление об ошибке
+      toast.error("Не удалось сохранить конфигурацию шапки")
     } finally {
       setSaving(false)
     }
