@@ -44,7 +44,7 @@ export function useHomepageSections() {
 
   const isSectionVisible = (sectionKey: string, deviceType: 'desktop' | 'mobile' = 'desktop'): boolean => {
     const section = sectionsConfig[sectionKey]
-    if (!section) return true // если ключа нет в конфиге — показываем (но это видно по логам выше)
+    if (!section) return false // не подменяем видимость дефолтным "включено"
     
     return section[deviceType] === 'published'
   }

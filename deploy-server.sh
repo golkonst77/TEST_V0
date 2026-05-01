@@ -11,6 +11,7 @@ PROJECT_PATH="/var/www/prostoburo_c_usr/data/www/prostoburo.com"
 REPO_URL="https://github.com/golkonst77/TEST_V0.git"
 BRANCH="main"
 PM2_APP_NAME="prostoburo"
+CMS_STORAGE_DIR_DEFAULT="/var/www/prostoburo_c_usr/data/storage"
 
 echo ""
 echo "======================================================"
@@ -64,6 +65,21 @@ echo -e "${GREEN}[SUCCESS] Code updated from GitHub${NC}"
 if [ ! -f ".env.local" ]; then
     echo -e "${YELLOW}[WARNING] .env.local not found${NC}"
     echo "[INFO] Please create .env.local with required environment variables"
+fi
+
+# Настройка постоянного хранилища CMS вне git-репозитория
+CMS_STORAGE_DIR="${CMS_STORAGE_DIR:-$CMS_STORAGE_DIR_DEFAULT}"
+echo "[INFO] Using CMS storage dir: $CMS_STORAGE_DIR"
+mkdir -p "$CMS_STORAGE_DIR"
+
+if [ -f ".env.local" ]; then
+    if grep -q "^CMS_STORAGE_DIR=" ".env.local"; then
+        sed -i "s|^CMS_STORAGE_DIR=.*|CMS_STORAGE_DIR=$CMS_STORAGE_DIR|g" ".env.local"
+    else
+        echo "" >> .env.local
+        echo "CMS_STORAGE_DIR=$CMS_STORAGE_DIR" >> .env.local
+    fi
+    echo "[INFO] CMS_STORAGE_DIR is set in .env.local"
 fi
 
 # Установка зависимостей

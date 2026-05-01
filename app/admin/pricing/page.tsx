@@ -13,8 +13,10 @@ import { Save, Plus, Trash2 } from "lucide-react"
 
 interface PricingPlan {
   id: number
+  group: "ip" | "ooo"
   name: string
   price: number
+  period: string
   description: string
   features: string[]
   is_popular: boolean
@@ -26,6 +28,9 @@ export default function AdminPricingPage() {
   const [plans, setPlans] = useState<PricingPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+
+  const ipPlans = plans.filter((plan) => plan.group === "ip")
+  const oooPlans = plans.filter((plan) => plan.group === "ooo")
 
   useEffect(() => {
     fetchPricingData()
@@ -131,103 +136,244 @@ export default function AdminPricingPage() {
       }
     >
       <div className="p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-          {plans.map((plan) => (
-            <Card key={plan.id} className={`border ${plan.is_popular ? "border-blue-500" : "border-gray-200"}`}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Тариф #{plan.id}</CardTitle>
-                  <div className="flex space-x-2">
-                    <div className="flex items-center space-x-1">
-                      <Label htmlFor={`popular-${plan.id}`} className="text-xs">
-                        Популярный
-                      </Label>
-                      <Switch
-                        id={`popular-${plan.id}`}
-                        checked={plan.is_popular}
-                        onCheckedChange={(checked) => handlePlanChange(plan.id, "is_popular", checked)}
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Тарифы для ИП</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              {ipPlans.map((plan) => (
+                <Card key={plan.id} className={`border ${plan.is_popular ? "border-blue-500" : "border-gray-200"}`}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">Тариф #{plan.id}</CardTitle>
+                      <div className="flex space-x-2">
+                        <div className="flex items-center space-x-1">
+                          <Label htmlFor={`popular-${plan.id}`} className="text-xs">
+                            Популярный
+                          </Label>
+                          <Switch
+                            id={`popular-${plan.id}`}
+                            checked={plan.is_popular}
+                            onCheckedChange={(checked) => handlePlanChange(plan.id, "is_popular", checked)}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Label htmlFor={`active-${plan.id}`} className="text-xs">
+                            Активен
+                          </Label>
+                          <Switch
+                            id={`active-${plan.id}`}
+                            checked={plan.is_active}
+                            onCheckedChange={(checked) => handlePlanChange(plan.id, "is_active", checked)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <Label htmlFor={`name-${plan.id}`} className="text-sm">Название тарифа</Label>
+                      <Input
+                        id={`name-${plan.id}`}
+                        value={plan.name}
+                        onChange={(e) => handlePlanChange(plan.id, "name", e.target.value)}
+                        placeholder="Название тарифа"
+                        className="h-8 text-sm mt-1"
                       />
                     </div>
-                    <Switch
-                      checked={plan.is_active}
-                      onCheckedChange={(checked) => handlePlanChange(plan.id, "is_active", checked)}
-                    />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <Label htmlFor={`name-${plan.id}`} className="text-sm">Название тарифа</Label>
-                  <Input
-                    id={`name-${plan.id}`}
-                    value={plan.name}
-                    onChange={(e) => handlePlanChange(plan.id, "name", e.target.value)}
-                    placeholder="Название тарифа"
-                    className="h-8 text-sm mt-1"
-                  />
-                </div>
 
-                <div>
-                  <Label htmlFor={`price-${plan.id}`} className="text-sm">Цена (руб/мес)</Label>
-                  <Input
-                    id={`price-${plan.id}`}
-                    type="number"
-                    value={plan.price}
-                    onChange={(e) => handlePlanChange(plan.id, "price", Number.parseInt(e.target.value) || 0)}
-                    className="h-8 text-sm mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor={`description-${plan.id}`} className="text-sm">Описание</Label>
-                  <Textarea
-                    id={`description-${plan.id}`}
-                    value={plan.description}
-                    onChange={(e) => handlePlanChange(plan.id, "description", e.target.value)}
-                    placeholder="Описание тарифа"
-                    rows={2}
-                    className="text-sm mt-1"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm">Возможности тарифа</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => addFeature(plan.id)}
-                      className="h-6 w-6 p-0"
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    {plan.features.map((feature, index) => (
-                      <div key={index} className="flex items-center space-x-2">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor={`price-${plan.id}`} className="text-sm">Цена</Label>
                         <Input
-                          value={feature}
-                          onChange={(e) => handleFeatureChange(plan.id, index, e.target.value)}
-                          placeholder="Возможность тарифа"
-                          className="h-7 text-xs"
+                          id={`price-${plan.id}`}
+                          type="number"
+                          value={plan.price}
+                          onChange={(e) => handlePlanChange(plan.id, "price", Number.parseInt(e.target.value) || 0)}
+                          className="h-8 text-sm mt-1"
                         />
+                      </div>
+                      <div>
+                        <Label htmlFor={`period-${plan.id}`} className="text-sm">Период</Label>
+                        <Input
+                          id={`period-${plan.id}`}
+                          value={plan.period}
+                          onChange={(e) => handlePlanChange(plan.id, "period", e.target.value)}
+                          className="h-8 text-sm mt-1"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`description-${plan.id}`} className="text-sm">Описание</Label>
+                      <Textarea
+                        id={`description-${plan.id}`}
+                        value={plan.description}
+                        onChange={(e) => handlePlanChange(plan.id, "description", e.target.value)}
+                        placeholder="Описание тарифа"
+                        rows={2}
+                        className="text-sm mt-1"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-sm">Возможности тарифа</Label>
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => removeFeature(plan.id, index)}
-                          className="h-7 w-7 p-0 text-red-500 hover:text-red-700"
+                          onClick={() => addFeature(plan.id)}
+                          className="h-6 w-6 p-0"
                         >
-                          <Trash2 className="h-3 w-3" />
+                          <Plus className="h-3 w-3" />
                         </Button>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                      <div className="space-y-2">
+                        {plan.features.map((feature, index) => (
+                          <div key={index} className="flex items-center space-x-2">
+                            <Input
+                              value={feature}
+                              onChange={(e) => handleFeatureChange(plan.id, index, e.target.value)}
+                              placeholder="Возможность тарифа"
+                              className="h-7 text-xs"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeFeature(plan.id, index)}
+                              className="h-7 w-7 p-0 text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Тарифы для ООО</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              {oooPlans.map((plan) => (
+                <Card key={plan.id} className={`border ${plan.is_popular ? "border-blue-500" : "border-gray-200"}`}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">Тариф #{plan.id}</CardTitle>
+                      <div className="flex space-x-2">
+                        <div className="flex items-center space-x-1">
+                          <Label htmlFor={`popular-${plan.id}`} className="text-xs">
+                            Популярный
+                          </Label>
+                          <Switch
+                            id={`popular-${plan.id}`}
+                            checked={plan.is_popular}
+                            onCheckedChange={(checked) => handlePlanChange(plan.id, "is_popular", checked)}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Label htmlFor={`active-${plan.id}`} className="text-xs">
+                            Активен
+                          </Label>
+                          <Switch
+                            id={`active-${plan.id}`}
+                            checked={plan.is_active}
+                            onCheckedChange={(checked) => handlePlanChange(plan.id, "is_active", checked)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <Label htmlFor={`name-${plan.id}`} className="text-sm">Название тарифа</Label>
+                      <Input
+                        id={`name-${plan.id}`}
+                        value={plan.name}
+                        onChange={(e) => handlePlanChange(plan.id, "name", e.target.value)}
+                        placeholder="Название тарифа"
+                        className="h-8 text-sm mt-1"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor={`price-${plan.id}`} className="text-sm">Цена</Label>
+                        <Input
+                          id={`price-${plan.id}`}
+                          type="number"
+                          value={plan.price}
+                          onChange={(e) => handlePlanChange(plan.id, "price", Number.parseInt(e.target.value) || 0)}
+                          className="h-8 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`period-${plan.id}`} className="text-sm">Период</Label>
+                        <Input
+                          id={`period-${plan.id}`}
+                          value={plan.period}
+                          onChange={(e) => handlePlanChange(plan.id, "period", e.target.value)}
+                          className="h-8 text-sm mt-1"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`description-${plan.id}`} className="text-sm">Описание</Label>
+                      <Textarea
+                        id={`description-${plan.id}`}
+                        value={plan.description}
+                        onChange={(e) => handlePlanChange(plan.id, "description", e.target.value)}
+                        placeholder="Описание тарифа"
+                        rows={2}
+                        className="text-sm mt-1"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-sm">Возможности тарифа</Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addFeature(plan.id)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <div className="space-y-2">
+                        {plan.features.map((feature, index) => (
+                          <div key={index} className="flex items-center space-x-2">
+                            <Input
+                              value={feature}
+                              onChange={(e) => handleFeatureChange(plan.id, index, e.target.value)}
+                              placeholder="Возможность тарифа"
+                              className="h-7 text-xs"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeFeature(plan.id, index)}
+                              className="h-7 w-7 p-0 text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </AdminLayout>

@@ -1,7 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { readFileSync, writeFileSync } from "fs"
-import { join } from "path"
-import { getHeroConfig } from "@/lib/homepage-store"
+import { getHeroConfig, saveHeroConfig } from "@/lib/homepage-store"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -9,12 +7,13 @@ export const revalidate = 0
 
 export async function GET() {
   try {
-    const config = getHeroConfig()
+    const { config, diagnostics } = await getHeroConfig()
     console.log("API: Отправка настроек главной страницы")
 
     return NextResponse.json({
       success: true,
       hero: config,
+      diagnostics,
     })
   } catch (error) {
     console.error("Ошибка получения настроек главной страницы:", error)
@@ -34,26 +33,16 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Неверные данные" }, { status: 400 })
     }
 
-    const dataDir = join(process.cwd(), "data")
-    const dataFile = join(dataDir, "homepage.json")
-    console.log("PROCESS CWD", process.cwd())
-    console.log("DATA FILE PATH", dataFile)
-
-    const fs = require("fs")
-    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true })
-
-    writeFileSync(dataFile, JSON.stringify(updatedConfig, null, 2), "utf8")
-    console.log("Saved homepage config", updatedConfig)
-
-    const savedRaw = readFileSync(dataFile, "utf8")
-    console.log("SAVED RAW FILE", savedRaw)
+    const saved = await saveHeroConfig(updatedConfig as any)
+    console.log("Saved homepage config", saved)
 
     return NextResponse.json({
       success: true,
       message: "Настройки главной страницы сохранены",
       hero: updatedConfig,
-      savedTo: dataFile,
-      savedAt: new Date().toISOString(),
+      savedTo: saved.path,
+      savedAt: saved.savedAt,
+      diagnostics: saved.diagnostics,
     })
   } catch (error) {
     console.error("Ошибка сохранения настроек главной страницы:", error)

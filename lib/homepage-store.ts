@@ -1,5 +1,6 @@
-import { readFileSync } from "fs"
+import { existsSync, readFileSync } from "fs"
 import { join } from "path"
+import { getCmsFileMeta, readCmsJsonOrInit, writeCmsJson } from "@/lib/cms-storage"
 
 // Хранилище настроек главной страницы
 interface HeroConfig {
@@ -38,7 +39,8 @@ interface HeroConfig {
   }
 }
 
-const DATA_FILE = join(process.cwd(), 'data', 'homepage.json')
+export const HOMEPAGE_CONFIG_FILE = "homepage.json"
+const LEGACY_DATA_FILE = join(process.cwd(), "data", "homepage.json")
 
 function isValidHomepageConfig(value: unknown): value is HeroConfig {
   if (!value || typeof value !== "object") return false
@@ -73,15 +75,48 @@ function isValidHomepageConfig(value: unknown): value is HeroConfig {
   return Boolean(hasBadge && hasTitle && hasDescription && hasButton && hasFeatures && hasBackground && hasLayout)
 }
 
-export function getHeroConfig(): HeroConfig {
-  const data = readFileSync(DATA_FILE, "utf8")
-  const parsed = JSON.parse(data)
-
-  if (!isValidHomepageConfig(parsed)) {
-    throw new Error("Homepage config not found or invalid")
+function getDefaultHeroConfig(): HeroConfig {
+  if (!existsSync(LEGACY_DATA_FILE)) {
+    throw new Error(`Legacy homepage config missing: ${LEGACY_DATA_FILE}`)
   }
-
+  const data = readFileSync(LEGACY_DATA_FILE, "utf8")
+  const parsed = JSON.parse(data)
+  if (!isValidHomepageConfig(parsed)) {
+    throw new Error("Legacy homepage config is invalid")
+  }
   return parsed
+}
+
+export async function getHeroConfig() {
+  const { data, source, path } = await readCmsJsonOrInit<HeroConfig>(HOMEPAGE_CONFIG_FILE, getDefaultHeroConfig())
+  if (!isValidHomepageConfig(data)) {
+    throw new Error(`Homepage config invalid at ${path}`)
+  }
+  const meta = await getCmsFileMeta(HOMEPAGE_CONFIG_FILE)
+  return {
+    config: data,
+    diagnostics: {
+      source,
+      path,
+      mtime: meta.mtime,
+      size: meta.size,
+    },
+  }
+}
+
+export async function saveHeroConfig(config: HeroConfig) {
+  if (!isValidHomepageConfig(config)) {
+    throw new Error("Invalid homepage config payload")
+  }
+  const writeResult = await writeCmsJson(HOMEPAGE_CONFIG_FILE, config)
+  const meta = await getCmsFileMeta(HOMEPAGE_CONFIG_FILE)
+  return {
+    ...writeResult,
+    diagnostics: {
+      mtime: meta.mtime,
+      size: meta.size,
+    },
+  }
 }
 
 export type { HeroConfig }

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { getHeroConfig } from "@/lib/homepage-store"
-import { join } from "path"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -8,9 +7,8 @@ export const runtime = "nodejs"
 
 export async function GET() {
   try {
-    const dataFile = join(process.cwd(), "data", "homepage.json")
-    console.log("READING HOMEPAGE FROM", dataFile)
-    const config = getHeroConfig()
+    const { config, diagnostics } = await getHeroConfig()
+    console.log("READING HOMEPAGE CONFIG", diagnostics)
     console.log("Публичный API: Отправка настроек главной страницы")
 
     return NextResponse.json(config, {

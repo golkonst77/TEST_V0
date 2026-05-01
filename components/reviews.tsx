@@ -112,8 +112,8 @@ export function Reviews() {
       setLoading(true)
       setError(null)
       
-      // Сначала пробуем локальный API
-      let response = await fetch('/api/local-reviews?limit=9')
+      // Сначала пробуем основной API (Supabase), локальный оставляем только fallback
+      let response = await fetch('/api/random-reviews?limit=9', { cache: 'no-store' })
       if (response.ok) {
         const data = await response.json()
         if (data.success && Array.isArray(data.reviews)) {
@@ -134,8 +134,8 @@ export function Reviews() {
         }
       }
       
-      // Если локальный API не работает, пробуем Supabase
-      response = await fetch('/api/random-reviews?limit=9')
+      // Fallback: локальные JSON отзывы только если основной источник недоступен
+      response = await fetch('/api/local-reviews?limit=9', { cache: 'no-store' })
       if (response.ok) {
         const data = await response.json()
         if (data.success && Array.isArray(data.reviews)) {
@@ -489,7 +489,7 @@ export function Reviews() {
                   <video 
                     src={videoReviews[0].video_url}
                     controls
-                    className="w-full h-full object-cover rounded-lg"
+                    className="w-full h-full object-contain rounded-lg bg-black"
                     style={{ maxHeight: '400px' }}
                     preload="metadata"
                   >

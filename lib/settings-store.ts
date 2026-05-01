@@ -196,10 +196,8 @@ export async function getSettings(): Promise<any> {
 
 export async function updateSettings(newSettings: Partial<SiteSettings>): Promise<SiteSettings | null> {
   if (!supabase) {
-    console.warn("Supabase not configured - updating local settings")
-    localSettings = { ...localSettings, ...newSettings }
-    console.log("Local settings updated:", localSettings)
-    return localSettings
+    console.error("Supabase not configured - settings update aborted (non-persistent mode)")
+    return null
   }
 
   try {
@@ -254,26 +252,20 @@ export async function updateSettings(newSettings: Partial<SiteSettings>): Promis
         
         if (insertError) {
           console.error("Error inserting settings in Supabase:", insertError);
-          // Fallback to local storage
-          localSettings = { ...localSettings, ...newSettings }
-          return localSettings;
+          return null;
         }
         
         console.log("Settings inserted successfully:", insertData);
-        return insertData?.[0] ? mapDatabaseToSettings(insertData[0]) : localSettings;
+        return insertData?.[0] ? mapDatabaseToSettings(insertData[0]) : null;
       }
       
-      // Fallback to local storage
-      localSettings = { ...localSettings, ...newSettings }
-      return localSettings;
+      return null;
     }
     
     console.log("Settings updated successfully:", updateData);
-    return updateData?.[0] ? mapDatabaseToSettings(updateData[0]) : localSettings;
+    return updateData?.[0] ? mapDatabaseToSettings(updateData[0]) : null;
   } catch (error) {
     console.error("Exception while updating settings:", error);
-    // Fallback to local storage
-    localSettings = { ...localSettings, ...newSettings }
-    return localSettings;
+    return null;
   }
 }

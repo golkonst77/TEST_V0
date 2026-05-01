@@ -7,9 +7,20 @@ import { Check, Star, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { QuizModal } from "@/components/quiz-modal"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-const ipPlans = [
+interface PricingPlan {
+  id: number
+  group?: "ip" | "ooo"
+  name: string
+  price: string
+  period: string
+  description: string
+  popular: boolean
+  features: string[]
+}
+
+const fallbackIpPlans: PricingPlan[] = [
   {
     name: "Круиз-Контроль",
     price: "2 990",
@@ -56,7 +67,7 @@ const ipPlans = [
   },
 ]
 
-const oooPlans = [
+const fallbackOooPlans: PricingPlan[] = [
   {
     name: "Круиз-Контроль",
     price: "8 990",
@@ -106,6 +117,53 @@ const oooPlans = [
 export function PricingSection() {
   const [quizOpen, setQuizOpen] = useState(false)
   const { handleCruiseClick } = useCruiseClick()
+  const [ipPlans, setIpPlans] = useState<PricingPlan[]>(fallbackIpPlans)
+  const [oooPlans, setOooPlans] = useState<PricingPlan[]>(fallbackOooPlans)
+
+  useEffect(() => {
+    const fetchPricingData = async () => {
+      try {
+        const response = await fetch("/api/admin/pricing", { cache: "no-store" })
+        if (!response.ok) return
+
+        const payload = await response.json()
+        if (!Array.isArray(payload?.plans) || payload.plans.length === 0) return
+
+        const mappedPlans: PricingPlan[] = payload.plans
+          .filter((plan: any) => plan && plan.is_active !== false)
+          .map((plan: any, index: number) => ({
+            id: typeof plan.id === "number" ? plan.id : index + 1,
+            group: plan.group === "ooo" ? "ooo" : "ip",
+            name: typeof plan.name === "string" ? plan.name : "",
+            price: String(plan.price ?? ""),
+            period: typeof plan.period === "string" && plan.period.length > 0 ? plan.period : "мес",
+            description: typeof plan.description === "string" ? plan.description : "",
+            popular: Boolean(plan.is_popular),
+            features: Array.isArray(plan.features) ? plan.features.filter((f: any) => typeof f === "string") : [],
+          }))
+
+        if (mappedPlans.length === 0) return
+
+        const groupedIp = mappedPlans.filter((plan) => plan.group !== "ooo")
+        const groupedOoo = mappedPlans.filter((plan) => plan.group === "ooo")
+
+        // Совместимость с текущим дизайном: первые 3 карточки ИП, следующие 3 — ООО.
+        const nextIp = (groupedIp.length > 0 ? groupedIp : mappedPlans.slice(0, 3)).slice(0, 3)
+        const nextOoo = (groupedOoo.length > 0 ? groupedOoo : mappedPlans.slice(3, 6)).slice(0, 3)
+
+        if (nextIp.length > 0) setIpPlans(nextIp)
+        if (nextOoo.length > 0) {
+          setOooPlans(nextOoo)
+        } else {
+          setOooPlans(nextIp)
+        }
+      } catch (error) {
+        console.error("Failed to fetch pricing plans:", error)
+      }
+    }
+
+    fetchPricingData()
+  }, [])
 
   return (
     <section className="py-8 bg-white" id="pricing">

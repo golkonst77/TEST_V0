@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
+import { saveHomepageSectionsConfig } from "@/lib/visibility-store"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -10,19 +9,16 @@ export async function POST(request: NextRequest) {
   try {
     const sectionsConfig = await request.json()
     console.log("VISIBILITY API RECEIVED", sectionsConfig)
-    
-    // Путь к файлу конфигурации
-    const configPath = join(process.cwd(), 'data', 'homepage-sections.json')
-    
-    // Сохраняем конфигурацию в файл
-    await writeFile(configPath, JSON.stringify(sectionsConfig, null, 2), 'utf-8')
-    console.log("VISIBILITY SAVED CONFIG", sectionsConfig)
+    const saved = await saveHomepageSectionsConfig(sectionsConfig)
+    console.log("VISIBILITY SAVED CONFIG", saved)
     
     return NextResponse.json({ 
       success: true, 
       message: 'Настройки видимости сохранены',
-      savedAt: new Date().toISOString(),
-      config: sectionsConfig
+      savedAt: saved.savedAt,
+      config: saved.config,
+      diagnostics: saved.diagnostics,
+      savedTo: saved.path,
     })
   } catch (error) {
     console.error('Error saving visibility config:', error)
