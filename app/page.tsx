@@ -4,6 +4,8 @@ import { Hero } from "@/components/hero"
 import { TrustSection } from "@/components/trust-section"
 import { CtaFinalSection } from "@/components/cta-final-section"
 import { CasesSection } from "@/components/cases-section"
+import { CaseDetailedSection } from "@/components/case-detailed-section"
+import { ComparisonSection } from "@/components/comparison-section"
 import { useHomepageSections } from "@/hooks/use-homepage-sections"
 import { useDeviceType } from "@/hooks/use-device-type"
 import { useEffect } from "react"
@@ -85,6 +87,8 @@ export default function HomePage() {
       {check('pricing') && <PricingSection />}
       {check('cta-final') && <CtaFinalSection />}
       {check('cases') && <CasesSection />}
+      {check('case-detailed') && <CaseDetailedSection />}
+      {check('comparison') && <ComparisonSection />}
       {check('faq') && <FAQ />}
       {check('calculator') && <Calculator />}
       {check('reviews') && (

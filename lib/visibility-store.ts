@@ -16,6 +16,8 @@ export const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionsConfig = {
   hero: { desktop: "published", mobile: "published" },
   trust: { desktop: "published", mobile: "published" },
   cases: { desktop: "published", mobile: "published" },
+  "case-detailed": { desktop: "published", mobile: "published" },
+  comparison: { desktop: "published", mobile: "published" },
   "cta-final": { desktop: "published", mobile: "published" },
   about: { desktop: "published", mobile: "published" },
   services: { desktop: "published", mobile: "published" },

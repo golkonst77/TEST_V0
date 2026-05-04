@@ -34,9 +34,9 @@ export function CtaFinalSection() {
   return (
     <section className="py-8 md:py-12 bg-gradient-to-br from-slate-50 to-blue-50 border-y border-gray-100" id="cta-final">
       <div className="container mx-auto px-4 text-center max-w-2xl">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Не уверены, какой тариф выбрать?</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Подберём тариф под ваш бизнес</h2>
         <p className="text-gray-600 text-sm md:text-base mb-6 leading-relaxed">
-          Поможем подобрать подходящий формат под ваш бизнес
+          Расскажем, что действительно нужно, а за что можно не переплачивать
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <Button

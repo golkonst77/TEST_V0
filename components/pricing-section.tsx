@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight } from "lucide-react"
@@ -68,22 +68,22 @@ function strengthenFeatureText(text: string): string {
   const t = text.trim()
   const lower = t.toLowerCase()
   if (lower.includes("ведение учета в 1с") || lower.includes("ведение учёта в 1с")) {
-    return "Ведение учета в 1С без ошибок и с контролем сроков"
+    return "Ведение учета в 1С"
   }
   if (lower.includes("кудир")) {
-    return "Ведение КУДиР с проверкой цифр перед отчётностью"
+    return "Ведение КУДиР"
   }
   if (lower.includes("сдача всех отчетов") || lower.includes("сдача всех отчётов")) {
-    return "Сдача отчётности в срок по всем обязательным направлениям"
+    return "Сдача всех отчетов"
   }
   if (lower.includes("сдача отчетности в фнс") || lower.includes("сдача отчётности в фнс")) {
-    return "Сдача отчётности в ФНС без просрочек"
+    return "Сдача отчётности в ФНС"
   }
   if (lower.includes("расчет и подача деклараций") || lower.includes("расчёт и подача деклараций")) {
-    return "Расчёт и подача деклараций с проверкой перед отправкой"
+    return "Расчёт и подача деклараций"
   }
   if (lower.includes("ведение бухучета") || lower.includes("ведение бухучёта")) {
-    return "Ведение бухучёта с контролем перед сдачей отчётности"
+    return "Ведение бухучёта"
   }
   return t
 }
@@ -187,28 +187,27 @@ export function PricingSection() {
             {ipPlans.map((plan, index) => (
               <Card
                 key={index}
-                className={`relative shadow-xl h-auto ${
+                className={`relative shadow-xl h-full flex flex-col ${
                   plan.popular ? "border-2 border-blue-500 scale-105" : "border border-gray-200"
                 }`}
               >
                 {plan.popular && (
                   <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
                     <Star className="w-3 h-3 mr-1" />
-                    Чаще всего выбирают
+                    Оптимальный выбор
                   </Badge>
                 )}
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <CardDescription>{displayPlanDescription(plan.description) || "\u00A0"}</CardDescription>
                   <span className="block text-xs sm:text-sm text-gray-600 mt-2 leading-snug">{audienceLineForPlan(plan, index)}</span>
                   <div className="mt-4">
                     <span className="text-4xl font-bold price-animate">{formatPlanPrice(plan.price)}</span>
                     <span className="text-gray-600 ml-2">/ {plan.period}</span>
                   </div>
                 </CardHeader>
-                <CardContent className="flex flex-col px-6">
-                  <ul className="space-y-3 max-h-[180px] overflow-auto">
-                    {plan.features.map((feature, idx) => (
+                <CardContent className="flex-1 flex flex-col px-6">
+                  <ul className="space-y-3">
+                    {plan.features.slice(0, 5).map((feature, idx) => (
                       <li key={idx} className="flex items-start">
                         <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{strengthenFeatureText(feature)}</span>
@@ -231,7 +230,7 @@ export function PricingSection() {
                 variant={plan.popular ? "default" : "outline"}
                 onClick={() => setQuizOpen(true)}
               >
-                Выбрать тариф
+                Обсудить тариф
                 <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5" />
               </Button>
             ))}
@@ -248,28 +247,27 @@ export function PricingSection() {
             {oooPlans.map((plan, index) => (
               <Card
                 key={index}
-                className={`relative shadow-xl h-auto ${
+                className={`relative shadow-xl h-full flex flex-col ${
                   plan.popular ? "border-2 border-blue-500 scale-105" : "border border-gray-200"
                 }`}
               >
                 {plan.popular && (
                   <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
                     <Star className="w-3 h-3 mr-1" />
-                    Чаще всего выбирают
+                    Оптимальный выбор
                   </Badge>
                 )}
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <CardDescription>{displayPlanDescription(plan.description) || "\u00A0"}</CardDescription>
                   <span className="block text-xs sm:text-sm text-gray-600 mt-2 leading-snug">{audienceLineForPlan(plan, index)}</span>
                   <div className="mt-4">
                     <span className="text-4xl font-bold price-animate">{formatPlanPrice(plan.price)}</span>
                     <span className="text-gray-600 ml-2">/ {plan.period}</span>
                   </div>
                 </CardHeader>
-                <CardContent className="flex flex-col px-6">
-                  <ul className="space-y-3 max-h-[180px] overflow-auto">
-                    {plan.features.map((feature, idx) => (
+                <CardContent className="flex-1 flex flex-col px-6">
+                  <ul className="space-y-3">
+                    {plan.features.slice(0, 5).map((feature, idx) => (
                       <li key={idx} className="flex items-start">
                         <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{strengthenFeatureText(feature)}</span>
@@ -292,7 +290,7 @@ export function PricingSection() {
                 variant={plan.popular ? "default" : "outline"}
                 onClick={() => setQuizOpen(true)}
               >
-                Выбрать тариф
+                Обсудить тариф
                 <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5" />
               </Button>
             ))}

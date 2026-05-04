@@ -34,6 +34,8 @@ const SECTIONS_INFO: SectionInfo[] = [
   { key: 'pricing', title: 'Тарифы', description: 'Тарифные планы и цены', icon: '💰' },
   { key: 'cta-final', title: 'CTA после тарифов', description: 'Призыв к консультации и телефон после блока тарифов', icon: '📣' },
   { key: 'cases', title: 'Кейсы', description: 'Примеры решения задач бизнеса', icon: '📋' },
+  { key: 'case-detailed', title: 'Подробный кейс', description: 'Детальный разбор кейса клиента: было, сделали, результат', icon: '🧾' },
+  { key: 'comparison', title: 'Штатный бухгалтер vs аутсорс', description: 'Сравнение формата работы: штатный бухгалтер и аутсорс', icon: '⚖️' },
   { key: 'reviews', title: 'Отзывы', description: 'Отзывы клиентов о компании', icon: '⭐' },
   { key: 'guarantees', title: 'Гарантии', description: 'Гарантии качества и безопасности', icon: '🛡️' },
   { key: 'faq', title: 'FAQ', description: 'Часто задаваемые вопросы', icon: '❓' },
