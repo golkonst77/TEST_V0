@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await supabase
     .from('reviews')
-    .select('id, name, rating, text, source, created_at, published_at')
+    .select('id, name, company, rating, text, source, created_at, published_at')
     .eq('is_published', true)
 
   if (error) {

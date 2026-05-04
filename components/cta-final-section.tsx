@@ -36,7 +36,7 @@ export function CtaFinalSection() {
       <div className="container mx-auto px-4 text-center max-w-2xl">
         <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Не уверены, какой тариф выбрать?</h2>
         <p className="text-gray-600 text-sm md:text-base mb-6 leading-relaxed">
-          Поможем подобрать подходящий вариант под ваш бизнес
+          Поможем подобрать подходящий формат под ваш бизнес
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <Button
@@ -44,7 +44,7 @@ export function CtaFinalSection() {
             className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 rounded-xl shadow-lg"
             onClick={handleCruiseClick}
           >
-            Получить консультацию
+            Получить бесплатную консультацию
           </Button>
           {phone ? (
             <a

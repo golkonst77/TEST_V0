@@ -5,15 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 const CASES = [
   {
     title: "ИП с сотрудниками",
-    problem: "Путаница с отчетностью и штрафы",
-    solution: "Взяли учет на себя",
-    result: "Отчетность без ошибок и штрафов",
+    lines: [
+      "Навели порядок в отчётности за 2 недели",
+      "Сдали отчёты без штрафов",
+      "Освободили время собственника",
+    ],
   },
   {
     title: "ООО на ОСН",
-    problem: "Сложный учет и нагрузка на директора",
-    solution: "Полный аутсорс бухгалтерии",
-    result: "Освободили время и снизили риски",
+    lines: [
+      "Передали бухгалтерию на аутсорс",
+      "Снизили нагрузку на директора",
+      "Убрали риски ошибок и проверок",
+    ],
   },
 ] as const
 
@@ -22,7 +26,7 @@ export function CasesSection() {
     <section className="py-8 md:py-12 bg-white" id="cases">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 text-center mb-8 md:mb-10">
-          Как мы решаем задачи бизнеса
+          Примеры задач, которые мы берём на себя
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
           {CASES.map((c) => (
@@ -31,18 +35,9 @@ export function CasesSection() {
                 <CardTitle className="text-lg md:text-xl">{c.title}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-gray-700">
-                <p>
-                  <span className="font-medium text-gray-900">Проблема: </span>
-                  {c.problem}
-                </p>
-                <p>
-                  <span className="font-medium text-gray-900">Решение: </span>
-                  {c.solution}
-                </p>
-                <p>
-                  <span className="font-medium text-gray-900">Результат: </span>
-                  {c.result}
-                </p>
+                {c.lines.map((line, i) => (
+                  <p key={`${c.title}-${i}`}>{line}</p>
+                ))}
               </CardContent>
             </Card>
           ))}

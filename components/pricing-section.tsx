@@ -276,14 +276,14 @@ export function PricingSection() {
 
         {/* CTA */}
         <div className="text-center mt-12 md:mt-16 px-4">
-          <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Не можете выбрать подходящий тариф?</h3>
-          <p className="text-gray-600 mb-6 text-sm md:text-base">Получите бесплатную консультацию и персональное предложение</p>
+          <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Не уверены, какой тариф выбрать?</h3>
+          <p className="text-gray-600 mb-6 text-sm md:text-base">Поможем подобрать подходящий формат под ваш бизнес</p>
           <Button
             size="lg"
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 md:px-8 py-3 md:py-4 rounded-xl"
             onClick={handleCruiseClick}
           >
-            Получить консультацию
+            Получить бесплатную консультацию
           </Button>
         </div>
 

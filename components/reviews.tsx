@@ -8,6 +8,8 @@
 
 import { useState, useEffect } from 'react'
 import { Star, StarHalf } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 
 interface Review {
   id: string
@@ -42,6 +44,7 @@ interface Settings {
 }
 
 export function Reviews() {
+  const { handleCruiseClick } = useCruiseClick()
   const [reviews, setReviews] = useState<Review[]>([])
   const [videoReviews, setVideoReviews] = useState<VideoReview[]>([])
   const [loading, setLoading] = useState(true)
@@ -54,19 +57,6 @@ export function Reviews() {
 
   const maxPages = Math.min(3, Math.ceil(reviews.length / 3) || 0)
   const pagedReviews = reviews.slice(page * 3, page * 3 + 3)
-
-  // Функция для расчета динамического количества клиентов
-  const calculateDynamicClients = () => {
-    const startDate = new Date('2024-01-01') // Начальная дата
-    const currentDate = new Date()
-    const monthsDiff = (currentDate.getFullYear() - startDate.getFullYear()) * 12 + 
-                      (currentDate.getMonth() - startDate.getMonth())
-    const baseClients = 500
-    const monthlyIncrease = 5
-    return baseClients + (monthsDiff * monthlyIncrease)
-  }
-
-  const dynamicClients = calculateDynamicClients()
 
   // Получение настроек из админки
   const fetchSettings = async () => {
@@ -291,8 +281,11 @@ export function Reviews() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Отзывы наших клиентов
           </h2>
+          <p className="text-lg md:text-xl text-gray-600 w-full max-w-none md:max-w-3xl mx-auto mb-3 leading-relaxed">
+            С нами работают ИП и ООО из разных сфер: услуги, торговля, онлайн-бизнес
+          </p>
           <p className="text-xl text-gray-600 w-full max-w-none md:max-w-3xl mx-auto">
-            Более {dynamicClients}+ довольных клиентов доверяют нам свою бухгалтерию
+            Реальные отзывы компаний, с которыми мы ведём учёт и отчётность
           </p>
         </div>
 
@@ -304,9 +297,11 @@ export function Reviews() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h4 className="font-semibold text-gray-900">{review.name || 'Анонимный клиент'}</h4>
-                    {review.company && (
-                      <p className="text-sm text-gray-600">{review.company}</p>
-                    )}
+                    <p className="text-xs md:text-sm text-gray-500 mt-0.5">
+                      {typeof review.company === "string" && review.company.trim().length > 0
+                        ? review.company.trim()
+                        : "Клиент"}
+                    </p>
                   </div>
                   <div className="flex items-center">
                     {renderStars(review.rating || 5)}
@@ -412,6 +407,9 @@ export function Reviews() {
                       ) : (
                         <>Отзывы клиентов</>
                       )}
+                    </p>
+                    <p className="text-xs md:text-sm text-gray-600 mt-1">
+                      Нам доверяют бухгалтерию на постоянной основе
                     </p>
                   </div>
                   
@@ -575,6 +573,20 @@ export function Reviews() {
               </>
             )}
           </div>
+        </div>
+
+        <div className="text-center mt-10 md:mt-14 px-4">
+          <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Остались вопросы?</h3>
+          <p className="text-gray-600 mb-6 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+            Разберём вашу ситуацию и подскажем, как лучше сделать
+          </p>
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 md:px-8 py-3 md:py-4 rounded-xl"
+            onClick={handleCruiseClick}
+          >
+            Получить бесплатную консультацию
+          </Button>
         </div>
       </div>
     </section>
