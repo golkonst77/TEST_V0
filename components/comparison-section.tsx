@@ -14,6 +14,9 @@ export function ComparisonSection() {
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900">
             Штатный бухгалтер или аутсорс — что выгоднее?
           </h2>
+          <p className="text-gray-600 text-sm md:text-base leading-relaxed w-full max-w-none md:max-w-3xl mx-auto mt-3">
+            Сравните не только цену, но и ответственность, заменяемость и риски
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
@@ -32,7 +35,7 @@ export function ComparisonSection() {
 
           <Card className="border border-gray-200 shadow-md">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg md:text-xl">ПростоБюро</CardTitle>
+              <CardTitle className="text-lg md:text-xl">Бухгалтерия на аутсорсе</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-gray-700">
               <p>Фиксированная стоимость</p>
@@ -44,7 +47,11 @@ export function ComparisonSection() {
           </Card>
         </div>
 
-        <div className="text-center mt-8 md:mt-10">
+        <p className="text-center text-xs md:text-sm text-gray-500 max-w-2xl mx-auto mt-8 md:mt-10 mb-4 md:mb-5 leading-relaxed">
+          Аутсорс выгоден, когда нужна не просто бухгалтерия, а ответственность и стабильная поддержка.
+        </p>
+
+        <div className="text-center">
           <Button
             size="lg"
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 md:px-8 py-3 md:py-4 rounded-xl"

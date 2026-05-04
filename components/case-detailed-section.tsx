@@ -8,23 +8,23 @@ export function CaseDetailedSection() {
   const { handleCruiseClick } = useCruiseClick()
 
   return (
-    <section className="py-8 md:py-12 bg-white" id="case-detailed">
+    <section className="py-12 md:py-16 bg-white" id="case-detailed">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-8 md:mb-10">
+        <div className="text-center mb-10 md:mb-12">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 mb-3">
-            Как мы навели порядок в бухгалтерии за 2 недели
+            Как мы быстро навели порядок в учёте
           </h2>
           <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-            Кейс клиента — ИП с сотрудниками
+            Реальный сценарий работы с ИП с сотрудниками
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-7 max-w-6xl mx-auto">
           <Card className="border border-gray-200 shadow-md">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg md:text-xl">Было</CardTitle>
+              <CardTitle className="text-xl md:text-2xl">Было</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-gray-700">
+            <CardContent className="space-y-2 md:space-y-3 text-sm md:text-base text-gray-700">
               <p>Учет велся нерегулярно</p>
               <p>Были ошибки в отчетности</p>
               <p>Риск штрафов</p>
@@ -33,9 +33,9 @@ export function CaseDetailedSection() {
 
           <Card className="border border-gray-200 shadow-md">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg md:text-xl">Сделали</CardTitle>
+              <CardTitle className="text-xl md:text-2xl">Сделали</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-gray-700">
+            <CardContent className="space-y-2 md:space-y-3 text-sm md:text-base text-gray-700">
               <p>Разобрали учет за 2 недели</p>
               <p>Восстановили документы</p>
               <p>Сдали отчётность</p>
@@ -44,9 +44,9 @@ export function CaseDetailedSection() {
 
           <Card className="border border-gray-200 shadow-md">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg md:text-xl">Результат</CardTitle>
+              <CardTitle className="text-xl md:text-2xl">Результат</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-gray-700">
+            <CardContent className="space-y-2 md:space-y-3 text-sm md:text-base text-gray-700">
               <p>Без штрафов</p>
               <p>Учет под контролем</p>
               <p>Собственник не тратит время</p>
@@ -54,7 +54,7 @@ export function CaseDetailedSection() {
           </Card>
         </div>
 
-        <div className="text-center mt-8 md:mt-10">
+        <div className="text-center mt-6 md:mt-8">
           <Button
             size="lg"
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 md:px-8 py-3 md:py-4 rounded-xl"

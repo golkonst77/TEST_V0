@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Star, ArrowRight } from "lucide-react"
-import Link from "next/link"
 import { QuizModal } from "@/components/quiz-modal"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
 import { useEffect, useState } from "react"
@@ -53,17 +52,6 @@ function audienceLineForPlan(plan: PricingPlan, index: number): string {
   return AUDIENCE_IP[Math.min(index, 2)]
 }
 
-function displayPlanDescription(raw: string): string {
-  let s = typeof raw === "string" ? raw : ""
-  s = s.replace(/\bИдеально\s+для\b/gi, "Для")
-  s = s.replace(/\bЛучшее\s+решение\s+для\b/gi, "Для")
-  s = s.replace(/\bИдеально\b/gi, "")
-  s = s.replace(/\bлучшее\s+решение\b/gi, "")
-  s = s.replace(/\bподходит\b/gi, "")
-  s = s.replace(/\s{2,}/g, " ").replace(/^[,.\s]+|[\s,]+$/g, "").trim()
-  return s
-}
-
 function strengthenFeatureText(text: string): string {
   const t = text.trim()
   const lower = t.toLowerCase()
@@ -90,7 +78,6 @@ function strengthenFeatureText(text: string): string {
 
 export function PricingSection() {
   const [quizOpen, setQuizOpen] = useState(false)
-  const { handleCruiseClick } = useCruiseClick()
   const [ipPlans, setIpPlans] = useState<PricingPlan[]>([])
   const [oooPlans, setOooPlans] = useState<PricingPlan[]>([])
 
@@ -335,20 +322,6 @@ export function PricingSection() {
           </div>
 
         </div>
-
-        {/* CTA */}
-        <div className="text-center mt-12 md:mt-16 px-4">
-          <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Не уверены, какой тариф выбрать?</h3>
-          <p className="text-gray-600 mb-6 text-sm md:text-base">Поможем подобрать подходящий формат под ваш бизнес</p>
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 md:px-8 py-3 md:py-4 rounded-xl"
-            onClick={handleCruiseClick}
-          >
-            Получить бесплатную консультацию
-          </Button>
-        </div>
-
         <QuizModal open={quizOpen} onOpenChange={setQuizOpen} />
       </div>
     </section>

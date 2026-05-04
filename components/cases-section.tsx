@@ -32,6 +32,9 @@ export function CasesSection() {
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 text-center mb-8 md:mb-10">
           С какими задачами к нам приходят
         </h2>
+        <p className="text-gray-600 text-sm md:text-base leading-relaxed text-center w-full max-w-none md:max-w-3xl mx-auto mb-6 md:mb-8">
+          Коротко о ситуациях, с которыми чаще всего обращаются ИП и ООО
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
           {CASES.map((c) => (
             <Card key={c.title} className="border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
