@@ -24,7 +24,7 @@ export function Footer() {
           <div className="space-y-2">
             <h4 className="text-sm font-semibold text-gray-800">О нас</h4>
             <p className="text-sm text-gray-600 leading-relaxed">
-              Мы — команда профессионалов, помогающих бизнесу вести бухгалтерию без ошибок и лишних затрат.
+              Помогаем бизнесу вести бухгалтерию без ошибок и лишних затрат
             </p>
           </div>
           <div className="space-y-2">
@@ -63,11 +63,7 @@ export function Footer() {
         </div>
 
         <div className="mt-4 text-xs text-gray-500 leading-relaxed">
-          Используем cookie для корректной работы сайта. Продолжая пользоваться сайтом, вы соглашаетесь с их использованием.
-        </div>
-
-        <div className="mt-1 text-xs text-gray-500">
-          Персональные данные обрабатываются в соответствии с ФЗ-152.
+          Используем cookie. Персональные данные обрабатываются по ФЗ-152
         </div>
 
         <div className="mt-4 pt-3 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-gray-500">
