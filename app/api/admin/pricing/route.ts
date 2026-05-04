@@ -22,6 +22,17 @@ interface PricingPayload {
   plans: PricingPlan[]
 }
 
+function normalizeLegacyPricingText(value: string): string {
+  return value
+    .replace(/Круиз-Контроль/gi, "Базовый")
+    .replace(/Адаптивный\s+Круиз/gi, "Оптимальный")
+    .replace(/Адаптивный\s+Круз/gi, "Оптимальный")
+    .replace(/Полный\s+Автопилот/gi, "Под ключ")
+    .replace(/Все из тарифа\s+Круиз-Контроль/gi, "Всё из тарифа Базовый")
+    .replace(/Все из тарифа\s+Адаптивный\s+Круиз/gi, "Всё из тарифа Оптимальный")
+    .replace(/Все из тарифа\s+Адаптивный\s+Круз/gi, "Всё из тарифа Оптимальный")
+}
+
 const DEFAULT_PRICING_DATA = {
   plans: [
     {
@@ -134,16 +145,26 @@ const DEFAULT_PRICING_DATA = {
 }
 
 function normalizePlan(raw: any, fallback: PricingPlan): PricingPlan {
+  const normalizedName = typeof raw?.name === "string" && raw.name.trim().length > 0
+    ? normalizeLegacyPricingText(raw.name)
+    : fallback.name
+  const normalizedDescription = typeof raw?.description === "string"
+    ? normalizeLegacyPricingText(raw.description)
+    : fallback.description
+  const normalizedFeatures = Array.isArray(raw?.features)
+    ? raw.features
+        .filter((f: unknown) => typeof f === "string")
+        .map((f: string) => normalizeLegacyPricingText(f))
+    : fallback.features
+
   return {
     id: fallback.id,
     group: fallback.group,
-    name: typeof raw?.name === "string" && raw.name.trim().length > 0 ? raw.name : fallback.name,
+    name: normalizedName,
     price: Number.isFinite(Number(raw?.price)) ? Number(raw.price) : fallback.price,
     period: typeof raw?.period === "string" && raw.period.trim().length > 0 ? raw.period : fallback.period,
-    description: typeof raw?.description === "string" ? raw.description : fallback.description,
-    features: Array.isArray(raw?.features)
-      ? raw.features.filter((f: unknown) => typeof f === "string")
-      : fallback.features,
+    description: normalizedDescription,
+    features: normalizedFeatures,
     is_popular: typeof raw?.is_popular === "boolean" ? raw.is_popular : fallback.is_popular,
     is_active: typeof raw?.is_active === "boolean" ? raw.is_active : fallback.is_active,
   }

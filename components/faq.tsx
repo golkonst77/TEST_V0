@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronDown, ChevronUp, Car } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { QuizModal } from "@/components/quiz-modal"
@@ -51,7 +51,37 @@ const faqData = [
 
 export function FAQ() {
   const [openItems, setOpenItems] = useState<number[]>([])
+  const [phone, setPhone] = useState("")
+  const [telegramLink, setTelegramLink] = useState("https://t.me/prostoburo")
   const { openContactForm } = useContactForm()
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/settings", {
+          cache: "no-store",
+          signal: controller.signal,
+        })
+        if (!response.ok) return
+        const data = await response.json()
+        if (typeof data?.phone === "string") {
+          setPhone(data.phone)
+        }
+        if (typeof data?.telegram === "string" && data.telegram.trim().length > 0) {
+          const clean = data.telegram.trim()
+          const url = clean.startsWith("http") ? clean : `https://t.me/${clean.replace("@", "")}`
+          setTelegramLink(url)
+        }
+      } catch (error) {
+        if (!(error instanceof Error && error.name === "AbortError")) {
+          console.error("FAQ settings load error:", error)
+        }
+      }
+    }
+    fetchSettings()
+    return () => controller.abort()
+  }, [])
 
   const toggleItem = (index: number) => {
     setOpenItems(prev => 
@@ -126,13 +156,13 @@ export function FAQ() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center">
               <a 
-                href="tel:+79990000000"
+                href={phone ? `tel:${phone.replace(/\s/g, "")}` : "#"}
                 className="inline-flex items-center justify-center px-6 md:px-8 py-5 md:py-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm md:text-base w-full sm:w-[320px] whitespace-nowrap"
               >
                 <svg className="w-4 h-4 md:w-5 md:h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
                 </svg>
-                +7 999 000-00-00
+                {phone || "—"}
               </a>
               
               <button 
@@ -146,7 +176,7 @@ export function FAQ() {
               </button>
               
               <a 
-                href="https://t.me/prostoburo"
+                href={telegramLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-6 md:px-8 py-5 md:py-6 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm md:text-base w-full sm:w-[320px]"

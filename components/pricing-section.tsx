@@ -20,105 +20,11 @@ interface PricingPlan {
   features: string[]
 }
 
-const fallbackIpPlans: PricingPlan[] = [
-  {
-    name: "Круиз-Контроль",
-    price: "2 990",
-    period: "мес",
-    description: "Идеально для ИП и фрилансеров, которые хотят снять с себя базовые задачи по отчетности и налогам",
-    popular: false,
-    features: [
-      "Ведение КУДиР",
-      "Расчет и подача деклараций",
-      "Консультации по налогам",
-      "Сдача отчетности в ФНС",
-      "Базовая поддержка",
-    ],
-  },
-  {
-    name: "Адаптивный Круиз",
-    price: "4 990",
-    period: "мес",
-    description: "Лучшее решение для растущих компаний и ИП с сотрудниками, которым нужна гибкость и поддержка в кадровых вопросах",
-    popular: true,
-    features: [
-      "Все из тарифа Круиз-Контроль",
-      "Ведение учета в 1С",
-      "Расчет взносов ИП",
-      "Консультации по оптимизации",
-      "Приоритетная поддержка",
-      "Личный кабинет",
-    ],
-  },
-  {
-    name: "Полный Автопилот",
-    price: "7 990",
-    period: "мес",
-    description: "Для опытных компаний со сложным учетом, ВЭД и специфическими задачами, требующими максимального вовлечения и экспертной поддержки",
-    popular: false,
-    features: [
-      "Все из тарифа Адаптивный Круиз",
-      "Ведение кадрового учета",
-      "Расчет зарплаты сотрудников",
-      "Юридическое сопровождение",
-      "Персональный менеджер",
-      "Безлимитные консультации",
-    ],
-  },
-]
-
-const fallbackOooPlans: PricingPlan[] = [
-  {
-    name: "Круиз-Контроль",
-    price: "8 990",
-    period: "мес",
-    description: "Идеально для ООО и фрилансеров, которые хотят снять с себя базовые задачи по отчетности и налогам",
-    popular: false,
-    features: [
-      "Ведение бухучета",
-      "Сдача всех отчетов",
-      "Расчет налогов",
-      "Консультации бухгалтера",
-      "Документооборот",
-    ],
-  },
-  {
-    name: "Адаптивный Круиз",
-    price: "14 990",
-    period: "мес",
-    description: "Лучшее решение для растущих компаний и ООО с сотрудниками, которым нужна гибкость и поддержка в кадровых вопросах",
-    popular: true,
-    features: [
-      "Все из тарифа Круиз-Контроль",
-      "Кадровое делопроизводство",
-      "Расчет зарплаты",
-      "Отчеты в ПФР и ФСС",
-      "Юридические консультации",
-      "Личный кабинет",
-    ],
-  },
-  {
-    name: "Полный Автопилот",
-    price: "24 990",
-    period: "мес",
-    description: "Для опытных компаний со сложным учетом, ВЭД и специфическими задачами, требующими максимального вовлечения и экспертной поддержки",
-    popular: false,
-    features: [
-      "Все из тарифа Адаптивный Круиз",
-      "Управленческий учет",
-      "Финансовая аналитика",
-      "Налоговое планирование",
-      "Персональный менеджер",
-      "Сопровождение проверок",
-    ],
-  },
-]
-
 export function PricingSection() {
   const [quizOpen, setQuizOpen] = useState(false)
   const { handleCruiseClick } = useCruiseClick()
-  const [ipPlans, setIpPlans] = useState<PricingPlan[]>(fallbackIpPlans)
-  const [oooPlans, setOooPlans] = useState<PricingPlan[]>(fallbackOooPlans)
+  const [ipPlans, setIpPlans] = useState<PricingPlan[]>([])
+  const [oooPlans, setOooPlans] = useState<PricingPlan[]>([])
 
   useEffect(() => {
     const fetchPricingData = async () => {
@@ -165,6 +71,10 @@ export function PricingSection() {
     fetchPricingData()
   }, [])
 
+  if (ipPlans.length === 0 && oooPlans.length === 0) {
+    return null
+  }
+
   return (
     <section className="py-8 bg-white" id="pricing">
       <style jsx global>{`
@@ -190,11 +100,11 @@ export function PricingSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
-            Выберите ваш режим «Круиз-контроля»
+            Выберите формат бухгалтерского обслуживания
           </h2>
           <div className="flex justify-center w-full mb-6">
             <div className="px-4 md:px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-sm md:text-base font-medium text-gray-900 text-center">
-              От базовой поддержки до полного автопилота для вашего бизнеса 🚗
+              От базового сопровождения до бухгалтерии под ключ
             </div>
           </div>
         </div>

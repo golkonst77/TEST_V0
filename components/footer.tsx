@@ -54,7 +54,10 @@ export function Footer() {
           <div className="flex flex-col items-end md:items-end text-right">
             <div className="text-gray-500">&copy; {new Date().getFullYear()} Все права защищены.</div>
             <div className="mt-2 text-gray-400 text-xs">ООО "ПростоБюро", ИНН: 4027132996. ОГРН: 1174027006592.</div>
-            <div className="mt-2 text-gray-400 text-xs">Сайт создан Golkonst. В тесном сотрудничестве с AI.</div>
+            <div className="mt-2 text-gray-400 text-xs inline-flex items-center gap-2">
+              <span className="font-semibold tracking-wide">GØL</span>
+              <span>Сайт создан GØL Design Studio</span>
+            </div>
             <div className="mt-2 text-gray-400 text-xs">
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
