@@ -17,15 +17,23 @@ import { ReCAPTCHAComponent } from "./recaptcha"
 import { useRouter, usePathname } from "next/navigation"
 import { useHomepageSections } from "@/hooks/use-homepage-sections"
 import { useDeviceType } from "@/hooks/use-device-type"
-import { VersionBadge } from "./version-badge"
 
 const MENU_ITEMS = [
-  { id: 'services', title: 'Услуги', href: '/#services', isAnchor: true },
-  { id: 'technologies', title: 'Технологии', href: '/#technologies', isAnchor: true },
   { id: 'pricing', title: 'Тарифы', href: '/#pricing', isAnchor: true },
   { id: 'faq', title: 'FAQ', href: '/#faq', isAnchor: true },
   { id: 'calculator', title: 'Калькулятор', href: '/#calculator', isAnchor: true },
   { id: 'reviews', title: 'Отзывы', href: '/#reviews', isAnchor: true },
+  {
+    id: "ausn-risk",
+    title: "АУСН / Риски",
+    href: "#",
+    isAnchor: false,
+    type: "dropdown",
+    children: [
+      { id: "ausn", title: "АУСН", href: "/ausn", isAnchor: false },
+      { id: "risk", title: "Риски", href: "/risk", isAnchor: false },
+    ],
+  },
   { id: 'contacts', title: 'Контакты', href: '/#contacts', isAnchor: true },
 ]
 
@@ -36,6 +44,7 @@ interface HeaderMenuItem {
   show?: boolean
   type?: "link" | "dropdown"
   isAnchor?: boolean
+  children?: HeaderMenuItem[]
 }
 
 export const Header = () => {
@@ -45,7 +54,7 @@ export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [settings, setSettings] = useState<any>(null)
   const [dynamicMenuItems, setDynamicMenuItems] = useState<HeaderMenuItem[] | null>(null)
-  const [ctaText, setCtaText] = useState("Получить скидку")
+  const [ctaText, setCtaText] = useState("Получить консультацию")
   const router = useRouter()
   const pathname = usePathname()
   const { isSectionVisible } = useHomepageSections()
@@ -105,6 +114,7 @@ export const Header = () => {
   // Фильтруем пункты меню на основе настроек видимости секций
   const menuSource = dynamicMenuItems && dynamicMenuItems.length > 0 ? dynamicMenuItems : MENU_ITEMS
   const visibleMenuItems = menuSource.filter(item => {
+    if (item.type === "dropdown") return (item as any).show !== false
     // Преобразуем тип устройства в формат для видимости секций
     const deviceTypeForVisibility = deviceType === 'tablet' ? 'desktop' : deviceType
     return isSectionVisible(item.id, deviceTypeForVisibility)
@@ -120,6 +130,30 @@ export const Header = () => {
   }
 
   const renderMenuItem = (item: any) => {
+    if (item.type === "dropdown" && Array.isArray(item.children)) {
+      return (
+        <div key={item.id} className="relative group">
+          <button
+            type="button"
+            className="rounded-lg px-4 py-2 font-medium bg-gray-100 text-gray-800 transition-colors hover:bg-gray-200 hover:text-blue-700 shadow-sm inline-flex items-center gap-1"
+          >
+            {item.title}
+            <ChevronDown className="h-4 w-4" />
+          </button>
+          <div className="absolute left-0 top-full mt-1 hidden group-hover:block min-w-[180px] rounded-lg border bg-white shadow-lg z-50">
+            {item.children.filter((child: HeaderMenuItem) => child.show !== false).map((child: HeaderMenuItem) => (
+              <Link
+                key={child.id}
+                href={child.href}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-lg last:rounded-b-lg"
+              >
+                {child.title}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )
+    }
     return (
       <Link
         key={item.id}
@@ -171,22 +205,21 @@ export const Header = () => {
               href="https://t.me/prostoburo"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
+              className="flex items-center text-gray-700 hover:text-blue-600 transition-colors"
+              aria-label="Telegram"
             >
               <MessageCircle className="h-4 w-4" />
-              <span className="hidden xl:inline">Telegram</span>
             </a>
           </div>
 
-          {/* CTA Button and Version */}
-          <div className="flex items-center gap-3">
+          {/* CTA Button */}
+          <div className="flex items-center">
             <Button
               onClick={handleCruiseClick}
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               {ctaText}
             </Button>
-            <VersionBadge />
           </div>
         </div>
       </div>
@@ -197,14 +230,32 @@ export const Header = () => {
           <div className="container mx-auto px-4 py-4">
                          <nav className="space-y-2">
                {visibleMenuItems.map((item) => (
-                 <Link
-                   key={item.id}
-                   href={item.href}
-                   onClick={() => setMobileMenuOpen(false)}
-                   className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                 >
-                   {item.title}
-                 </Link>
+                 item.type === "dropdown" && Array.isArray(item.children) ? (
+                  <div key={item.id} className="px-4 py-2 text-gray-700 rounded-lg">
+                    <div className="font-medium mb-2">{item.title}</div>
+                    <div className="pl-2 space-y-1">
+                      {item.children.filter((child) => (child as any).show !== false).map((child) => (
+                        <Link
+                          key={child.id}
+                          href={child.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                          {child.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                 ) : (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    {item.title}
+                  </Link>
+                 )
                ))}
               <div className="pt-4 border-t">
                 <a
@@ -219,9 +270,9 @@ export const Header = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  aria-label="Telegram"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  <span>Telegram</span>
                 </a>
                 <Button
                   onClick={() => {

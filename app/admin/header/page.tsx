@@ -66,13 +66,26 @@ const defaultConfig: HeaderConfig = {
     show: true,
   },
   ctaButton: {
-    text: "Получить скидку",
+    text: "Получить консультацию",
     show: true,
   },
   menuItems: [
-    { id: "calculator", title: "Калькулятор", href: "/calculator", show: true, type: "link" },
-    { id: "pricing", title: "Тарифы", href: "/pricing", show: true, type: "link" },
-    { id: "contacts", title: "Контакты", href: "/contacts", show: true, type: "link" },
+    { id: "pricing", title: "Тарифы", href: "/#pricing", show: true, type: "link" },
+    { id: "faq", title: "FAQ", href: "/#faq", show: true, type: "link" },
+    { id: "calculator", title: "Калькулятор", href: "/#calculator", show: true, type: "link" },
+    { id: "reviews", title: "Отзывы", href: "/#reviews", show: true, type: "link" },
+    {
+      id: "ausn-risk",
+      title: "АУСН / Риски",
+      href: "#",
+      show: true,
+      type: "dropdown",
+      children: [
+        { id: "ausn", title: "АУСН", href: "/ausn", show: true, type: "link" },
+        { id: "risk", title: "Риски", href: "/risk", show: true, type: "link" },
+      ],
+    },
+    { id: "contacts", title: "Контакты", href: "/#contacts", show: true, type: "link" },
   ],
   layout: {
     sticky: true,
@@ -118,7 +131,7 @@ export default function HeaderEditor() {
               show: true,
             },
             ctaButton: {
-              text: persistedHeader?.ctaText || "Получить скидку",
+              text: persistedHeader?.ctaText || "Получить консультацию",
               show: true,
             },
             menuItems: Array.isArray(persistedHeader?.menuItems) ? persistedHeader.menuItems : defaultConfig.menuItems,
