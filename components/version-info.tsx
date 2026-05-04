@@ -11,9 +11,11 @@ interface VersionInfo {
 
 interface VersionInfoProps {
   className?: string
+  inline?: boolean
+  showDate?: boolean
 }
 
-export function VersionInfo({ className }: VersionInfoProps) {
+export function VersionInfo({ className, inline = false, showDate = true }: VersionInfoProps) {
   const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null)
 
   useEffect(() => {
@@ -41,13 +43,33 @@ export function VersionInfo({ className }: VersionInfoProps) {
 
   if (!versionInfo) return null
 
+  if (inline) {
+    return (
+      <span className={`text-[11px] md:text-xs text-gray-400 font-normal ${className ?? ""}`}>
+        <span>v{versionInfo.version}</span>
+        <span className="mx-1">·</span>
+        <span>build {versionInfo.build}</span>
+        {showDate ? (
+          <>
+            <span className="mx-1">·</span>
+            <span>{versionInfo.date}</span>
+          </>
+        ) : null}
+      </span>
+    )
+  }
+
   return (
     <div className={`text-[11px] md:text-xs text-gray-400 font-normal text-center ${className ?? ""}`}>
       <span>v{versionInfo.version}</span>
       <span className="mx-1">·</span>
       <span>build {versionInfo.build}</span>
-      <span className="mx-1">·</span>
-      <span>{versionInfo.date}</span>
+      {showDate ? (
+        <>
+          <span className="mx-1">·</span>
+          <span>{versionInfo.date}</span>
+        </>
+      ) : null}
     </div>
   )
 }

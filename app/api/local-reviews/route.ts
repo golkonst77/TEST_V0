@@ -69,6 +69,12 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(parseInt(searchParams.get('limit') || '9', 10), 50)
 
   // Перемешиваем отзывы и преобразуем данные
+  const total = localReviews.length
+  const averageRating =
+    total > 0
+      ? localReviews.reduce((sum, r) => sum + (Number.isFinite(Number(r?.rating)) ? Number(r.rating) : 5), 0) / total
+      : 5
+
   const shuffled = [...localReviews].sort(() => Math.random() - 0.5)
   const selected = shuffled.slice(0, limit).map(review => ({
     id: review.id,
@@ -83,12 +89,22 @@ export async function GET(req: NextRequest) {
     date: review.date
   }))
 
-  return NextResponse.json({ 
-    success: true, 
-    reviews: selected,
-    total: localReviews.length,
-    source: 'local-json'
-  })
+  return NextResponse.json(
+    {
+      success: true,
+      reviews: selected,
+      total,
+      average_rating: Number(averageRating.toFixed(1)),
+      source: "local-json",
+    },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    },
+  )
 }
 
 export async function POST(req: NextRequest) {

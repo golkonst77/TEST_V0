@@ -31,6 +31,9 @@ function normalizeLegacyPricingText(value: string): string {
     .replace(/Все из тарифа\s+Круиз-Контроль/gi, "Всё из тарифа Базовый")
     .replace(/Все из тарифа\s+Адаптивный\s+Круиз/gi, "Всё из тарифа Оптимальный")
     .replace(/Все из тарифа\s+Адаптивный\s+Круз/gi, "Всё из тарифа Оптимальный")
+    .replace(/круиз/gi, "бухучёт")
+    .replace(/автопилот/gi, "сопровождение")
+    .replace(/режим\s*[«"]?\s*круиз/gi, "формат обслуживания")
 }
 
 const DEFAULT_PRICING_DATA = {

@@ -292,8 +292,8 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
   return (
     <>
       <Dialog open={!!(open !== undefined ? open : isOpen)} onOpenChange={onOpenChange || closeContactForm}>
-        <DialogTitle className="sr-only">Квиз для получения скидки</DialogTitle>
-        <DialogDescription className="sr-only">Пройдите квиз, чтобы получить персональную скидку на бухгалтерские услуги</DialogDescription>
+        <DialogTitle className="sr-only">Короткий опрос для подбора условий</DialogTitle>
+        <DialogDescription className="sr-only">Ответьте на несколько вопросов — мы подготовим персональное предложение</DialogDescription>
         <DialogContent className="max-w-4xl h-[90vh] max-h-[800px] p-0 overflow-hidden border-0 shadow-2xl" style={{
            backgroundImage: 'url("/quiz-background.jpg")',
            backgroundSize: 'cover',
@@ -430,7 +430,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
 
                       setShowThanks(true)
 
-                      // Reset form + закрываем квиз
+                      // Reset form + закрываем опрос
                       setCurrentStep(0)
                       setAnswers([])
                       setCanFinalSubmit(false)
@@ -462,7 +462,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
 
       {/* Модалка благодарности */}
       <Dialog open={showThanks} onOpenChange={setShowThanks}>
-        <DialogTitle className="sr-only">Благодарность за прохождение квиза</DialogTitle>
+        <DialogTitle className="sr-only">Благодарность за заполнение опроса</DialogTitle>
         <DialogDescription className="sr-only">Коммерческое предложение и подарок отправлены</DialogDescription>
         <DialogContent className="max-w-md p-8 text-center flex flex-col items-center justify-center">
           <button

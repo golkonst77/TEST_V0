@@ -15,7 +15,7 @@ export function VersionBadge() {
   useEffect(() => {
     const fetchVersion = async () => {
       try {
-        const response = await fetch('/api/version')
+        const response = await fetch("/api/version", { cache: "no-store" })
         if (response.ok) {
           const data = await response.json()
           setVersionInfo(data)
@@ -29,11 +29,7 @@ export function VersionBadge() {
   }, [])
 
   if (!versionInfo) {
-    return (
-      <div className="text-xs text-gray-500 font-mono">
-        v1.1.7
-      </div>
-    )
+    return null
   }
 
   return (

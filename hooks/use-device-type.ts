@@ -1,31 +1,34 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
+import { useSiteRuntimeBootstrap } from "@/components/site-runtime-provider"
 
-type DeviceType = 'mobile' | 'tablet' | 'desktop'
+type DeviceType = "mobile" | "tablet" | "desktop"
 
 export function useDeviceType() {
-  const [deviceType, setDeviceType] = useState<DeviceType>('desktop')
+  const bootstrap = useSiteRuntimeBootstrap()
+
+  const [deviceType, setDeviceType] = useState<DeviceType>(() => {
+    if (bootstrap?.initialDeviceHint === "mobile") return "mobile"
+    return "desktop"
+  })
 
   useEffect(() => {
     const checkDeviceType = () => {
       const width = window.innerWidth
-      
+
       if (width < 768) {
-        setDeviceType('mobile')
+        setDeviceType("mobile")
       } else if (width < 1024) {
-        setDeviceType('tablet')
+        setDeviceType("tablet")
       } else {
-        setDeviceType('desktop')
+        setDeviceType("desktop")
       }
     }
 
-    // Проверяем сразу при загрузке
     checkDeviceType()
-
-    // Добавляем слушатель изменения размера окна
-    window.addEventListener('resize', checkDeviceType)
+    window.addEventListener("resize", checkDeviceType)
 
     return () => {
-      window.removeEventListener('resize', checkDeviceType)
+      window.removeEventListener("resize", checkDeviceType)
     }
   }, [])
 

@@ -38,7 +38,7 @@ interface CompanyInfo {
 
 interface Settings {
   address?: string
-  phone?: string
+  phone?: string | undefined
 }
 
 export function Reviews() {
@@ -48,8 +48,8 @@ export function Reviews() {
   const [error, setError] = useState<string | null>(null)
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({})
   const [settings, setSettings] = useState<Settings>({})
-  const [averageRating, setAverageRating] = useState(5.0)
-  const [totalReviews, setTotalReviews] = useState(15)
+  const [averageRating, setAverageRating] = useState<number | null>(null)
+  const [totalReviews, setTotalReviews] = useState(0)
   const [page, setPage] = useState(0)
 
   const maxPages = Math.min(3, Math.ceil(reviews.length / 3) || 0)
@@ -71,20 +71,15 @@ export function Reviews() {
   // Получение настроек из админки
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/admin/settings')
-      if (response.ok) {
-        const data = await response.json()
-        setSettings({
-          address: data.address || 'Калуга, Дзержинского 37, офис 20',
-          phone: data.phone || '+7 999 000-00-00'
-        })
-      }
-    } catch (error) {
-      console.error('Ошибка получения настроек:', error)
+      const response = await fetch("/api/settings", { cache: "no-store" })
+      if (!response.ok) return
+      const data = await response.json()
       setSettings({
-        address: 'Калуга, Дзержинского 37, офис 20',
-        phone: '+7 999 000-00-00'
+        address: typeof data.address === "string" && data.address.trim().length > 0 ? data.address : "Калуга, Дзержинского 37, офис 20",
+        phone: typeof data.phone === "string" && data.phone.trim().length > 0 ? data.phone : undefined,
       })
+    } catch (error) {
+      console.error("Ошибка получения настроек:", error)
     }
   }
 
@@ -119,15 +114,15 @@ export function Reviews() {
         if (data.success && Array.isArray(data.reviews)) {
           const fetched = data.reviews
           setReviews(fetched)
-          // Используем total из API для общего количества отзывов
-          if (fetched.length > 0) {
-            const avg = fetched.reduce((s: number, r: any) => s + (r.rating || 5), 0) / fetched.length
+          const publishedTotal = typeof data.total === "number" && Number.isFinite(data.total) ? data.total : fetched.length
+          setTotalReviews(publishedTotal)
+          if (typeof data.average_rating === "number" && Number.isFinite(data.average_rating)) {
+            setAverageRating(Number(data.average_rating.toFixed(1)))
+          } else if (publishedTotal > 0 && fetched.length > 0) {
+            const avg = fetched.reduce((s: number, r: any) => s + (Number(r.rating) || 5), 0) / fetched.length
             setAverageRating(Number(avg.toFixed(1)))
-            // total из API — это общее количество всех отзывов
-            setTotalReviews(data.total || fetched.length)
           } else {
-            setAverageRating(5.0)
-            setTotalReviews(data.total || 0)
+            setAverageRating(null)
           }
           setPage(0)
           return
@@ -141,33 +136,34 @@ export function Reviews() {
         if (data.success && Array.isArray(data.reviews)) {
           const fetched = data.reviews
           setReviews(fetched)
-          // Используем total из API для общего количества отзывов
-          if (fetched.length > 0) {
-            const avg = fetched.reduce((s: number, r: any) => s + (r.rating || 5), 0) / fetched.length
+          const publishedTotal = typeof data.total === "number" && Number.isFinite(data.total) ? data.total : fetched.length
+          setTotalReviews(publishedTotal)
+          if (typeof data.average_rating === "number" && Number.isFinite(data.average_rating)) {
+            setAverageRating(Number(data.average_rating.toFixed(1)))
+          } else if (publishedTotal > 0 && fetched.length > 0) {
+            const avg = fetched.reduce((s: number, r: any) => s + (Number(r.rating) || 5), 0) / fetched.length
             setAverageRating(Number(avg.toFixed(1)))
-            setTotalReviews(data.total || fetched.length)
           } else {
-            setAverageRating(5.0)
-            setTotalReviews(data.total || 0)
+            setAverageRating(null)
           }
           setPage(0)
         } else {
           setError(data.error || 'Ошибка загрузки отзывов')
           setReviews([])
-          setAverageRating(5.0)
+          setAverageRating(null)
           setTotalReviews(0)
         }
       } else {
         setError('Ошибка загрузки отзывов')
         setReviews([])
-        setAverageRating(5.0)
+        setAverageRating(null)
         setTotalReviews(0)
       }
     } catch (error) {
       console.error('Ошибка загрузки отзывов:', error)
       setError('Ошибка загрузки отзывов')
       setReviews([])
-      setAverageRating(5.0)
+      setAverageRating(null)
       setTotalReviews(0)
     } finally {
       setLoading(false)
@@ -392,7 +388,12 @@ export function Reviews() {
                       <span className="text-sm md:text-lg font-semibold text-gray-900">Рейтинг:</span>
                       <div className="flex items-center">
                         <span className="text-lg md:text-2xl font-bold text-yellow-500">
-                          {typeof companyInfo.rating === 'number' && !isNaN(companyInfo.rating) ? companyInfo.rating.toFixed(1) : '5.0'}
+                          {(() => {
+                            const r = averageRating ?? companyInfo.rating
+                            if (typeof r === "number" && !Number.isNaN(r)) return r.toFixed(1)
+                            if (loading) return "…"
+                            return "—"
+                          })()}
                         </span>
                         <div className="flex ml-2">
                           {[...Array(5)].map((_, i) => (
@@ -403,7 +404,15 @@ export function Reviews() {
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs md:text-sm text-gray-600">Более {typeof totalReviews === 'number' && !isNaN(totalReviews) ? totalReviews : 0} отзывов от довольных клиентов</p>
+                    <p className="text-xs md:text-sm text-gray-600">
+                      {loading && totalReviews === 0 && reviews.length === 0 ? (
+                        <span className="text-gray-400">Загрузка…</span>
+                      ) : totalReviews > 0 ? (
+                        <>{totalReviews} отзывов клиентов</>
+                      ) : (
+                        <>Отзывы клиентов</>
+                      )}
+                    </p>
                   </div>
                   
                   <div className="bg-white rounded-lg p-3 md:p-4 shadow-sm">
@@ -413,12 +422,14 @@ export function Reviews() {
                       </svg>
                       <span className="text-xs md:text-sm text-gray-600">{settings.address}</span>
                     </div>
-                    <div className="flex items-center">
-                      <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-                      </svg>
-                      <span className="text-xs md:text-sm text-gray-600">{settings.phone}</span>
-                    </div>
+                    {settings.phone ? (
+                      <div className="flex items-center">
+                        <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                        </svg>
+                        <span className="text-xs md:text-sm text-gray-600">{settings.phone}</span>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 
@@ -547,9 +558,22 @@ export function Reviews() {
             {" "}и нашего сайта
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs md:text-sm text-gray-500">
-            <span>Средняя оценка: {averageRating}</span>
-            <span className="hidden sm:inline">•</span>
-            <span>Всего отзывов: {totalReviews}+</span>
+            {error || (!loading && totalReviews === 0 && reviews.length === 0) ? (
+              <span>Отзывы клиентов</span>
+            ) : (
+              <>
+                <span>
+                  Средняя оценка:{" "}
+                  {averageRating !== null && !Number.isNaN(averageRating)
+                    ? averageRating.toFixed(1)
+                    : loading
+                      ? "…"
+                      : "—"}
+                </span>
+                <span className="hidden sm:inline">•</span>
+                <span>Всего отзывов: {loading && totalReviews === 0 ? "…" : totalReviews}</span>
+              </>
+            )}
           </div>
         </div>
       </div>

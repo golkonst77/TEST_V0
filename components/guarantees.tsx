@@ -2,8 +2,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Shield, Clock, Lock, Users, CheckCircle } from "lucide-react"
 import { AIDocuments } from "@/components/ai-documents"
-import { QuizModal } from "@/components/quiz-modal"
-import { useState } from "react"
 import { useHomepageSections } from "@/hooks/use-homepage-sections"
 import { useDeviceType } from "@/hooks/use-device-type"
 
@@ -43,7 +41,6 @@ const guarantees = [
 ]
 
 export function Guarantees() {
-  const [quizOpen, setQuizOpen] = useState(false)
   const { isSectionVisible } = useHomepageSections()
   const deviceType = useDeviceType()
   const deviceTypeForVisibility = deviceType === "tablet" ? "desktop" : deviceType
@@ -53,7 +50,7 @@ export function Guarantees() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
-            Укрощение бюрократического зверя
+            Бухгалтерия без хаоса и сюрпризов
           </h2>
           <div className="flex flex-col items-center gap-2 mb-8">
             <p className="text-lg md:text-xl text-gray-600 w-full max-w-none md:max-w-3xl leading-relaxed text-center">
@@ -144,7 +141,6 @@ export function Guarantees() {
           <p className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 font-bold">Расти спокойно.</p>
         </div>
 
-        <QuizModal open={quizOpen} onOpenChange={setQuizOpen} />
       </div>
     </section>
   )

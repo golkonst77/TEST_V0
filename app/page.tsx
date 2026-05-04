@@ -1,7 +1,5 @@
 "use client"
 
-export const dynamic = "force-dynamic"
-
 import { Hero } from "@/components/hero"
 import { TrustSection } from "@/components/trust-section"
 import { CtaFinalSection } from "@/components/cta-final-section"

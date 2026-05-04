@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react'
 import { useContactForm } from "@/hooks/use-contact-form"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
@@ -40,36 +40,52 @@ export function Contacts() {
     return () => controller.abort()
   }, [])
 
-  const contactInfo = [
-    {
-      icon: Phone,
-      title: 'Телефон',
-      value: settings?.phone || '+7 999 000-00-00',
-      href: `tel:${settings?.phone?.replace(/\s/g, '') || '+79990000000'}`,
-      color: 'text-blue-400'
-    },
-    {
-      icon: Mail,
-      title: 'Email',
-      value: settings?.email || 'urist40@gmail.com',
-      href: `mailto:${settings?.email || 'urist40@gmail.com'}`,
-      color: 'text-green-400'
-    },
-    {
-      icon: MapPin,
-      title: 'Адрес',
-      value: settings?.address || 'Калуга, Дзержинского 37, офис 20',
-      href: '#map',
-      color: 'text-red-400'
-    },
-    {
-      icon: MessageCircle,
-      title: 'Telegram',
-      value: settings?.telegram || '@prostoburo',
-      href: `https://t.me/${settings?.telegram?.replace('@', '') || 'prostoburo'}`,
-      color: 'text-cyan-400'
+  const contactInfo = useMemo(() => {
+    const phone = settings?.phone?.trim()
+    const rows: Array<{
+      icon: typeof Phone
+      title: string
+      value: string
+      href: string
+      color: string
+    }> = []
+
+    if (phone) {
+      rows.push({
+        icon: Phone,
+        title: "Телефон",
+        value: phone,
+        href: `tel:${phone.replace(/\s/g, "")}`,
+        color: "text-blue-400",
+      })
     }
-  ]
+
+    rows.push(
+      {
+        icon: Mail,
+        title: "Email",
+        value: settings?.email || "urist40@gmail.com",
+        href: `mailto:${settings?.email || "urist40@gmail.com"}`,
+        color: "text-green-400",
+      },
+      {
+        icon: MapPin,
+        title: "Адрес",
+        value: settings?.address || "Калуга, Дзержинского 37, офис 20",
+        href: "#map",
+        color: "text-red-400",
+      },
+      {
+        icon: MessageCircle,
+        title: "Telegram",
+        value: settings?.telegram || "@prostoburo",
+        href: `https://t.me/${settings?.telegram?.replace("@", "") || "prostoburo"}`,
+        color: "text-cyan-400",
+      },
+    )
+
+    return rows
+  }, [settings])
 
   const workingHours = [
     { 
