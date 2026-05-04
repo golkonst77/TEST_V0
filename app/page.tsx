@@ -3,6 +3,9 @@
 export const dynamic = "force-dynamic"
 
 import { Hero } from "@/components/hero"
+import { TrustSection } from "@/components/trust-section"
+import { CtaFinalSection } from "@/components/cta-final-section"
+import { CasesSection } from "@/components/cases-section"
 import { useHomepageSections } from "@/hooks/use-homepage-sections"
 import { useDeviceType } from "@/hooks/use-device-type"
 import { useEffect } from "react"
@@ -76,11 +79,14 @@ export default function HomePage() {
   return (
     <main id="home-page" className="min-h-screen">
       {check('hero') && <Hero />}
+      {check('trust') && <TrustSection />}
       {check('guarantees') && <Guarantees />}
       {check('services') && <Services showTitle />}
       {check('technologies') && <Technologies />}
       {check('ai-documents') && <AIDocuments />}
       {check('pricing') && <PricingSection />}
+      {check('cta-final') && <CtaFinalSection />}
+      {check('cases') && <CasesSection />}
       {check('faq') && <FAQ />}
       {check('calculator') && <Calculator />}
       {check('reviews') && (

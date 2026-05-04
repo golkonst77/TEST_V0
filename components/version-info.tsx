@@ -9,60 +9,45 @@ interface VersionInfo {
   description: string
 }
 
-export function VersionInfo() {
+interface VersionInfoProps {
+  className?: string
+}
+
+export function VersionInfo({ className }: VersionInfoProps) {
   const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    const controller = new AbortController()
     const fetchVersion = async () => {
       try {
-        console.log('🔍 Загружаем версию из API...')
-        const response = await fetch('/api/version')
-        console.log('📡 Ответ сервера:', response.status, response.ok)
+        const response = await fetch('/api/version', {
+          cache: 'no-store',
+          signal: controller.signal,
+        })
         if (response.ok) {
           const data = await response.json()
-          console.log('📋 Данные версии:', data)
           setVersionInfo(data)
-        } else {
-          console.error('❌ Ошибка загрузки версии:', response.status)
         }
       } catch (error) {
-        console.error('❌ Ошибка загрузки версии:', error)
-      } finally {
-        setIsLoading(false)
+        if (!(error instanceof Error && error.name === "AbortError")) {
+          console.error('Ошибка загрузки версии:', error)
+        }
       }
     }
 
     fetchVersion()
+    return () => controller.abort()
   }, [])
 
-  if (isLoading) {
-    return (
-      <div className="text-sm text-black text-center mt-2 font-medium">
-        <span className="font-mono">Загрузка версии...</span>
-      </div>
-    )
-  }
-
-  if (!versionInfo) {
-    return (
-      <div className="text-sm text-black text-center mt-2 font-medium">
-        <span className="font-mono">v1.1.7</span>
-        <span className="mx-1">•</span>
-        <span className="font-mono">build 117</span>
-        <span className="mx-1">•</span>
-        <span className="text-gray-600">2026-04-09</span>
-      </div>
-    )
-  }
+  if (!versionInfo) return null
 
   return (
-    <div className="text-sm text-black text-center mt-2 font-medium">
-      <span className="font-mono">v{versionInfo.version}</span>
-      <span className="mx-1">•</span>
-      <span className="font-mono">build {versionInfo.build}</span>
-      <span className="mx-1">•</span>
-      <span className="text-gray-600">{versionInfo.date}</span>
+    <div className={`text-[11px] md:text-xs text-gray-400 font-normal text-center ${className ?? ""}`}>
+      <span>v{versionInfo.version}</span>
+      <span className="mx-1">·</span>
+      <span>build {versionInfo.build}</span>
+      <span className="mx-1">·</span>
+      <span>{versionInfo.date}</span>
     </div>
   )
 }

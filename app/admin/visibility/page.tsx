@@ -27,10 +27,13 @@ interface SectionInfo {
 
 const SECTIONS_INFO: SectionInfo[] = [
   { key: 'hero', title: 'Главный баннер', description: 'Основной блок с заголовком и призывом к действию', icon: '🏠' },
+  { key: 'trust', title: 'Доверие', description: 'Блок «Работаем прозрачно» после главного баннера', icon: '🤝' },
   { key: 'about', title: 'О компании', description: 'Информация о компании и её преимуществах', icon: 'ℹ️' },
   { key: 'services', title: 'Услуги', description: 'Список предоставляемых услуг', icon: '🛠️' },
   { key: 'calculator', title: 'Калькулятор', description: 'Интерактивный калькулятор стоимости услуг', icon: '🧮' },
   { key: 'pricing', title: 'Тарифы', description: 'Тарифные планы и цены', icon: '💰' },
+  { key: 'cta-final', title: 'CTA после тарифов', description: 'Призыв к консультации и телефон после блока тарифов', icon: '📣' },
+  { key: 'cases', title: 'Кейсы', description: 'Примеры решения задач бизнеса', icon: '📋' },
   { key: 'reviews', title: 'Отзывы', description: 'Отзывы клиентов о компании', icon: '⭐' },
   { key: 'guarantees', title: 'Гарантии', description: 'Гарантии качества и безопасности', icon: '🛡️' },
   { key: 'faq', title: 'FAQ', description: 'Часто задаваемые вопросы', icon: '❓' },

@@ -14,6 +14,9 @@ const LEGACY_HOMEPAGE_SECTIONS_FILE = join(process.cwd(), "data", "homepage-sect
 
 export const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionsConfig = {
   hero: { desktop: "published", mobile: "published" },
+  trust: { desktop: "published", mobile: "published" },
+  cases: { desktop: "published", mobile: "published" },
+  "cta-final": { desktop: "published", mobile: "published" },
   about: { desktop: "published", mobile: "published" },
   services: { desktop: "published", mobile: "published" },
   calculator: { desktop: "published", mobile: "published" },
