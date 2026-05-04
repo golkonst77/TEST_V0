@@ -11,7 +11,7 @@ export function Footer() {
   const [policyText, setPolicyText] = useState("")
 
   useEffect(() => {
-    fetch("/policy.md")
+    fetch("/policy.md", { cache: "no-store" })
       .then(res => res.text())
       .then(setPolicyText)
       .catch(() => setPolicyText("Ошибка загрузки политики."))
@@ -68,7 +68,7 @@ export function Footer() {
         </div>
 
         <div className="pt-4 border-t border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-gray-500">
-          <div>&copy; {new Date().getFullYear()} ООО "ПростоБюро"</div>
+          <div>&copy; 2026 ООО "ПростоБюро"</div>
           <div className="inline-flex items-center gap-2">
             <span className="font-semibold tracking-wide text-gray-500">GØL</span>
             <span>Сайт создан GØL Design Studio</span>

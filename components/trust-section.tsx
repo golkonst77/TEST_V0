@@ -3,19 +3,19 @@
 const TRUST_CARDS = [
   {
     title: "Работаем по договору",
-    description: "Фиксируем объём работ, сроки и ответственность. Никаких «на словах».",
+    description: "Фиксируем объём работ, сроки и ответственность.",
   },
   {
-    title: "Минимизируем штрафы",
-    description: "Контролируем сроки и сдачу отчётности. Следим за изменениями в законодательстве.",
+    title: "Контролируем отчётность",
+    description: "Следим за сроками и сдаём отчёты вовремя.",
   },
   {
     title: "Всегда на связи",
-    description: "Отвечаем быстро в Telegram или по телефону. Вы не остаётесь без ответа.",
+    description: "Отвечаем быстро в Telegram или по телефону.",
   },
   {
-    title: "Прозрачная работа",
-    description: "Вы понимаете, что мы делаем и за что платите. Без «чёрного ящика».",
+    title: "Понятный учёт",
+    description: "Вы всегда видите, что происходит и за что платите.",
   },
 ] as const
 
@@ -27,10 +27,10 @@ export function TrustSection() {
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-10">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 mb-3">
-            Работаем прозрачно и берём ответственность на себя
+            Почему нам доверяют бухгалтерию
           </h2>
           <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-            Вы всегда понимаете, что происходит с вашей бухгалтерией
+            Коротко о том, как мы работаем и что вы получаете
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">

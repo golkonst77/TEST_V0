@@ -20,6 +20,12 @@ interface PricingPlan {
   features: string[]
 }
 
+function formatPlanPrice(rawPrice: string): string {
+  const numeric = Number(String(rawPrice).replace(/[^\d]/g, ""))
+  if (!Number.isFinite(numeric) || numeric <= 0) return "от — ₽"
+  return `от ${new Intl.NumberFormat("ru-RU").format(numeric)} ₽`
+}
+
 export function PricingSection() {
   const [quizOpen, setQuizOpen] = useState(false)
   const { handleCruiseClick } = useCruiseClick()
@@ -133,8 +139,8 @@ export function PricingSection() {
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
                   <CardDescription>{plan.description || "\u00A0"}</CardDescription>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold price-animate">{plan.price}</span>
-                    <span className="text-gray-600 ml-2">₽/{plan.period}</span>
+                    <span className="text-4xl font-bold price-animate">{formatPlanPrice(plan.price)}</span>
+                    <span className="text-gray-600 ml-2">/ {plan.period}</span>
                   </div>
                 </CardHeader>
                 <CardContent className="flex flex-col px-6">
@@ -193,8 +199,8 @@ export function PricingSection() {
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
                   <CardDescription>{plan.description || "\u00A0"}</CardDescription>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold price-animate">{plan.price}</span>
-                    <span className="text-gray-600 ml-2">₽/{plan.period}</span>
+                    <span className="text-4xl font-bold price-animate">{formatPlanPrice(plan.price)}</span>
+                    <span className="text-gray-600 ml-2">/ {plan.period}</span>
                   </div>
                 </CardHeader>
                 <CardContent className="flex flex-col px-6">
