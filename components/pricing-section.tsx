@@ -26,6 +26,68 @@ function formatPlanPrice(rawPrice: string): string {
   return `от ${new Intl.NumberFormat("ru-RU").format(numeric)} ₽`
 }
 
+const AUDIENCE_IP = [
+  "Для ИП без сотрудников или с минимальными операциями",
+  "Для ИП с сотрудниками и регулярной деятельностью",
+  "Для ИП со сложным учетом или ВЭД",
+] as const
+
+const AUDIENCE_OOO = [
+  "Для небольших ООО с простым учетом",
+  "Для компаний с сотрудниками и регулярной отчетностью",
+  "Для компаний со сложной структурой и повышенными требованиями",
+] as const
+
+function audienceLineForPlan(plan: PricingPlan, index: number): string {
+  const n = plan.name.toLowerCase()
+  const isOoo = plan.group === "ooo"
+  if (isOoo) {
+    if (n.includes("под ключ")) return AUDIENCE_OOO[2]
+    if (n.includes("оптимал")) return AUDIENCE_OOO[1]
+    if (n.includes("базов")) return AUDIENCE_OOO[0]
+    return AUDIENCE_OOO[Math.min(index, 2)]
+  }
+  if (n.includes("под ключ")) return AUDIENCE_IP[2]
+  if (n.includes("оптимал")) return AUDIENCE_IP[1]
+  if (n.includes("базов")) return AUDIENCE_IP[0]
+  return AUDIENCE_IP[Math.min(index, 2)]
+}
+
+function displayPlanDescription(raw: string): string {
+  let s = typeof raw === "string" ? raw : ""
+  s = s.replace(/\bИдеально\s+для\b/gi, "Для")
+  s = s.replace(/\bЛучшее\s+решение\s+для\b/gi, "Для")
+  s = s.replace(/\bИдеально\b/gi, "")
+  s = s.replace(/\bлучшее\s+решение\b/gi, "")
+  s = s.replace(/\bподходит\b/gi, "")
+  s = s.replace(/\s{2,}/g, " ").replace(/^[,.\s]+|[\s,]+$/g, "").trim()
+  return s
+}
+
+function strengthenFeatureText(text: string): string {
+  const t = text.trim()
+  const lower = t.toLowerCase()
+  if (lower.includes("ведение учета в 1с") || lower.includes("ведение учёта в 1с")) {
+    return "Ведение учета в 1С без ошибок и с контролем сроков"
+  }
+  if (lower.includes("кудир")) {
+    return "Ведение КУДиР с проверкой цифр перед отчётностью"
+  }
+  if (lower.includes("сдача всех отчетов") || lower.includes("сдача всех отчётов")) {
+    return "Сдача отчётности в срок по всем обязательным направлениям"
+  }
+  if (lower.includes("сдача отчетности в фнс") || lower.includes("сдача отчётности в фнс")) {
+    return "Сдача отчётности в ФНС без просрочек"
+  }
+  if (lower.includes("расчет и подача деклараций") || lower.includes("расчёт и подача деклараций")) {
+    return "Расчёт и подача деклараций с проверкой перед отправкой"
+  }
+  if (lower.includes("ведение бухучета") || lower.includes("ведение бухучёта")) {
+    return "Ведение бухучёта с контролем перед сдачей отчётности"
+  }
+  return t
+}
+
 export function PricingSection() {
   const [quizOpen, setQuizOpen] = useState(false)
   const { handleCruiseClick } = useCruiseClick()
@@ -132,12 +194,13 @@ export function PricingSection() {
                 {plan.popular && (
                   <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
                     <Star className="w-3 h-3 mr-1" />
-                    Оптимальный выбор
+                    Чаще всего выбирают
                   </Badge>
                 )}
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description || "\u00A0"}</CardDescription>
+                  <CardDescription>{displayPlanDescription(plan.description) || "\u00A0"}</CardDescription>
+                  <span className="block text-xs sm:text-sm text-gray-600 mt-2 leading-snug">{audienceLineForPlan(plan, index)}</span>
                   <div className="mt-4">
                     <span className="text-4xl font-bold price-animate">{formatPlanPrice(plan.price)}</span>
                     <span className="text-gray-600 ml-2">/ {plan.period}</span>
@@ -148,7 +211,7 @@ export function PricingSection() {
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start">
                         <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{feature}</span>
+                        <span className="text-sm text-gray-700">{strengthenFeatureText(feature)}</span>
                       </li>
                     ))}
                   </ul>
@@ -192,12 +255,13 @@ export function PricingSection() {
                 {plan.popular && (
                   <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
                     <Star className="w-3 h-3 mr-1" />
-                    Оптимальный выбор
+                    Чаще всего выбирают
                   </Badge>
                 )}
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description || "\u00A0"}</CardDescription>
+                  <CardDescription>{displayPlanDescription(plan.description) || "\u00A0"}</CardDescription>
+                  <span className="block text-xs sm:text-sm text-gray-600 mt-2 leading-snug">{audienceLineForPlan(plan, index)}</span>
                   <div className="mt-4">
                     <span className="text-4xl font-bold price-animate">{formatPlanPrice(plan.price)}</span>
                     <span className="text-gray-600 ml-2">/ {plan.period}</span>
@@ -208,7 +272,7 @@ export function PricingSection() {
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start">
                         <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{feature}</span>
+                        <span className="text-sm text-gray-700">{strengthenFeatureText(feature)}</span>
                       </li>
                     ))}
                   </ul>

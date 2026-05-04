@@ -296,8 +296,8 @@ export function Reviews() {
               <div key={review.id || Math.random()} className="bg-white rounded-lg shadow-lg p-6 md:p-8">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h4 className="font-semibold text-gray-900">{review.name || 'Анонимный клиент'}</h4>
-                    <p className="text-xs md:text-sm text-gray-500 mt-0.5">
+                    <h4 className="font-semibold text-gray-900 break-words">{review.name || 'Анонимный клиент'}</h4>
+                    <p className="text-xs md:text-sm text-gray-500 mt-0.5 break-words">
                       {typeof review.company === "string" && review.company.trim().length > 0
                         ? review.company.trim()
                         : "Клиент"}
