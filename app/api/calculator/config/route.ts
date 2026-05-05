@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getCmsFileMeta, readCmsJsonStrict, writeCmsJson } from "@/lib/cms-storage"
+import { getCmsFileMeta, readCmsJsonOrInit, readCmsJsonStrict, writeCmsJson } from "@/lib/cms-storage"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -7,10 +7,10 @@ export const revalidate = 0
 const CALCULATOR_CONFIG_FILE = "calculator-config.json"
 const DEFAULT_CALCULATOR_CONFIG = {
   services: {
-    accounting: { price: 3000, description: "Бухгалтерский учет" },
-    payroll: { price: 1500, description: "Зарплата и кадры" },
-    legal: { price: 2000, description: "Юридическое сопровождение" },
-    terminal: { price: 1200, description: "Кассовый терминал" },
+    accounting: { price: 8000, description: "Бухгалтерский учет" },
+    payroll: { price: 3000, description: "Зарплата и кадры" },
+    legal: { price: 5000, description: "Юридическое сопровождение" },
+    terminal: { price: 1850, description: "Кассовый терминал" },
   },
   multipliers: {
     taxSystems: {
@@ -32,18 +32,22 @@ const DEFAULT_CALCULATOR_CONFIG = {
 export async function GET() {
   try {
     let data: typeof DEFAULT_CALCULATOR_CONFIG
-    let source: "stored" | "default-fallback"
+    let source: "stored" | "initialized"
     let path: string
-    try {
+
+    if (process.env.NODE_ENV === "production") {
       const strict = await readCmsJsonStrict<typeof DEFAULT_CALCULATOR_CONFIG>(CALCULATOR_CONFIG_FILE)
       data = strict.data
       source = "stored"
       path = strict.path
-    } catch (error) {
-      if (process.env.NODE_ENV === "production") throw error
-      data = DEFAULT_CALCULATOR_CONFIG
-      source = "default-fallback"
-      path = "in-memory-default"
+    } else {
+      const withInit = await readCmsJsonOrInit<typeof DEFAULT_CALCULATOR_CONFIG>(
+        CALCULATOR_CONFIG_FILE,
+        DEFAULT_CALCULATOR_CONFIG,
+      )
+      data = withInit.data
+      source = withInit.source
+      path = withInit.path
     }
     const meta = await getCmsFileMeta(CALCULATOR_CONFIG_FILE)
     return NextResponse.json({

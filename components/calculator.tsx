@@ -31,6 +31,23 @@ interface CalculatorState {
   services: string[]
 }
 
+const PRICE_ON_REQUEST = "цена рассчитывается индивидуально"
+
+const DEFAULT_TAX_MULTIPLIERS = {
+  usn: 1,
+  osn: 1.5,
+  envd: 0.8,
+  patent: 0.7,
+}
+
+const DEFAULT_EMPLOYEE_MULTIPLIERS = {
+  "0": 1,
+  "1-5": 1.2,
+  "6-15": 1.5,
+  "16-50": 2,
+  "50+": 3,
+}
+
 export function Calculator() {
   const { openContactForm } = useContactForm()
   const [config, setConfig] = useState<CalculatorConfig | null>(null)
@@ -49,51 +66,25 @@ export function Calculator() {
 
   const fetchCalculatorConfig = async () => {
     try {
-      const response = await fetch("/api/calculator/config")
+      const response = await fetch("/api/calculator/config", { cache: "no-store" })
+      if (!response.ok) {
+        throw new Error(`Failed to load calculator config: ${response.status}`)
+      }
       const configData = await response.json()
       setConfig(configData)
     } catch (error) {
       console.error("Error fetching calculator config:", error)
-      // Fallback к дефолтным значениям если API недоступен
-      setConfig({
-        services: {
-          accounting: { price: 3000, description: "Бухгалтерский учет" },
-          payroll: { price: 1500, description: "Зарплата и кадры" },
-          legal: { price: 2000, description: "Юридическое сопровождение" },
-          terminal: { price: 1200, description: "Кассовый терминал" },
-        },
-        multipliers: {
-          taxSystems: { usn: 1, osn: 1.5, envd: 0.8, patent: 0.7 },
-          employees: { "0": 1, "1-5": 1.2, "6-15": 1.5, "16-50": 2, "50+": 3 },
-        },
-      })
+      setConfig(null)
     } finally {
       setConfigLoading(false)
     }
   }
 
-  // Используем данные из конфигурации или fallback значения
-  const servicePrices = config?.services || {
-    accounting: { price: 3000, description: "Бухгалтерский учет" },
-    payroll: { price: 1500, description: "Зарплата и кадры" },
-    legal: { price: 2000, description: "Юридическое сопровождение" },
-    terminal: { price: 1200, description: "Кассовый терминал" },
-  }
+  const servicePrices = config?.services ?? null
 
-  const taxSystemMultipliers = config?.multipliers.taxSystems || {
-    usn: 1,
-    osn: 1.5,
-    envd: 0.8,
-    patent: 0.7,
-  }
+  const taxSystemMultipliers = config?.multipliers.taxSystems ?? DEFAULT_TAX_MULTIPLIERS
 
-  const employeeMultipliers = config?.multipliers.employees || {
-    "0": 1,
-    "1-5": 1.2,
-    "6-15": 1.5,
-    "16-50": 2,
-    "50+": 3,
-  }
+  const employeeMultipliers = config?.multipliers.employees ?? DEFAULT_EMPLOYEE_MULTIPLIERS
 
   // Коэффициенты для количества документов в месяц
   const documentMultipliers = {
@@ -112,6 +103,7 @@ export function Calculator() {
 
     // Добавляем стоимость выбранных услуг
     state.services.forEach((service) => {
+      if (!servicePrices) return
       const serviceConfig = servicePrices[service as keyof typeof servicePrices]
       if (serviceConfig) {
         basePrice += serviceConfig.price
@@ -305,7 +297,7 @@ export function Calculator() {
                         className="data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                       />
                       <Label htmlFor="accounting" className="text-sm font-normal text-gray-900 flex-1">
-                        Бухгалтерский учет (от {servicePrices.accounting.price.toLocaleString()} руб/мес)
+                        Бухгалтерский учет ({servicePrices?.accounting?.price ? `от ${servicePrices.accounting.price.toLocaleString()} руб/мес` : PRICE_ON_REQUEST})
                       </Label>
                     </div>
                     <div className="flex items-start space-x-3 p-3 rounded-lg border border-purple-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
@@ -316,7 +308,7 @@ export function Calculator() {
                         className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
                       />
                       <Label htmlFor="payroll" className="text-sm font-normal text-gray-900 flex-1">
-                        Зарплата и кадры (от {servicePrices.payroll.price.toLocaleString()} руб/мес)
+                        Зарплата и кадры ({servicePrices?.payroll?.price ? `от ${servicePrices.payroll.price.toLocaleString()} руб/мес` : PRICE_ON_REQUEST})
                       </Label>
                     </div>
                     <div className="flex items-start space-x-3 p-3 rounded-lg border border-green-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
@@ -327,7 +319,7 @@ export function Calculator() {
                         className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                       />
                       <Label htmlFor="legal" className="text-sm font-normal text-gray-900 flex-1">
-                        Юридическое сопровождение (от {servicePrices.legal.price.toLocaleString()} руб/мес)
+                        Юридическое сопровождение ({servicePrices?.legal?.price ? `от ${servicePrices.legal.price.toLocaleString()} руб/мес` : PRICE_ON_REQUEST})
                       </Label>
                     </div>
                     <div className="flex items-start space-x-3 p-3 rounded-lg border border-orange-200 shadow-sm hover:shadow-md transition-all duration-200 bg-transparent">
@@ -338,7 +330,7 @@ export function Calculator() {
                         className="data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                       />
                                              <Label htmlFor="terminal" className="text-sm font-normal text-gray-900 flex-1">
-                        Кассовый терминал (от {servicePrices.terminal.price.toLocaleString()} руб)
+                        Кассовый терминал ({servicePrices?.terminal?.price ? `от ${servicePrices.terminal.price.toLocaleString()} руб` : PRICE_ON_REQUEST})
                       </Label>
                     </div>
                   </div>

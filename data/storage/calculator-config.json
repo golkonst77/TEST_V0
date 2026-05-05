@@ -1,0 +1,35 @@
+{
+  "services": {
+    "accounting": {
+      "price": 8000,
+      "description": "Бухгалтерский учет"
+    },
+    "payroll": {
+      "price": 3000,
+      "description": "Зарплата и кадры"
+    },
+    "legal": {
+      "price": 5000,
+      "description": "Юридическое сопровождение"
+    },
+    "terminal": {
+      "price": 1850,
+      "description": "Кассовый терминал"
+    }
+  },
+  "multipliers": {
+    "taxSystems": {
+      "usn": 1,
+      "osn": 1.5,
+      "envd": 0.8,
+      "patent": 0.7
+    },
+    "employees": {
+      "0": 1,
+      "1-5": 1.2,
+      "6-15": 1.5,
+      "16-50": 2,
+      "50+": 3
+    }
+  }
+}

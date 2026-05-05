@@ -20,7 +20,7 @@ export function ComparisonSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
-          <Card className="border border-gray-200 shadow-md">
+          <Card className="border border-gray-200 bg-gray-50 shadow-sm opacity-90">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg md:text-xl">Штатный бухгалтер</CardTitle>
             </CardHeader>
@@ -33,7 +33,7 @@ export function ComparisonSection() {
             </CardContent>
           </Card>
 
-          <Card className="border border-gray-200 shadow-md">
+          <Card className="border border-blue-500 bg-blue-50/80 shadow-md ring-1 ring-blue-200">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg md:text-xl">Бухгалтерия на аутсорсе</CardTitle>
             </CardHeader>

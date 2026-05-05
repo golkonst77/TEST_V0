@@ -232,7 +232,7 @@ export const Header = () => {
               className="flex items-center text-gray-700 hover:text-blue-600 transition-colors"
               aria-label="Telegram"
             >
-              <MessageCircle className="h-4 w-4" />
+              <MessageCircle className="h-4 w-4 text-blue-500 hover:text-blue-600 transition-colors" />
             </a>
           </div>
 
@@ -304,7 +304,7 @@ export const Header = () => {
                   className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                   aria-label="Telegram"
                 >
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageCircle className="h-4 w-4 text-blue-500 hover:text-blue-600 transition-colors" />
                 </a>
                 <Button
                   onClick={() => {

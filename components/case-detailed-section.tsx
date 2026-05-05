@@ -42,7 +42,7 @@ export function CaseDetailedSection() {
             </CardContent>
           </Card>
 
-          <Card className="border border-gray-200 shadow-md">
+          <Card className="border border-blue-500 bg-blue-50 shadow-md ring-1 ring-blue-200">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl md:text-2xl">Результат</CardTitle>
             </CardHeader>
