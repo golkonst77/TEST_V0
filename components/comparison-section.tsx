@@ -8,7 +8,7 @@ export function ComparisonSection() {
   const { handleCruiseClick } = useCruiseClick()
 
   return (
-    <section className="py-8 md:py-12 bg-white" id="comparison">
+    <section className="py-8 md:py-12 bg-gradient-to-b from-gray-50 to-white" id="comparison">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8 md:mb-10">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900">
@@ -20,7 +20,7 @@ export function ComparisonSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
-          <Card className="border border-gray-200 bg-gray-50 shadow-sm opacity-90">
+          <Card className="border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg md:text-xl">Штатный бухгалтер</CardTitle>
             </CardHeader>
@@ -33,7 +33,7 @@ export function ComparisonSection() {
             </CardContent>
           </Card>
 
-          <Card className="border border-blue-500 bg-blue-50/80 shadow-md ring-1 ring-blue-200">
+          <Card className="border border-blue-400 bg-blue-50/70 shadow-md ring-1 ring-blue-100 hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg md:text-xl">Бухгалтерия на аутсорсе</CardTitle>
             </CardHeader>

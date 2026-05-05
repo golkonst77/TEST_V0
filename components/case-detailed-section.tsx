@@ -8,7 +8,7 @@ export function CaseDetailedSection() {
   const { handleCruiseClick } = useCruiseClick()
 
   return (
-    <section className="py-12 md:py-16 bg-white" id="case-detailed">
+    <section className="py-12 md:py-16 bg-gradient-to-b from-gray-50 to-white" id="case-detailed">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10 md:mb-12">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 mb-3">
@@ -20,7 +20,7 @@ export function CaseDetailedSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-7 max-w-6xl mx-auto">
-          <Card className="border border-gray-200 shadow-md">
+          <Card className="border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl md:text-2xl">Было</CardTitle>
             </CardHeader>
@@ -31,7 +31,7 @@ export function CaseDetailedSection() {
             </CardContent>
           </Card>
 
-          <Card className="border border-gray-200 shadow-md">
+          <Card className="border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl md:text-2xl">Сделали</CardTitle>
             </CardHeader>
@@ -42,7 +42,7 @@ export function CaseDetailedSection() {
             </CardContent>
           </Card>
 
-          <Card className="border border-blue-500 bg-blue-50 shadow-md ring-1 ring-blue-200">
+          <Card className="border border-blue-400 bg-blue-50/70 shadow-md ring-1 ring-blue-100 hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl md:text-2xl">Результат</CardTitle>
             </CardHeader>

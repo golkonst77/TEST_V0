@@ -43,7 +43,7 @@ export function CasesSection() {
   const { handleCruiseClick } = useCruiseClick()
 
   return (
-    <section className="py-8 md:py-12 bg-white" id="cases">
+    <section className="py-8 md:py-12 bg-gradient-to-b from-gray-50 to-white" id="cases">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 text-center mb-8 md:mb-10">
           С какими задачами к нам приходят
@@ -53,7 +53,7 @@ export function CasesSection() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
           {CASES.map((c) => (
-            <Card key={c.title} className="border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+            <Card key={c.title} className="border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg md:text-xl">{c.title}</CardTitle>
               </CardHeader>
