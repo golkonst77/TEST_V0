@@ -8,7 +8,7 @@ export function ComparisonSection() {
   const { handleCruiseClick } = useCruiseClick()
 
   return (
-    <section className="py-8 md:py-12 bg-gradient-to-b from-gray-50 to-white" id="comparison">
+    <section className="py-16 md:py-20 bg-gradient-to-br from-slate-50 via-blue-50/40 to-violet-50/50" id="comparison">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8 md:mb-10">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900">
@@ -20,29 +20,35 @@ export function ComparisonSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
-          <Card className="border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
+          <Card className="rounded-2xl border border-gray-200 bg-white/80 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all opacity-90">
             <CardHeader className="pb-2">
+              <span className="inline-flex w-fit px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 mb-3">
+                Риски и расходы
+              </span>
               <CardTitle className="text-lg md:text-xl">Штатный бухгалтер</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-gray-700">
-              <p>Зарплата от 60 000 ₽</p>
-              <p>Отпуска и больничные</p>
-              <p>Ошибки — ваша ответственность</p>
-              <p>Ограниченный опыт</p>
-              <p>Зависимость от одного человека</p>
+              <p><span className="text-slate-400 mr-2">−</span>Зарплата от 60 000 ₽</p>
+              <p><span className="text-slate-400 mr-2">−</span>Отпуска и больничные</p>
+              <p><span className="text-slate-400 mr-2">−</span>Ошибки — ваша ответственность</p>
+              <p><span className="text-slate-400 mr-2">−</span>Ограниченный опыт</p>
+              <p><span className="text-slate-400 mr-2">−</span>Зависимость от одного человека</p>
             </CardContent>
           </Card>
 
-          <Card className="border border-blue-400 bg-blue-50/70 shadow-md ring-1 ring-blue-100 hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
+          <Card className="rounded-2xl border border-blue-400 bg-gradient-to-br from-blue-50 to-violet-50 shadow-xl ring-1 ring-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
+              <span className="inline-flex w-fit px-3 py-1 rounded-full text-xs font-medium bg-blue-600 text-white mb-3">
+                Рекомендуем
+              </span>
               <CardTitle className="text-lg md:text-xl">Бухгалтерия на аутсорсе</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-gray-700">
-              <p>Фиксированная стоимость</p>
-              <p>Без отпусков и замен</p>
-              <p>Ответственность по договору</p>
-              <p>Команда специалистов</p>
-              <p>Всегда на связи</p>
+              <p><span className="text-emerald-600 mr-2">✓</span>Фиксированная стоимость</p>
+              <p><span className="text-emerald-600 mr-2">✓</span>Без отпусков и замен</p>
+              <p><span className="text-emerald-600 mr-2">✓</span>Ответственность по договору</p>
+              <p><span className="text-emerald-600 mr-2">✓</span>Команда специалистов</p>
+              <p><span className="text-emerald-600 mr-2">✓</span>Всегда на связи</p>
             </CardContent>
           </Card>
         </div>
@@ -51,7 +57,7 @@ export function ComparisonSection() {
           Аутсорс выгоден, когда нужна не просто бухгалтерия, а ответственность и стабильная поддержка.
         </p>
 
-        <div className="text-center">
+        <div className="text-center mt-8">
           <Button
             size="lg"
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 md:px-8 py-3 md:py-4 rounded-xl"

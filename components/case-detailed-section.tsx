@@ -8,7 +8,7 @@ export function CaseDetailedSection() {
   const { handleCruiseClick } = useCruiseClick()
 
   return (
-    <section className="py-12 md:py-16 bg-gradient-to-b from-gray-50 to-white" id="case-detailed">
+    <section className="py-16 md:py-20 bg-gradient-to-br from-slate-50 via-blue-50/40 to-violet-50/50" id="case-detailed">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10 md:mb-12">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 mb-3">
@@ -19,9 +19,20 @@ export function CaseDetailedSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-7 max-w-6xl mx-auto">
-          <Card className="border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
+        <div className="relative max-w-6xl mx-auto">
+          <div className="hidden md:block pointer-events-none absolute inset-y-0 left-1/3 -translate-x-1/2 z-10">
+            <div className="h-full flex items-center text-2xl text-slate-400">→</div>
+          </div>
+          <div className="hidden md:block pointer-events-none absolute inset-y-0 left-2/3 -translate-x-1/2 z-10">
+            <div className="h-full flex items-center text-2xl text-slate-400">→</div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-7">
+            <Card className="rounded-2xl border border-gray-200 bg-slate-50/80 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-semibold mb-3 bg-slate-200 text-slate-700">
+                1
+              </div>
               <CardTitle className="text-xl md:text-2xl">Было</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 md:space-y-3 text-sm md:text-base text-gray-700">
@@ -31,8 +42,11 @@ export function CaseDetailedSection() {
             </CardContent>
           </Card>
 
-          <Card className="border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
+            <Card className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/80 to-violet-50/70 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-semibold mb-3 bg-blue-100 text-blue-700">
+                2
+              </div>
               <CardTitle className="text-xl md:text-2xl">Сделали</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 md:space-y-3 text-sm md:text-base text-gray-700">
@@ -42,16 +56,20 @@ export function CaseDetailedSection() {
             </CardContent>
           </Card>
 
-          <Card className="border border-blue-400 bg-blue-50/70 shadow-md ring-1 ring-blue-100 hover:shadow-lg transition-shadow hover:-translate-y-1 transition-all">
+            <Card className="rounded-2xl border border-blue-400 bg-gradient-to-br from-blue-50 to-violet-50 shadow-xl ring-1 ring-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xl md:text-2xl">Результат</CardTitle>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-semibold mb-3 bg-blue-600 text-white">
+                3
+              </div>
+              <CardTitle className="text-xl md:text-2xl text-blue-700">Результат</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 md:space-y-3 text-sm md:text-base text-gray-700">
               <p>Без штрафов</p>
               <p>Учет под контролем</p>
               <p>Собственник не тратит время</p>
             </CardContent>
-          </Card>
+            </Card>
+          </div>
         </div>
 
         <div className="text-center mt-6 md:mt-8">
