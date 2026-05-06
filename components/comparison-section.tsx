@@ -20,7 +20,7 @@ export function ComparisonSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
-          <Card className="rounded-2xl border border-gray-200 bg-white/80 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all opacity-90">
+          <Card className="rounded-2xl border border-gray-200 bg-white/80 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all opacity-80 grayscale-[20%]">
             <CardHeader className="pb-2">
               <span className="inline-flex w-fit px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 mb-3">
                 Риски и расходы
@@ -36,7 +36,7 @@ export function ComparisonSection() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl border border-blue-400 bg-gradient-to-br from-blue-50 to-violet-50 shadow-xl ring-1 ring-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all">
+          <Card className="rounded-2xl border border-blue-400 bg-gradient-to-br from-blue-50 to-violet-50 shadow-2xl ring-1 ring-blue-200 scale-[1.02] hover:shadow-2xl hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
               <span className="inline-flex w-fit px-3 py-1 rounded-full text-xs font-medium bg-blue-600 text-white mb-3">
                 Рекомендуем
@@ -55,6 +55,9 @@ export function ComparisonSection() {
 
         <p className="text-center text-xs md:text-sm text-gray-500 max-w-2xl mx-auto mt-8 md:mt-10 mb-4 md:mb-5 leading-relaxed">
           Аутсорс выгоден, когда нужна не просто бухгалтерия, а ответственность и стабильная поддержка.
+        </p>
+        <p className="text-center text-sm md:text-base text-gray-600 max-w-2xl mx-auto mb-5 leading-relaxed">
+          В большинстве случаев это дешевле и безопаснее, чем держать бухгалтера в штате
         </p>
 
         <div className="text-center mt-8">

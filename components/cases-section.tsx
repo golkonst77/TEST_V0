@@ -60,10 +60,14 @@ export function CasesSection() {
           Коротко о ситуациях, с которыми чаще всего обращаются ИП и ООО
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
-          {CASES.map((c) => (
+          {CASES.map((c, i) => (
             <Card
               key={c.title}
-              className="rounded-2xl border border-blue-100 bg-white/90 backdrop-blur-sm shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
+              className={`rounded-2xl backdrop-blur-sm shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all ${
+                i === 0
+                  ? "bg-gradient-to-br from-blue-50 to-violet-50 border border-blue-400 shadow-xl md:scale-[1.02]"
+                  : "bg-white/90 border border-blue-100"
+              }`}
             >
               <CardHeader className="pb-2">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-semibold mb-3 ${c.markerClassName}`}>

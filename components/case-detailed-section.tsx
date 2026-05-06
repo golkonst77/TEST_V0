@@ -21,10 +21,10 @@ export function CaseDetailedSection() {
 
         <div className="relative max-w-6xl mx-auto">
           <div className="hidden md:block pointer-events-none absolute inset-y-0 left-1/3 -translate-x-1/2 z-10">
-            <div className="h-full flex items-center text-2xl text-slate-400">→</div>
+            <div className="h-full flex items-center text-2xl text-slate-500 opacity-70">→</div>
           </div>
           <div className="hidden md:block pointer-events-none absolute inset-y-0 left-2/3 -translate-x-1/2 z-10">
-            <div className="h-full flex items-center text-2xl text-slate-400">→</div>
+            <div className="h-full flex items-center text-2xl text-slate-500 opacity-70">→</div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-7">
@@ -56,12 +56,12 @@ export function CaseDetailedSection() {
             </CardContent>
           </Card>
 
-            <Card className="rounded-2xl border border-blue-400 bg-gradient-to-br from-blue-50 to-violet-50 shadow-xl ring-1 ring-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all">
+            <Card className="rounded-2xl border border-blue-500 bg-gradient-to-br from-blue-100 to-violet-100 shadow-2xl ring-1 ring-blue-200 md:scale-[1.03] hover:shadow-2xl hover:-translate-y-1 transition-all">
             <CardHeader className="pb-2">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-semibold mb-3 bg-blue-600 text-white">
                 3
               </div>
-              <CardTitle className="text-xl md:text-2xl text-blue-700">Результат</CardTitle>
+              <CardTitle className="text-xl md:text-2xl text-blue-700">Что получили в итоге</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 md:space-y-3 text-sm md:text-base text-gray-700">
               <p>Без штрафов</p>
