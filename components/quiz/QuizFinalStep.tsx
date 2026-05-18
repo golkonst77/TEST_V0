@@ -129,6 +129,26 @@ function mapQuizDataToLead(site: SiteKind, quizData: any): NormalizedLeadPayload
 
   // Попытка извлечь некоторые значения из массива answers (если есть)
   const answers = Array.isArray(quizData?.answers) ? quizData.answers : []
+  const businessStepAnswer = answers.find((a: any) => a?.questionId === 1)?.answer
+
+  if (businessStepAnswer && typeof businessStepAnswer === "object" && !Array.isArray(businessStepAnswer)) {
+    const taxSystem = typeof businessStepAnswer.taxSystem === "string" ? businessStepAnswer.taxSystem : undefined
+    if (taxSystem) {
+      if (taxSystem === "usn") lead.tax_regime = "УСН"
+      else if (taxSystem === "osn") lead.tax_regime = "ОСНО"
+      else if (taxSystem === "patent") lead.tax_regime = "Патент"
+      else if (taxSystem === "not-selected") lead.tax_regime = "Нужна консультация по выбору режима"
+    }
+
+    const employees = typeof businessStepAnswer.employees === "string" ? businessStepAnswer.employees : undefined
+    if (employees) {
+      if (employees === "0") lead.employees_count = 0
+      else if (employees === "has") lead.employees_count = 1
+      else if (employees === "plan") lead.employees_count = 1
+      else if (employees === "many") lead.employees_count = 6
+    }
+  }
+
   if (site === "ausn") {
     // В ausn квизе: id=2 выручка (категория), id=3 работники
     const revenueAnswer = answers.find((a: any) => a?.questionId === 2)?.answer
@@ -194,11 +214,11 @@ export const QuizFinalStep = forwardRef<
 
   const texts = useMemo(() => {
     return {
-      title: uiTexts?.title || "Последний шаг!",
+      title: uiTexts?.title || "Получите предварительные рекомендации",
       subtitle:
         uiTexts?.subtitle ||
-        "Оставьте email, и мы отправим персональное коммерческое предложение и подарок.",
-      giftLabel: uiTexts?.giftLabel || "Подарок (чек-лист)",
+        "Оставьте email, и мы отправим подбор бухгалтерского сопровождения под ваш бизнес.",
+      giftLabel: uiTexts?.giftLabel || "Полезные материалы (по желанию)",
     }
   }, [uiTexts])
 
@@ -217,6 +237,7 @@ export const QuizFinalStep = forwardRef<
 
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
+  const [name, setName] = useState("")
   const [consentPd, setConsentPd] = useState(false)
   const [giftPdfFilename, setGiftPdfFilename] = useState(
     defaultGiftPdfFilename || "Kak_vibrat_buh_kompany.pdf"
@@ -244,7 +265,7 @@ export const QuizFinalStep = forwardRef<
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [canSubmit, email, phone, consentPd, giftPdfFilename, site, quizData]
+    [canSubmit, email, phone, consentPd, giftPdfFilename, site, quizData, name]
   )
 
   const handleSubmit = async () => {
@@ -285,6 +306,7 @@ export const QuizFinalStep = forwardRef<
       const utm = readUtmFromStorage()
       const lead = {
         ...mapQuizDataToLead(site, quizData),
+        ...(name.trim() ? { name: name.trim() } : {}),
         ...utm,
       }
 
@@ -343,8 +365,21 @@ export const QuizFinalStep = forwardRef<
 
         <div className="space-y-3">
           <div className="text-left">
+            <Label htmlFor="quiz-final-name" className="text-sm text-gray-700">
+              Как к вам обращаться
+            </Label>
+            <Input
+              id="quiz-final-name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Имя"
+              className="mt-1 text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
+            />
+          </div>
+          <div className="text-left">
             <Label htmlFor="quiz-final-email" className="text-sm text-gray-700">
-              Email
+              Email — если удобно получить материалы письмом
             </Label>
             <Input
               id="quiz-final-email"
@@ -358,7 +393,7 @@ export const QuizFinalStep = forwardRef<
 
           <div className="text-left">
             <Label htmlFor="quiz-final-phone" className="text-sm text-gray-700">
-              Телефон (необязательно)
+              Телефон или мессенджер
             </Label>
             <InputMask mask="+7 (999) 999-99-99" value={phone} onChange={(e) => setPhone(e.target.value)}>
               {(inputProps) => (
@@ -415,6 +450,9 @@ export const QuizFinalStep = forwardRef<
       <div className="shrink-0 bg-white pt-2 pb-2">
         <div className="bg-gray-50 rounded-2xl p-4 text-center mt-2">
           <p className="text-xs font-bold text-gray-900 uppercase tracking-wide">БЕЗОПАСНО И КОНФИДЕНЦИАЛЬНО</p>
+          <p className="text-xs text-gray-600 mt-2 normal-case tracking-normal font-normal">
+            Без спама и навязывания услуг. Свяжемся, чтобы уточнить детали и предложить подходящий вариант.
+          </p>
         </div>
       </div>
     </div>

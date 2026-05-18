@@ -14,162 +14,229 @@ import { ArrowRight, ArrowLeft, X } from "lucide-react"
 import { sendYandexMetric, YANDEX_METRICS_EVENTS } from "@/utils/yandex-metrics"
 import { QuizFinalStep, type QuizFinalStepHandle } from "@/components/quiz/QuizFinalStep"
 
-// CSS анимация для мигающей карточки скидки
-const discountCardAnimation = `
-  @keyframes discountGlow {
-    0%, 100% {
-      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      border: 1px solid #e5e7eb;
-    }
-
-  useEffect(() => {
-    if (!showThanks) return
-    const t = window.setTimeout(() => {
-      window.location.href = '/'
-    }, 3000)
-    return () => window.clearTimeout(t)
-  }, [showThanks])
-    50% {
-      background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
-      box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.2), 0 4px 6px -2px rgba(6, 182, 212, 0.1);
-      border: 1px solid #06b6d4;
-    }
-  }
-  
-  .discount-card-animate {
-    animation: discountGlow 2s ease-in-out infinite;
-  }
-`
-
 interface QuizAnswer {
   questionId: number
-  answer: string | string[]
+  answer: string | string[] | Record<string, string>
+}
+
+type SidebarContext = {
+  title: string
+  shortSummary: string
+  points: [string, string, string]
+  recommendation: string
+  trustLine: string
 }
 
 const questions = [
   {
     id: 1,
-    title: "Какой у вас сейчас статус бизнеса?",
-    type: "single" as const,
-    options: [
-      { value: "planning", label: "Только собираюсь открыть бизнес", discount: 5 },
-      { value: "ip", label: "ИП без сотрудников", discount: 10 },
-      { value: "ooo-usn", label: "ООО на УСН", discount: 15 },
-      { value: "ooo-osn", label: "ООО на ОСНО", discount: 20 },
-    ],
+    title: "Расскажите о вашем бизнесе",
+    subtitle: "Это поможет подобрать подходящий формат бухгалтерского сопровождения",
+    type: "business" as const,
   },
   {
     id: 2,
-    title: "Как вы сейчас ведёте бухгалтерию?",
-    type: "single" as const,
-    options: [
-      { value: "self", label: "Сам(а) через онлайн-сервисы", discount: 5 },
-      { value: "staff", label: "Штатный бухгалтер", discount: 10 },
-      { value: "outsource", label: "Внешняя бухгалтерия (аутсорсинг)", discount: 15 },
-      { value: "chaos", label: "Пока никак — всё в хаосе", discount: 25 },
-    ],
-  },
-  {
-    id: 3,
-    title: "Что вас сейчас беспокоит больше всего?",
+    title: "Что сейчас вызывает сложности?",
     type: "multiple" as const,
     options: [
-      { value: "fines", label: "Боюсь штрафов и проверок", discount: 10 },
-      { value: "taxes", label: "Не понимаю, какие налоги платить", discount: 10 },
-      { value: "time", label: "Хочу сэкономить время и нервы", discount: 10 },
-    ],
-  },
-  {
-    id: 4,
-    title: "Какие услуги вам актуальны?",
-    type: "multiple" as const,
-    options: [
-      { value: "full", label: "Полное бухгалтерское обслуживание", discount: 15 },
-      { value: "registration", label: "Помощь при открытии ИП/ООО", discount: 10 },
-      { value: "optimization", label: "Оптимизация налогообложения", discount: 15 },
+      { value: "self-accounting", label: "Ведём бухгалтерию самостоятельно" },
+      { value: "irregular-accounting", label: "Бухгалтерия ведётся нерегулярно" },
+      { value: "reporting-confidence", label: "Нет уверенности, что отчётность сдана правильно" },
+      { value: "fns-requests", label: "Приходят требования или вопросы от ФНС" },
+      { value: "unstable-accountant", label: "Бухгалтер долго отвечает или пропадает" },
+      { value: "docs-order", label: "Нужен порядок в документах" },
+      { value: "business-launch", label: "Открываем бизнес и хотим сразу сделать правильно" },
+      { value: "handover", label: "Хотим перейти от другого бухгалтера без хаоса" },
+      { value: "responsibility", label: "Нужна понятная стоимость и зона ответственности" },
     ],
   },
 ]
 
-const bonuses = ["Бесплатная консультация", "Дополнительные услуги"]
+function getQuizSidebarContext(answers: QuizAnswer[]): SidebarContext {
+  const base: SidebarContext = {
+    title: "Что вы получите",
+    shortSummary: "Коротко разберем вашу ситуацию и предложим подходящий формат работы.",
+    points: [
+      "Предварительные рекомендации",
+      "Подходящий формат сопровождения",
+      "Консультацию специалиста",
+    ],
+    recommendation: "Ответим на вопросы по учёту и налогам с учетом вашей текущей ситуации.",
+    trustLine: "Для новых клиентов доступны специальные условия на первый месяц сопровождения.",
+  }
+
+  const business = answers.find((a) => a.questionId === 1)?.answer
+  const complexity = answers.find((a) => a.questionId === 2)?.answer
+
+  const companyType =
+    business && typeof business === "object" && !Array.isArray(business)
+      ? String(business.companyType || "")
+      : ""
+  const taxSystem =
+    business && typeof business === "object" && !Array.isArray(business)
+      ? String(business.taxSystem || "")
+      : ""
+  const employees =
+    business && typeof business === "object" && !Array.isArray(business)
+      ? String(business.employees || "")
+      : ""
+
+  const selectedComplexities = Array.isArray(complexity) ? complexity : []
+
+  const hasFns = selectedComplexities.includes("fns-requests")
+  const hasHandover =
+    selectedComplexities.includes("unstable-accountant") || selectedComplexities.includes("handover")
+  const hasIrregular =
+    selectedComplexities.includes("reporting-confidence") || selectedComplexities.includes("irregular-accounting")
+  const hasOooOsno = companyType === "ooo" || taxSystem === "osn"
+  const hasEmployees =
+    employees === "has" || employees === "plan" || employees === "many"
+  const isStartup = companyType === "new"
+
+  if (hasFns) {
+    return {
+      title: "Если есть вопросы от ФНС",
+      shortSummary: "Важно спокойно разобраться в причине требования и подготовить корректный ответ.",
+      points: [
+        "Посмотрим суть требования",
+        "Подскажем, какие документы нужны",
+        "Поможем снизить риск ошибок в ответе",
+      ],
+      recommendation: "Лучше не отвечать формально: сначала нужно понять, что именно хочет налоговая.",
+      trustLine: base.trustLine,
+    }
+  }
+
+  if (hasHandover) {
+    return {
+      title: "Переход без хаоса",
+      shortSummary: "Поможем аккуратно принять дела и понять, что происходит с учётом.",
+      points: [
+        "Проверим, что уже сдано",
+        "Составим список недостающих документов",
+        "Предложим понятный формат перехода",
+      ],
+      recommendation: "При смене бухгалтера важно не просто передать документы, а проверить состояние учёта.",
+      trustLine: base.trustLine,
+    }
+  }
+
+  if (hasIrregular) {
+    return {
+      title: "Если нет уверенности в учёте",
+      shortSummary: "Сначала важно понять текущее состояние отчётности и документов.",
+      points: [
+        "Проверим основные риски",
+        "Подскажем, с чего начать",
+        "Предложим формат наведения порядка",
+      ],
+      recommendation: "Обычно в такой ситуации полезно начать с короткого разбора текущего учёта.",
+      trustLine: base.trustLine,
+    }
+  }
+
+  if (hasOooOsno) {
+    return {
+      title: "Для ООО и ОСНО",
+      shortSummary: "Здесь особенно важны регулярность, документы и контроль сроков.",
+      points: [
+        "Проверим текущую ситуацию",
+        "Подскажем подходящий формат сопровождения",
+        "Обсудим отчётность, НДС и документы",
+      ],
+      recommendation: "Обычно для ООО и ОСНО лучше работает регулярное сопровождение с понятной зоной ответственности.",
+      trustLine: base.trustLine,
+    }
+  }
+
+  if (hasEmployees) {
+    return {
+      title: "Если есть сотрудники",
+      shortSummary: "Кроме бухгалтерии важно правильно вести зарплату, кадры и отчётность по сотрудникам.",
+      points: [
+        "Поможем с зарплатой и кадрами",
+        "Подскажем по отчётности за сотрудников",
+        "Обсудим удобный формат сопровождения",
+      ],
+      recommendation: "При сотрудниках важно заранее выстроить понятный процесс по документам и срокам.",
+      trustLine: base.trustLine,
+    }
+  }
+
+  if (isStartup) {
+    return {
+      title: "Для старта бизнеса",
+      shortSummary: "Поможем выбрать формат работы и не запутаться с налоговым режимом.",
+      points: [
+        "Подскажем подходящий налоговый режим",
+        "Поможем настроить учёт с начала",
+        "Объясним отчётность простым языком",
+      ],
+      recommendation: "Обычно на старте важно сразу выбрать понятную схему учёта и не откладывать документы на потом.",
+      trustLine: base.trustLine,
+    }
+  }
+
+  return base
+}
 
 function QuizSidebar({
   canProceed,
   handleNext,
   handleSubmit,
   isPhoneStep,
-  currentQuestion,
-  calculateDiscount,
-  getBonusCount,
-  bonuses,
   canSubmit,
   isSubmitting,
+  context,
 }: {
   canProceed: boolean,
   handleNext: () => void,
   handleSubmit: () => void,
   isPhoneStep: boolean,
-  currentQuestion: any,
-  calculateDiscount: () => number,
-  getBonusCount: () => number,
-  bonuses: string[],
   canSubmit: boolean,
   isSubmitting: boolean
+  context: SidebarContext
 }) {
   return (
-         <div className="w-80 bg-amber-100 px-6 py-6 border-l border-amber-200 flex flex-col justify-between items-center">
-      <style dangerouslySetInnerHTML={{ __html: discountCardAnimation }} />
-      <div className="w-full flex flex-col items-center">
-        <div className={`rounded-2xl flex flex-col items-center mb-3 min-h-[80px] max-h-[100px] p-2 w-full ${calculateDiscount() > 0 ? 'discount-card-animate' : 'bg-white shadow-md'}`}>
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-100 mb-1">
-            <span className="text-xl text-cyan-500">₽</span>
-          </div>
-          <div className="text-xs text-gray-500 mb-0.5 leading-tight">Ваша скидка</div>
-          <div className="text-lg font-bold text-cyan-500 mb-0.5 leading-tight break-words max-w-[90%] text-center">{calculateDiscount().toLocaleString()} ₽</div>
-          <div className="text-[10px] text-gray-400 leading-tight text-center break-words max-w-[90%] whitespace-pre-line">на первый месяц\nобслуживания</div>
-        </div>
-        <div className="bg-white rounded-2xl shadow-md flex flex-col items-center p-3 w-full">
-          <div className="text-sm font-bold mb-1 text-gray-900">Бонусы в подарок:</div>
-          <div className="flex gap-1 mt-1 justify-center items-center w-full">
-            {bonuses.map((bonus, idx) => (
-                             <div
-                 key={bonus}
-                 className="flex flex-col items-center bg-green-200 rounded-xl shadow min-w-[120px] max-w-[120px] min-h-[100px] max-h-[100px] justify-center p-1"
-                 style={{ flex: '0 0 120px' }}
-               >
-                <span
-                  className={`w-8 h-8 flex items-center justify-center rounded-full text-white text-xl mb-1 ${idx === 0 ? 'bg-orange-500' : 'bg-cyan-500'}`}
-                >
-                  {idx === 0 ? '🎁' : '💡'}
-                </span>
-                <span className="text-xs text-gray-900 text-center font-bold leading-tight">
-                  {bonus}
-                </span>
-              </div>
+         <div className="w-80 bg-slate-100 px-6 py-6 border-l border-slate-200 flex flex-col justify-between items-center">
+      <div className="w-full flex flex-col items-center gap-3">
+        <div className="bg-white rounded-2xl shadow-md p-4 w-full">
+          <div className="text-base font-bold mb-2 text-gray-900">{context.title}</div>
+          <p className="text-sm text-gray-600 mb-3">{context.shortSummary}</p>
+          <div className="space-y-2 text-sm text-gray-700">
+            {context.points.map((point) => (
+              <p key={point}>• {point}</p>
             ))}
           </div>
+          <p className="text-xs text-gray-600 mt-3 leading-relaxed">{context.recommendation}</p>
         </div>
+        <div className="bg-white rounded-2xl shadow-md p-4 w-full">
+          <div className="text-base font-bold mb-3 text-gray-900">Почему нам доверяют</div>
+          <div className="space-y-2 text-sm text-gray-700">
+            <p>• Работаем по договору</p>
+            <p>• Помогаем при требованиях ФНС</p>
+            <p>• Поддержка в мессенджерах</p>
+            <p>• Опыт с ИП и ООО</p>
+          </div>
+        </div>
+        <p className="text-xs text-gray-500 leading-relaxed px-1">
+          {context.trustLine}
+        </p>
         {isPhoneStep ? (
           <Button
             onClick={handleSubmit}
             disabled={!canSubmit || isSubmitting}
-            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-full mt-4 rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 border-2 border-orange-400 hover:border-orange-300 whitespace-normal leading-tight text-center min-h-[96px] py-6"
-            style={{
-              boxShadow:
-                '0 10px 25px rgba(249, 115, 22, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-            }}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white w-full mt-4 rounded-xl font-semibold text-base shadow-lg transition-all duration-300 whitespace-normal leading-tight text-center py-4"
           >
-            {isSubmitting ? "Отправляем..." : "ПОЛУЧИТЬ ПОДАРОК И КУПОН"}
+            {isSubmitting ? "Отправляем..." : "Получить рекомендации"}
           </Button>
         ) : null}
       </div>
-      {/* Кнопка Далее справа для multiple choice */}
-      {(!isPhoneStep && currentQuestion?.type === "multiple") ? (
+      {(!isPhoneStep) ? (
         <Button
           onClick={handleNext}
           disabled={!canProceed}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white w-full mt-4 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+          className="bg-slate-800 hover:bg-slate-900 text-white w-full mt-4 py-3 rounded-xl font-medium shadow-md transition-all"
         >
           Далее
           <ArrowRight className="ml-2 h-5 w-5" />
@@ -179,22 +246,28 @@ function QuizSidebar({
   )
 }
 
-// Определяем тип бизнеса на основе ответов
 const getBusinessType = (answers: QuizAnswer[]): "ip" | "ooo" | "both" => {
-  // Ищем ответ на вопрос о типе бизнеса
   const businessTypeAnswer = answers.find(a => a.questionId === 1)?.answer
-  
-  if (!businessTypeAnswer) return "both"
-  
-  if (Array.isArray(businessTypeAnswer)) {
-    return businessTypeAnswer.includes("ip") && businessTypeAnswer.includes("ooo") 
-      ? "both" 
-      : businessTypeAnswer.includes("ip") 
-        ? "ip" 
-        : "ooo"
+  if (!businessTypeAnswer || typeof businessTypeAnswer !== "object" || Array.isArray(businessTypeAnswer)) return "both"
+
+  const type = businessTypeAnswer.companyType
+  if (type === "ip") return "ip"
+  if (type === "ooo") return "ooo"
+  if (type === "both") return "both"
+  if (type === "new") return "both"
+  return "both"
+}
+
+const getBusinessStepValue = (answers: QuizAnswer[]) => {
+  const answer = answers.find((a) => a.questionId === 1)?.answer
+  if (!answer || typeof answer !== "object" || Array.isArray(answer)) {
+    return { companyType: "", taxSystem: "", employees: "" }
   }
-  
-  return businessTypeAnswer === "ip" ? "ip" : "ooo"
+  return {
+    companyType: String(answer.companyType || ""),
+    taxSystem: String(answer.taxSystem || ""),
+    employees: String(answer.employees || ""),
+  }
 }
 
 export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange?: (open: boolean) => void } = {}) {
@@ -209,26 +282,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
   const totalSteps = questions.length + 1 // +1 for phone step
   const progress = ((currentStep + 1) / totalSteps) * 100
 
-  const calculateDiscount = () => {
-    // Каждый завершенный шаг дает 2500 рублей скидки
-    const completedSteps = answers.length
-    const discountPerStep = 2500
-    const maxDiscount = 10000
-
-    return Math.min(completedSteps * discountPerStep, maxDiscount)
-  }
-
-  const getBonusCount = () => {
-    const completedSteps = answers.length
-
-    // Первый бонус появляется после 2-го ответа
-    // Второй бонус появляется после 4-го ответа
-    if (completedSteps >= 4) return 2
-    if (completedSteps >= 2) return 1
-    return 0
-  }
-
-  const handleAnswer = (questionId: number, answer: string | string[]) => {
+  const handleAnswer = (questionId: number, answer: string | string[] | Record<string, string>) => {
     setAnswers((prev) => {
       const existing = prev.find((a) => a.questionId === questionId)
       if (existing) {
@@ -252,27 +306,31 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
 
   const quizData = {
     answers,
-    discount: calculateDiscount(),
+    discount: 0,
     businessType: getBusinessType(answers),
   }
 
-  const currentQuestion = questions[currentStep]
-  const currentAnswer = answers.find((a) => a.questionId === currentQuestion?.id)
-  const canProceed = Boolean(
-    currentAnswer && (Array.isArray(currentAnswer.answer) ? currentAnswer.answer.length > 0 : currentAnswer.answer)
-  ) || false
-
   const isPhoneStep = currentStep >= questions.length
+  const currentQuestion = questions[currentStep]
+  const businessStepValue = getBusinessStepValue(answers)
+  const sidebarContext = getQuizSidebarContext(answers)
+  const currentAnswer = answers.find((a) => a.questionId === currentQuestion?.id)
+  const canProceed = isPhoneStep
+    ? false
+    : currentQuestion?.type === "business"
+      ? Boolean(businessStepValue.companyType && businessStepValue.taxSystem && businessStepValue.employees)
+      : Boolean(
+          currentAnswer &&
+            (Array.isArray(currentAnswer.answer) ? currentAnswer.answer.length > 0 : currentAnswer.answer)
+        )
 
-  // Auto-advance for single choice questions
   useEffect(() => {
-    if (!isPhoneStep && currentQuestion?.type === "single" && canProceed) {
-      const timer = setTimeout(() => {
-        handleNext()
-      }, 500) // Small delay for better UX
-      return () => clearTimeout(timer)
-    }
-  }, [canProceed, currentQuestion?.type, isPhoneStep])
+    if (!showThanks) return
+    const t = window.setTimeout(() => {
+      window.location.href = "/"
+    }, 3000)
+    return () => window.clearTimeout(t)
+  }, [showThanks])
 
   const handleOptionCheckedChange = (questionId: number, optionValue: string, checked: CheckboxPrimitive.CheckedState) => {
     const currentAnswers = Array.isArray(answers.find(a => a.questionId === questionId)?.answer)
@@ -307,9 +365,9 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
             {/* Header */}
             <div className="bg-white px-12 py-8 text-center border-b border-gray-100">
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Пройдите короткий опрос и получите подарок и бонусы
+                Короткая диагностика для подбора бухгалтерского сопровождения
               </h1>
-              <p className="text-gray-500">Всего 4 вопроса — 2 минуты вашего времени</p>
+              <p className="text-gray-500">3 шага — и мы подготовим предварительные рекомендации</p>
             </div>
 
             <div className="flex flex-1 overflow-hidden">
@@ -335,9 +393,104 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                 {!isPhoneStep ? (
                   <>
                     <div className="flex flex-col px-0 py-0 overflow-y-auto max-h-[60vh]">
-                      <h2 className="text-2xl font-bold mb-6 mt-2 text-gray-900 leading-tight">{currentQuestion.title}</h2>
+                      <h2 className="text-2xl font-bold mb-2 mt-2 text-gray-900 leading-tight">{currentQuestion.title}</h2>
+                      {"subtitle" in currentQuestion && currentQuestion.subtitle ? (
+                        <p className="text-gray-600 mb-6">{currentQuestion.subtitle}</p>
+                      ) : null}
 
-                      {currentQuestion.type === "single" ? (
+                      {currentQuestion.type === "business" ? (
+                        <div className="space-y-5">
+                          <div className="bg-cyan-50 border border-gray-200 rounded-lg p-5">
+                            <Label className="text-sm font-semibold text-gray-900 mb-2 block">Форма бизнеса</Label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {[
+                                { value: "ip", label: "ИП" },
+                                { value: "ooo", label: "ООО" },
+                                { value: "both", label: "ИП и ООО" },
+                                { value: "new", label: "Пока только планирую открыть бизнес" },
+                              ].map((option) => (
+                                <button
+                                  key={option.value}
+                                  type="button"
+                                  onClick={() =>
+                                    handleAnswer(1, {
+                                      ...businessStepValue,
+                                      companyType: option.value,
+                                    })
+                                  }
+                                  className={`text-left border rounded-lg px-4 py-3 transition-colors ${
+                                    businessStepValue.companyType === option.value
+                                      ? "border-cyan-500 bg-white"
+                                      : "border-gray-200 bg-white/70 hover:border-cyan-300"
+                                  }`}
+                                >
+                                  {option.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="bg-cyan-50 border border-gray-200 rounded-lg p-5">
+                            <Label className="text-sm font-semibold text-gray-900 mb-2 block">Система налогообложения</Label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {[
+                                { value: "usn", label: "УСН" },
+                                { value: "osn", label: "ОСНО" },
+                                { value: "patent", label: "Патент" },
+                                { value: "not-selected", label: "Нужна консультация по выбору режима" },
+                              ].map((option) => (
+                                <button
+                                  key={option.value}
+                                  type="button"
+                                  onClick={() =>
+                                    handleAnswer(1, {
+                                      ...businessStepValue,
+                                      taxSystem: option.value,
+                                    })
+                                  }
+                                  className={`text-left border rounded-lg px-4 py-3 transition-colors ${
+                                    businessStepValue.taxSystem === option.value
+                                      ? "border-cyan-500 bg-white"
+                                      : "border-gray-200 bg-white/70 hover:border-cyan-300"
+                                  }`}
+                                >
+                                  {option.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="bg-cyan-50 border border-gray-200 rounded-lg p-5">
+                            <Label className="text-sm font-semibold text-gray-900 mb-2 block">Сотрудники</Label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {[
+                                { value: "0", label: "Нет сотрудников" },
+                                { value: "has", label: "Есть сотрудники" },
+                                { value: "plan", label: "Планируем нанимать" },
+                                { value: "many", label: "Есть команда более 5 человек" },
+                              ].map((option) => (
+                                <button
+                                  key={option.value}
+                                  type="button"
+                                  onClick={() =>
+                                    handleAnswer(1, {
+                                      ...businessStepValue,
+                                      employees: option.value,
+                                    })
+                                  }
+                                  className={`text-left border rounded-lg px-4 py-3 transition-colors ${
+                                    businessStepValue.employees === option.value
+                                      ? "border-cyan-500 bg-white"
+                                      : "border-gray-200 bg-white/70 hover:border-cyan-300"
+                                  }`}
+                                >
+                                  {option.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : currentQuestion.type === "single" ? (
                         <div className="space-y-4">
                           {currentQuestion.options.map((option) => (
                             <div
@@ -404,12 +557,14 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                     </div>
                   </>
                 ) : (
-                  <QuizFinalStep
+                   <QuizFinalStep
                     ref={finalStepRef}
                     site="main"
                     quizData={quizData}
                     uiTexts={{
-                      subtitle: `Оставьте email, и мы отправим персональное коммерческое предложение со скидкой ${calculateDiscount().toLocaleString()} ₽`,
+                      title: "Получите предварительные рекомендации",
+                      subtitle: "Мы посмотрим ответы и предложим подходящий формат бухгалтерского сопровождения.",
+                      giftLabel: "Материалы по теме (по желанию)",
                     }}
                     defaultGiftPdfFilename="Kak_vibrat_buh_kompany.pdf"
                     onStateChange={({ canSubmit, isSubmitting }) => {
@@ -447,12 +602,9 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
                 handleNext={handleNext}
                 handleSubmit={() => finalStepRef.current?.submit()}
                 isPhoneStep={isPhoneStep}
-                currentQuestion={currentQuestion}
-                calculateDiscount={calculateDiscount}
-                getBonusCount={getBonusCount}
-                bonuses={bonuses}
                 canSubmit={canFinalSubmit && !showThanks}
                 isSubmitting={isFinalSubmitting || showThanks}
+                context={sidebarContext}
               />
             </div>
           </div>
@@ -463,7 +615,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
       {/* Модалка благодарности */}
       <Dialog open={showThanks} onOpenChange={setShowThanks}>
         <DialogTitle className="sr-only">Благодарность за заполнение опроса</DialogTitle>
-        <DialogDescription className="sr-only">Коммерческое предложение и подарок отправлены</DialogDescription>
+        <DialogDescription className="sr-only">Рекомендации отправлены</DialogDescription>
         <DialogContent className="max-w-md p-8 text-center flex flex-col items-center justify-center">
           <button
             onClick={() => setShowThanks(false)}
@@ -473,7 +625,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean, onOpenChange
           </button>
           <h2 className="text-2xl font-bold mb-4 text-green-700">Спасибо за уделенное время!</h2>
           <p className="text-base text-gray-700 mb-4">
-            Коммерческое предложение и подарок отправлены на ваш email, проверьте почту
+            Предварительные рекомендации отправлены на ваш email, проверьте почту
           </p>
           <Button onClick={() => setShowThanks(false)} className="mt-2 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl">
             Закрыть

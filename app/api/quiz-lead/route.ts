@@ -273,14 +273,63 @@ function normalizePhone(phone: string): string | null {
   return raw
 }
 
-function getQuestionText(questionId: number): string {
-  const questions: { [key: number]: string } = {
-    1: 'Статус бизнеса',
-    2: 'Ведение бухгалтерии',
-    3: 'Что беспокоит больше всего',
-    4: 'Какие услуги актуальны'
+const COMPANY_TYPE_LABELS: Record<string, string> = {
+  ooo: "ООО",
+  ip: "ИП",
+  both: "ИП и ООО",
+  new: "Планирую открыть бизнес",
+}
+
+const TAX_SYSTEM_LABELS: Record<string, string> = {
+  usn: "УСН",
+  osn: "ОСНО",
+  patent: "Патент",
+  consult: "Нужна консультация по режиму",
+  "not-selected": "Нужна консультация по режиму",
+}
+
+const EMPLOYEES_LABELS: Record<string, string> = {
+  none: "Сотрудников нет",
+  "0": "Сотрудников нет",
+  has: "Есть сотрудники",
+  plan: "Планируем нанимать",
+  many: "Команда более 5 человек",
+}
+
+const COMPLEXITY_LABELS: Record<string, string> = {
+  "self-accounting": "Ведём бухгалтерию самостоятельно",
+  "irregular-accounting": "Бухгалтерия ведётся нерегулярно",
+  "reporting-confidence": "Нет уверенности, что отчётность сдана правильно",
+  "fns-requests": "Приходят требования или вопросы от ФНС",
+  "unstable-accountant": "Бухгалтер долго отвечает или пропадает",
+  "docs-order": "Нужен порядок в документах",
+  "business-launch": "Открываем бизнес и хотим сразу сделать правильно",
+  handover: "Хотим перейти от другого бухгалтера без хаоса",
+  responsibility: "Нужна понятная стоимость и зона ответственности",
+}
+
+function formatLabel(value: unknown, labels: Record<string, string>, fallback = "—"): string {
+  if (typeof value !== "string" || !value.trim()) return fallback
+  return labels[value] || value
+}
+
+function extractQuizSummary(quizData: any) {
+  const answers = Array.isArray(quizData?.answers) ? quizData.answers : []
+  const businessRaw = answers.find((a: any) => a?.questionId === 1)?.answer
+  const complexitiesRaw = answers.find((a: any) => a?.questionId === 2)?.answer
+
+  const business =
+    businessRaw && typeof businessRaw === "object" && !Array.isArray(businessRaw) ? businessRaw : {}
+  const complexities = Array.isArray(complexitiesRaw)
+    ? complexitiesRaw.map((v) => formatLabel(v, COMPLEXITY_LABELS, String(v || "").trim())).filter(Boolean)
+    : []
+
+  return {
+    companyType: formatLabel(business.companyType, COMPANY_TYPE_LABELS),
+    taxSystem: formatLabel(business.taxSystem, TAX_SYSTEM_LABELS),
+    employees: formatLabel(business.employees, EMPLOYEES_LABELS),
+    complexities,
   }
-  return questions[questionId] || `Вопрос ${questionId}`
 }
 
 function shouldExposeDebugDetails(): boolean {
@@ -538,47 +587,15 @@ export async function POST(request: NextRequest) {
       }
     })()
 
+    const quizSummary = extractQuizSummary(quizData)
+
     const sendClientEmail = async () => {
-      const subject = 'Ваш подарок: чек-лист + скидочный купон от ПростоБюро'
+      const subject = 'Новая заявка на подбор бухгалтерского сопровождения'
       const html = `
         <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.5">
-          <h2>Спасибо за интерес к нашей компании! Ваш подарок готов!</h2>
-          <div style="max-width:520px;margin:16px auto;padding:0">
-            <div style="border:2px dashed #06b6d4;border-radius:14px;overflow:hidden;background:#f0f9ff">
-              <div style="padding:16px 18px;background:linear-gradient(90deg,#06b6d4,#22c55e);color:#ffffff">
-                <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:0.95">Скидочный купон</div>
-                <div style="font-size:20px;font-weight:700;margin-top:6px">Скидка ${Number.isFinite(discount) ? discount.toLocaleString('ru-RU') : discount} ₽</div>
-              </div>
-              <div style="padding:16px 18px;background:#ffffff">
-                <div style="font-size:12px;color:#6b7280">Ваш код</div>
-                <div style="font-size:22px;font-weight:800;letter-spacing:1px;margin-top:6px;color:#0f172a">${couponCode}</div>
-                <div style="margin-top:10px;font-size:12px;color:#475569">
-                  Покажите этот код менеджеру — мы проверим его и применим скидку.
-                </div>
-                <div style="margin-top:10px;font-size:12px;color:#0f172a;font-weight:700">
-                  Условие: скидка действует при заключении договора не менее чем на 6 месяцев
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div style="max-width:520px;margin:18px auto 8px auto;padding:0">
-            <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;padding:14px 14px 12px 14px;box-shadow:0 8px 18px rgba(15,23,42,0.06)">
-              <div style="font-size:14px;font-weight:700;color:#0f172a;text-align:center;margin-bottom:10px">Бонусы в подарок:</div>
-              <div style="display:flex;gap:10px;justify-content:center;align-items:stretch">
-                <div style="flex:1;min-width:0;background:#bbf7d0;border-radius:14px;padding:12px 10px;text-align:center">
-                  <div style="width:44px;height:44px;margin:0 auto 8px auto;border-radius:999px;background:#f97316;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700">🎁</div>
-                  <div style="font-size:13px;font-weight:800;color:#0f172a;line-height:1.2">Бесплатная консультация<br/>30 минут</div>
-                </div>
-                <div style="flex:1;min-width:0;background:#bbf7d0;border-radius:14px;padding:12px 10px;text-align:center">
-                  <div style="width:44px;height:44px;margin:0 auto 8px auto;border-radius:999px;background:#06b6d4;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700">💡</div>
-                  <div style="font-size:13px;font-weight:800;color:#0f172a;line-height:1.2">1 месяц<br/>юридического сопровождения<br/>в подарок</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          ${giftPdf ? '<p>PDF чек-лист во вложении к письму.</p>' : '<p>Чек-лист не выбран.</p>'}
+          <h2>Новая заявка с квиза ПростоБюро</h2>
+          <p>Мы получили вашу заявку на подбор бухгалтерского сопровождения.</p>
+          <p>${giftPdf ? 'Материалы по теме приложены к письму.' : 'Если потребуется, отправим материалы по теме отдельно после уточнения задач.'}</p>
           <p>
             Сайт ПростоБюро: <a href="https://prostoburo.com" target="_blank" rel="noopener noreferrer">https://prostoburo.com</a>
           </p>
@@ -592,15 +609,10 @@ export async function POST(request: NextRequest) {
       `.trim()
 
       const text = `
-Спасибо за интерес к нашей компании! Ваш подарок готов!
+Новая заявка с квиза ПростоБюро
 
-Скидочный купон
-Скидка: ${Number.isFinite(discount) ? discount.toLocaleString('ru-RU') : discount} ₽
-Ваш код: ${couponCode}
-Покажите этот код менеджеру — мы проверим его и применим скидку.
-Условие: скидка действует при заключении договора не менее чем на 6 месяцев
-
-${giftPdf ? 'PDF чек-лист во вложении к письму.' : 'Чек-лист не выбран.'}
+Мы получили вашу заявку на подбор бухгалтерского сопровождения.
+${giftPdf ? 'Материалы по теме приложены к письму.' : 'При необходимости отправим материалы после уточнения задач.'}
 
 Email: ${email}
 ${normalizedPhone ? `Телефон: ${normalizedPhone}` : ''}
@@ -639,34 +651,43 @@ ${leadId ? `ID заявки: ${leadId}` : ''}
       const answers = Array.isArray(quizData?.answers) ? quizData.answers : []
 
       const notificationText = `
-Новый клиент завершил квиз!
+Новая заявка на подбор бухгалтерского сопровождения
 
-📧 Email: ${email}
-${normalizedPhone ? `📱 Телефон: ${normalizedPhone}` : '📱 Телефон: не указан'}
-💰 Скидка: ${Number.isFinite(discount) ? discount.toLocaleString('ru-RU') : discount} ₽
-${businessType ? `🏢 Тип бизнеса: ${businessType}` : '🏢 Тип бизнеса: —'}
-🎟️ Купон: ${couponCode}${couponSaved ? '' : ' (НЕ СОХРАНЕН В БД)'}
-${!couponSaved && couponSaveErrorDetails ? `⚠️ Ошибка сохранения купона: ${JSON.stringify(couponSaveErrorDetails)}` : ''}
-🧾 Site: ${site}
-${leadId ? `🆔 Lead ID: ${leadId}` : ''}
+Новая заявка с квиза ПростоБюро
 
-📝 Ответы на вопросы:
-${answers
-  .map((answer: any, index: number) => {
-    const questionText = getQuestionText(answer.questionId)
-    const answerValue = Array.isArray(answer.answer) ? answer.answer.join(', ') : String(answer.answer)
-    return `${index + 1}. ${questionText}: ${answerValue}`
-  })
-  .join('\n')}
+Контакты:
+Имя: ${normalized.lead.name || '—'}
+Телефон / мессенджер: ${normalizedPhone || '—'}
+Email: ${email || '—'}
 
-📎 Данные квиза (JSON):
+Информация о бизнесе:
+Форма бизнеса: ${quizSummary.companyType}
+Налоговый режим: ${quizSummary.taxSystem}
+Сотрудники: ${quizSummary.employees}
+
+Ситуация / сложности:
+${quizSummary.complexities.length > 0 ? quizSummary.complexities.map((item) => `- ${item}`).join('\n') : '- Не указано'}
+
+Комментарий:
+${normalized.lead.city ? `Город: ${normalized.lead.city}` : '—'}
+
+Источник:
+Квиз “Подбор бухгалтерского сопровождения”
+
+Служебные данные:
+Site: ${site}
+Lead ID: ${leadId ?? '—'}
+Служебный код: ${couponCode}
+Сохранение служебного кода: ${couponSaved ? 'успешно' : 'ошибка'}
+${!couponSaved && couponSaveErrorDetails ? `Детали ошибки: ${JSON.stringify(couponSaveErrorDetails)}` : ''}
+
+Данные квиза (JSON):
 ${prettyJson}
 
-⏰ Время: ${new Date().toLocaleString('ru-RU')}
+Время: ${new Date().toLocaleString('ru-RU')}
       `.trim()
 
-      const siteLabel = String(site || '').toUpperCase()
-      const subject = `🎯 [${siteLabel}] Квиз: ${email}${normalizedPhone ? ` — ${normalizedPhone}` : ''} — купон ${couponCode}`
+      const subject = 'Новая заявка на подбор бухгалтерского сопровождения'
       const html = notificationText.replace(/\n/g, '<br>')
 
       const emailResult = await sendEmail({
