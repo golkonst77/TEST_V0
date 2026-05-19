@@ -129,6 +129,8 @@ npm run dev
 
 Приложение будет доступно: **http://localhost:3000**
 
+Подробнее (Windows, CMS storage, `start-dev.bat`): **[docs/DEV_SETUP.md](docs/DEV_SETUP.md)**
+
 ### Первый запуск
 1. Откройте http://localhost:3000
 2. Примите cookie consent

@@ -5,11 +5,38 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и проект следует [Semantic Versioning](https://semver.org/lang/ru/).
 
-## [2.3.10] - 2026-05-19 - Автоматическое обновление версии
+## [2.4.1] - 2026-05-19 - Автоматическое обновление версии
 
 ### Изменено
-- Автоматическое обновление версии до 2.3.10
+- Автоматическое обновление версии до 2.4.1
 - Обновлен package.json
+
+## [2.4.0] - 2026-05-19 - FAQ, onboarding-секция, visibility, dev workflow
+
+### Добавлено
+- Локальная разработка: `docs/DEV_SETUP.md`, `start-dev.bat`, `storage:seed`, `CMS_STORAGE_DIR=./data/storage`
+
+### Изменено
+- FAQ: новый контент и premium accordion (`components/faq.tsx`)
+- Секция «О компании»: onboarding/process в `components/guarantees.tsx` (5 шагов, «Что фиксируем в работе», CTA)
+- Исправлен рендер секции `about` на главной (`app/page.tsx`)
+- Quiz: success modal и polish финального шага
+
+### Исправлено
+- Visibility key `about` снова отображается на главной
+
+## [2.3.11] - 2026-05-19 - Локальная разработка: dev workflow
+
+### Добавлено
+- `docs/DEV_SETUP.md`, `.env.local.example`, `start-dev.bat`, `scripts/seed-local-storage.cjs`
+- npm scripts: `storage:seed`, `dev:setup`, `dev:3001`
+- `CMS_STORAGE_DIR=./data/storage` в `.env.local` для изоляции от production storage
+
+## [2.3.10] - 2026-05-19 - Секция «О компании»: premium B2B onboarding
+
+### Изменено
+- `components/guarantees.tsx`: процесс из 5 шагов, блок «Что фиксируем в работе», спокойная CTA; убраны банки и рекламный banner
+- Встроенный AIDocuments убран из секции (рендерится отдельно через visibility `ai-documents`)
 
 ## [2.3.9] - 2026-05-19 - Автоматическое обновление версии
 

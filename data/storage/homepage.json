@@ -1,0 +1,53 @@
+{
+  "badge": {
+    "text": "Защищаем ваш бизнес",
+    "show": true
+  },
+  "title": {
+    "text": "Бухгалтерия на аутсорсе без",
+    "highlightText": "ошибок и штрафов"
+  },
+  "description": "Берём на себя ведение бухгалтерии, отчётность и налоги.\nСнижаем нагрузку на бизнес и помогаем экономить до 50%.",
+  "button": {
+    "text": "Получить бесплатную консультацию",
+    "show": true
+  },
+  "features": [
+    {
+      "id": "cruise-control",
+      "title": "Круиз-контроль:",
+      "description": "Мы следим за сроками, вы — за ростом",
+      "icon": "CheckCircle",
+      "color": "blue",
+      "show": true
+    },
+    {
+      "id": "communication",
+      "title": "На связи:",
+      "description": "Личный бухгалтер в Telegram или WhatsApp",
+      "icon": "MessageCircle",
+      "color": "green",
+      "show": true
+    },
+    {
+      "id": "no-risks",
+      "title": "Без рисков:",
+      "description": "Защита от штрафов и проверок",
+      "icon": "Shield",
+      "color": "orange",
+      "show": true
+    }
+  ],
+  "background": {
+    "image": "/uploads/hero-bg.webp",
+    "overlay": 0
+  },
+  "layout": {
+    "alignment": "center",
+    "maxWidth": "max-w-4xl",
+    "marginLeft": 0,
+    "marginTop": 0,
+    "marginBottom": 0,
+    "paddingX": 60
+  }
+}

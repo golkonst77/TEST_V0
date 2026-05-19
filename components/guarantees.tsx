@@ -1,146 +1,139 @@
-'use client'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Shield, Clock, Lock, Users, CheckCircle } from "lucide-react"
-import { AIDocuments } from "@/components/ai-documents"
-import { useHomepageSections } from "@/hooks/use-homepage-sections"
-import { useDeviceType } from "@/hooks/use-device-type"
+"use client"
 
-const guarantees = [
+import { Shield, Clock, Lock, Users, ChevronRight } from "lucide-react"
+import { useContactForm } from "@/hooks/use-contact-form"
+
+const PROCESS_STEPS = [
+  {
+    number: "01",
+    title: "Знакомимся с бизнесом",
+    description: "Смотрим налоги, документы и текущие задачи.",
+  },
+  {
+    number: "02",
+    title: "Проверяем учёт",
+    description: "Проверяем риски и текущее состояние учёта.",
+  },
+  {
+    number: "03",
+    title: "Настраиваем передачу документов",
+    description: "Настраиваем обмен документами и нужные сервисы.",
+  },
+  {
+    number: "04",
+    title: "Закрепляем команду",
+    description: "Закрепляем специалиста и рабочие контакты.",
+  },
+  {
+    number: "05",
+    title: "Ведём сопровождение",
+    description: "Ведём отчётность, налоги и бухгалтерские задачи.",
+  },
+] as const
+
+const COMMITMENTS = [
   {
     icon: Shield,
-    title: "Возмещаем штрафы и пени",
-    description: "Возмещаем штрафы и пени, возникшие по нашей вине при ведении учета",
-    highlight: true,
-    bg: "bg-green-100 border-green-500",
-    iconBg: "bg-green-600 text-white",
+    title: "Ответственность по договору",
+    description: "Условия и сроки фиксируем в договоре.",
   },
   {
     icon: Clock,
-    title: "100% своевременная сдача",
-    description: "Гарантируем 100% своевременную сдачу всех отчетов",
-    highlight: false,
-    bg: "bg-blue-100 border-blue-500",
-    iconBg: "bg-blue-600 text-white",
+    title: "Отчётность в срок",
+    description: "Следим за сроками и важными датами.",
   },
   {
     icon: Lock,
-    title: "Строгая конфиденциальность",
-    description: "Строгая конфиденциальность (подписываем NDA)",
-    highlight: false,
-    bg: "bg-purple-100 border-purple-500",
-    iconBg: "bg-purple-600 text-white",
+    title: "Конфиденциальность",
+    description: "Не передаём данные третьим лицам.",
   },
   {
     icon: Users,
-    title: "Персональный бухгалтер",
-    description: "Персональный бухгалтер доступен в рабочие часы",
-    highlight: false,
-    bg: "bg-red-100 border-red-500",
-    iconBg: "bg-red-600 text-white",
+    title: "Закреплённый специалист",
+    description: "У клиента есть закреплённый контакт.",
   },
-]
+] as const
 
 export function Guarantees() {
-  const { isSectionVisible } = useHomepageSections()
-  const deviceType = useDeviceType()
-  const deviceTypeForVisibility = deviceType === "tablet" ? "desktop" : deviceType
-  const aiVisible = isSectionVisible("ai-documents", deviceTypeForVisibility)
-  return (
-    <section id="about" className="py-12 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
-            Бухгалтерия без хаоса и сюрпризов
-          </h2>
-          <div className="flex flex-col items-center gap-2 mb-8">
-            <p className="text-lg md:text-xl text-gray-600 w-full max-w-none md:max-w-3xl leading-relaxed text-center">
-              Переводим с языка чиновников на язык бизнеса. Избавляем от бумажного хаоса, чтобы вы могли творить
-            </p>
-            <div className="flex flex-col items-center gap-2 mt-4 px-4 w-full">
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg px-4 md:px-6 py-3 mb-4 text-left">
-                <span className="text-sm md:text-base font-medium">
-                  Мы являемся авторизованными партнерами Сбербанка, ВТБ, Альфа-Банка
-                </span>
-              </div>
-              <div className="flex flex-col sm:flex-row items-stretch gap-4 md:gap-6 mt-4 w-full max-w-none md:max-w-2xl">
-                {/* Сбербанк */}
-                <Card className="text-center border-2 border-gray-200 bg-white hover:border-green-300 hover:shadow-lg transition-all duration-200 px-4 md:px-6 py-4 w-full sm:flex-1">
-                  <CardHeader className="pb-2">
-                    <div className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-lg mx-auto mb-3 bg-green-600 text-white">
-                      <svg width="24" height="24" className="md:w-8 md:h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                    <CardTitle className="text-sm md:text-base">Сбербанк</CardTitle>
-                  </CardHeader>
-                </Card>
-                {/* ВТБ */}
-                <Card className="text-center border-2 border-gray-200 bg-white hover:border-blue-300 hover:shadow-lg transition-all duration-200 px-4 md:px-6 py-4 w-full sm:flex-1">
-                  <CardHeader className="pb-2">
-                    <div className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-lg mx-auto mb-3 bg-blue-600 text-white">
-                      <svg width="24" height="24" className="md:w-8 md:h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 6h16v2H4V6zm2 4h12v2H6v-2zm2 4h8v2H8v-2z" fill="#fff"/>
-                      </svg>
-                    </div>
-                    <CardTitle className="text-sm md:text-base">ВТБ</CardTitle>
-                  </CardHeader>
-                </Card>
-                {/* Альфа-Банк */}
-                <Card className="text-center border-2 border-gray-200 bg-white hover:border-red-300 hover:shadow-lg transition-all duration-200 px-4 md:px-6 py-4 w-full sm:flex-1">
-                  <CardHeader className="pb-2">
-                    <div className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-lg mx-auto mb-3 bg-red-600 text-white">
-                      <svg width="24" height="24" className="md:w-8 md:h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2l3 9h-6l3-9zm-3 12h6v2H9v-2z" fill="#fff"/>
-                      </svg>
-                    </div>
-                    <CardTitle className="text-sm md:text-base">Альфа-Банк</CardTitle>
-                  </CardHeader>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </div>
+  const { openContactForm } = useContactForm()
 
-        {/* Guarantees */}
-        <div className="mb-12 md:mb-16">
-          <h3 className="text-xl md:text-2xl font-bold text-center mb-6 md:mb-8 px-4">Наши гарантии</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 px-4">
-            {guarantees.map((guarantee, index) => (
-              <Card
-                key={index}
-                className={`text-center border-2 ${guarantee.bg} rounded-xl shadow-lg hover:shadow-xl transition-all duration-200`}
+  return (
+    <section
+      id="about"
+      className="py-16 md:py-24 bg-gradient-to-b from-white via-stone-50/60 to-white border-b border-stone-100/80"
+    >
+      <div className="container mx-auto px-4 max-w-6xl">
+        <header className="text-center mb-12 md:mb-16">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900 mb-5">
+            Берём бухгалтерию под контроль поэтапно
+          </h2>
+          <p className="text-base md:text-lg text-stone-500 leading-relaxed max-w-[720px] mx-auto">
+            Проверяем текущее состояние учёта, настраиваем передачу документов и закрепляем
+            команду сопровождения.
+          </p>
+        </header>
+
+        <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-5 mb-20 md:mb-28 list-none p-0 m-0">
+          {PROCESS_STEPS.map((step) => (
+            <li
+              key={step.number}
+              className="group flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm border-t-2 border-t-indigo-500/40 h-full transition-[transform,box-shadow,border-color] duration-300 ease-out md:hover:-translate-y-0.5 md:hover:border-indigo-200 md:hover:shadow-md"
+            >
+              <div className="flex flex-col flex-1 p-4 md:p-5 pt-4">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-medium mb-4 w-fit">
+                  {step.number}
+                  <ChevronRight
+                    className="hidden xl:block h-3 w-3 opacity-45 shrink-0"
+                    strokeWidth={2.5}
+                    aria-hidden
+                  />
+                </span>
+                <h3 className="text-[15px] md:text-base font-medium text-stone-900 mb-2.5 leading-tight text-balance max-w-[11.5rem] sm:max-w-none">
+                  {step.title}
+                </h3>
+                <p className="text-sm font-normal text-stone-600 leading-[1.55] mt-auto">
+                  {step.description}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <div className="mb-12 md:mb-14">
+          <h3 className="text-xl md:text-2xl font-bold text-center text-stone-900 mb-7 md:mb-9 tracking-tight">
+            Что фиксируем в работе
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+            {COMMITMENTS.map((item) => (
+              <div
+                key={item.title}
+                className="flex flex-col rounded-2xl border border-stone-200/90 bg-gradient-to-br from-white to-indigo-50/30 p-4 md:p-4 shadow-sm shadow-stone-200/40 h-full transition-[box-shadow,border-color] duration-300 ease-out md:hover:border-indigo-100 md:hover:shadow-md md:hover:shadow-indigo-100/25"
               >
-                <CardHeader className="p-4 md:p-6">
-                  <div
-                    className={`flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-lg mx-auto mb-4 ${guarantee.iconBg}`}
-                  >
-                    <guarantee.icon className="h-6 w-6 md:h-7 md:w-7" />
-                  </div>
-                  <CardTitle className="text-base md:text-lg font-semibold">{guarantee.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 md:p-6 pt-0">
-                  <p className="text-sm md:text-base text-gray-600 leading-relaxed">{guarantee.description}</p>
-                </CardContent>
-              </Card>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 mb-3 shrink-0 ring-1 ring-indigo-100/80">
+                  <item.icon className="h-4 w-4" strokeWidth={2} aria-hidden />
+                </div>
+                <h4 className="text-[15px] font-medium text-stone-900 mb-1.5 leading-tight text-balance">
+                  {item.title}
+                </h4>
+                <p className="text-sm font-normal text-stone-600 leading-[1.5]">{item.description}</p>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* AI Documents Section */}
-        {aiVisible && (
-          <div className="mb-16 -mx-4">
-            <AIDocuments />
-          </div>
-        )}
-
-        {/* CTA */}
-        <div className="text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-6 md:p-8 mx-4">
-          <h3 className="text-xl md:text-2xl font-bold mb-4 leading-tight">
-            Ты — создаешь бизнес. Мы — следим, чтобы налоги не съели твою прибыль.
-          </h3>
-          <p className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 font-bold">Расти спокойно.</p>
+        <div className="rounded-3xl border border-indigo-200/70 bg-gradient-to-br from-indigo-50/90 via-white to-violet-50/70 p-6 md:p-8 text-center max-w-3xl mx-auto shadow-sm shadow-indigo-100/30 ring-1 ring-inset ring-white/70">
+          <p className="text-sm md:text-base text-stone-600 leading-relaxed mb-6">
+            Переход можно начать с короткой консультации: посмотрим текущую ситуацию и подскажем,
+            как безопасно передать учёт.
+          </p>
+          <button
+            type="button"
+            onClick={openContactForm}
+            className="inline-flex w-full sm:w-auto items-center justify-center px-7 py-3.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 shadow-sm hover:bg-indigo-700 hover:shadow-md md:hover:-translate-y-px transition-[transform,background-color,box-shadow] duration-300 ease-out"
+          >
+            Обсудить переход
+          </button>
         </div>
-
       </div>
     </section>
   )
