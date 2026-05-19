@@ -1,56 +1,85 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronDown, ChevronUp, Car } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { ChevronDown, HelpCircle } from "lucide-react"
 import { QuizModal } from "@/components/quiz-modal"
 import { useContactForm } from "@/hooks/use-contact-form"
 
 const faqData = [
   {
-    question: "Из чего складывается цена и не будет ли скрытых «опций»?",
-    answer: "Стоимость зависит от «мощности» вашего бизнеса (системы налогообложения, числа операций). Мы предлагаем полную и честную «комплектацию» услуг без скрытых платежей — всё прозрачно по договору: перечень работ и смета без сюрпризов."
+    question: "Сколько стоят бухгалтерские услуги?",
+    answer:
+      "Стоимость зависит от формы бизнеса (ИП или ООО), налогового режима, количества операций и сотрудников. Мы заранее согласуем состав работ и фиксируем цену в договоре — без скрытых доплат. Если нужно, поможем подобрать формат бухгалтерского сопровождения под вашу ситуацию.",
   },
   {
-    question: "Что будет, если вы ошибетесь и я получу штраф?",
-    answer: "Если «ДТП» со штрафом произойдет по нашей вине, мы все оплатим. Считайте, что полное «КАСКО» от финансовых рисков уже включено в стоимость наших услуг и прописано в договоре."
+    question: "Что входит в бухгалтерское сопровождение?",
+    answer:
+      "Обычно это ведение учёта, подготовка и сдача отчётности, контроль сроков, консультации по налогам и документам. Мы берём на себя рутину, чтобы вы не отвлекались от бизнеса. Конкретный перечень работ прописываем в договоре под ваш режим и задачи.",
   },
   {
-    question: "У меня уже есть бухгалтер. Сложно ли будет «пересесть» к вам?",
-    answer: "Мы проведем «техосмотр» ваших дел и переключим все на себя максимально плавно. Вы просто «пересаживаетесь за руль», а наша команда уже всё настроила под капотом."
+    question: "Работаете ли вы с ИП и ООО?",
+    answer:
+      "Да, сопровождаем и индивидуальных предпринимателей, и общества с ограниченной ответственностью. Подбираем учёт и отчётность под выбранную форму и налоговый режим. Если вы только планируете открыть бизнес — подскажем, с чего начать.",
   },
   {
-    question: "Что конкретно входит в вашу работу за эту цену?",
-    answer: "Мы выстраиваем понятный цикл: документы → учёт → отчётность → контроль сроков. Вы управляете бизнесом, а мы держим бухгалтерский контур в порядке и вовремя."
+    question: "Можно ли перейти к вам от другого бухгалтера?",
+    answer:
+      "Да, такие переходы — обычная практика. Мы запрашиваем базу документов и остатки, проверяем, как вёлся учёт, и аккуратно подключаемся к работе. Вам не нужно разбираться в технических деталях — мы проведём передачу дел по шагам.",
   },
   {
-    question: "А что мне нужно будет делать?",
-    answer: "Вы остаетесь главным водителем — вы управляете бизнесом и задаете направление. От вас потребуется только заправлять нас «топливом» (документами), чтобы мы могли двигаться вперед без остановок."
+    question: "Помогаете ли вы при требованиях ФНС?",
+    answer:
+      "Да. Разбираем требование, готовим ответ и комплект документов, объясняем сроки и порядок действий. Если ситуация сложная, подключаем дополнительную проверку учёта. Цель — спокойно пройти коммуникацию с инспекцией без лишней паники.",
   },
   {
-    question: "Вы помогаете легально платить меньше налогов?",
-    answer: "Конечно. Мы не просто едем по навигатору. Наша задача — проложить самый экономичный маршрут, объезжая «пробки» и «платные дороги» закона, чтобы сэкономить ваше «топливо» (деньги)."
+    question: "Как происходит обмен документами?",
+    answer:
+      "Документы принимаем в удобном для вас формате: мессенджер, почта, облако или электронный документооборот. Согласуем простой регламент: что, когда и в каком виде передавать. Так учёт идёт без хаоса и потерянных файлов.",
   },
   {
-    question: "Если у меня срочный вопрос, как быстро вы ответите?",
-    answer: "У вас будет «прямая связь» с вашим личным штурманом-бухгалтером через мессенджер. Мы всегда наготове, чтобы помочь вам сориентироваться на любом, даже самом сложном, участке дороги."
+    question: "Нужно ли приезжать в офис?",
+    answer:
+      "В большинстве случаев — нет. Всё можно решить удалённо: документы, вопросы, согласования. Если нужна личная встреча или подписание бумаг — договоримся о визите. Для аутсорсинга бухгалтерии это стандартный и удобный формат.",
   },
   {
-    question: "Мы будем подписывать договор?",
-    answer: "Обязательно. Договор — это ваша официальная «дорожная карта» и «техпаспорт» нашего сотрудничества. В нем зафиксирован маршрут, гарантии и полная ответственность нашего «сервисного центра»."
+    question: "Кто будет вести нашу бухгалтерию?",
+    answer:
+      "За вами закрепляется ответственный специалист, который знает вашу ситуацию. При необходимости подключаются коллеги по узким вопросам — отчётность, кадры, налоги. Вы всегда понимаете, к кому обратиться, без «перекидывания» между людьми.",
   },
   {
-    question: "Вы работали с таким бизнесом, как у меня?",
-    answer: "У нас большой практический опыт: от небольших ИП до компаний со сложным учётом и кадрами. Мы подстраиваем процессы под отрасль и масштаб, чтобы учёт был стабильным и предсказуемым."
+    question: "Что делать, если бухгалтерия раньше велась с ошибками?",
+    answer:
+      "Сначала делаем диагностику: смотрим отчётность, остатки и риски. Затем предлагаем план — восстановление учёта, корректировки, выравнивание сроков. Дальше выстраиваем нормальное сопровождение, чтобы ошибки не повторялись.",
   },
   {
-    question: "Насколько безопасно доверять вам свои данные?",
-    answer: "Ваша коммерческая информация хранится в надежном «гараже» с тройной системой сигнализации. Конфиденциальность — это как не обсуждать маршрут с посторонними: наше главное правило безопасности."
-  }
-]
+    question: "Можно ли подключиться не с начала года?",
+    answer:
+      "Да, подключиться можно в любой момент. При необходимости восстановим учёт за прошлые периоды и приведём отчётность в порядок. Сроки и объём работ согласуем заранее, чтобы вы понимали план и бюджет.",
+  },
+  {
+    question: "Работаете ли вы с АУСН?",
+    answer:
+      "Да, сопровождаем бизнес на автоматизированной упрощённой системе налогообложения (АУСН). Помогаем с учётом, отчётностью и практическими вопросами по режиму. Если вы только выбираете систему — подскажем, подходит ли АУСН именно вам.",
+  },
+  {
+    question: "Что если у нас пока нет сотрудников?",
+    answer:
+      "Это нормальная ситуация. Настраиваем сопровождение без кадрового блока или с минимальным набором услуг. Когда появятся сотрудники — расширим учёт и отчётность. Формат бухгалтерских услуг подстраивается под этап развития компании.",
+  },
+  {
+    question: "Как быстро вы отвечаете на вопросы?",
+    answer:
+      "Рабочие вопросы обычно закрываем в течение рабочего дня в мессенджере или по почте. Срочные темы по срокам и налогам берём в приоритет. Регламент ответов фиксируем в договорённостях, чтобы вы знали, чего ожидать.",
+  },
+  {
+    question: "Заключаете ли вы договор и несёте ли ответственность?",
+    answer:
+      "Да, работаем по договору на бухгалтерское сопровождение. В нём — перечень услуг, сроки, порядок взаимодействия и зона ответственности сторон. Это основа доверия: понятные правила и защита интересов клиента.",
+  },
+] as const
 
-export function FAQ() {
-  const [openItems, setOpenItems] = useState<number[]>([])
+export function FAQ({ showHeader = true }: { showHeader?: boolean }) {
+  const [openItems, setOpenItems] = useState<number[]>([0])
   const [phone, setPhone] = useState("")
   const [telegramLink, setTelegramLink] = useState("https://t.me/prostoburo")
   const { openContactForm } = useContactForm()
@@ -84,116 +113,126 @@ export function FAQ() {
   }, [])
 
   const toggleItem = (index: number) => {
-    setOpenItems(prev => 
-      prev.includes(index) 
-        ? prev.filter(i => i !== index)
-        : [...prev, index]
+    setOpenItems((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     )
   }
 
   return (
-    <section className="py-16 bg-gradient-to-br from-slate-50 to-blue-50" id="faq">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-8 md:mb-12">
-          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-blue-100 rounded-full mb-4 md:mb-6">
-            <Car className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
+    <section
+      className="py-14 md:py-16 bg-gradient-to-b from-stone-50 via-white to-indigo-50/30"
+      id="faq"
+    >
+      <div className="container mx-auto px-4 max-w-4xl">
+        {showHeader ? (
+        <div className="text-center mb-8 md:mb-10">
+          <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100/80 mb-4">
+            <HelpCircle className="w-6 h-6 md:w-7 md:h-7" strokeWidth={2} />
           </div>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-4 bg-blue-600 px-4 py-2 rounded-lg inline-block">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900 mb-3">
             Ответы на важные вопросы
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 w-full max-w-none md:max-w-3xl mx-auto leading-relaxed">
-            Прояснили ключевые моменты, чтобы вы спокойно приняли решение
+          <p className="text-base md:text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
+            Ответы, которые чаще всего задают перед переходом на сопровождение — по делу и без лишней бюрократии
           </p>
         </div>
+        ) : null}
 
-        <div className="w-full max-w-none md:max-w-4xl mx-auto">
-          <div className="space-y-3 md:space-y-4">
-            {faqData.map((item, index) => (
-              <Card 
-                key={index} 
-                className="border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-xl"
+        <div className="space-y-2 md:space-y-2.5">
+          {faqData.map((item, index) => {
+            const isOpen = openItems.includes(index)
+            return (
+              <div
+                key={item.question}
+                className={`group rounded-2xl border bg-white transition-all duration-300 ease-out motion-reduce:transition-none ${
+                  isOpen
+                    ? "border-indigo-200/90 bg-indigo-50/25 shadow-md shadow-indigo-500/[0.07] ring-1 ring-indigo-200/50"
+                    : "border-stone-200/80 shadow-sm hover:border-indigo-200/70 hover:bg-stone-50/40 hover:shadow-md hover:shadow-indigo-500/[0.05]"
+                }`}
               >
-                <CardContent className="p-0">
-                  <button
-                    onClick={() => toggleItem(index)}
-                    className="w-full text-left p-4 md:p-6 flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    <span className="text-base md:text-lg font-medium text-gray-900 pr-4 leading-relaxed">
-                      {item.question}
-                    </span>
-                    <div className="flex-shrink-0">
-                      {openItems.includes(index) ? (
-                        <ChevronUp className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-                      )}
-                    </div>
-                  </button>
-                  
-                  {openItems.includes(index) && (
-                    <div className="px-4 md:px-6 pb-4 md:pb-6">
-                      <div className="border-t border-gray-100 pt-4">
-                        <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                <button
+                  type="button"
+                  onClick={() => toggleItem(index)}
+                  className={`w-full text-left px-4 md:px-5 py-3 md:py-3.5 flex items-center justify-between gap-3 rounded-2xl transition-colors duration-200 ${
+                    isOpen ? "bg-indigo-50/20" : "hover:bg-stone-50/60"
+                  }`}
+                  aria-expanded={isOpen}
+                >
+                  <span className="text-base md:text-lg font-semibold text-stone-900 leading-snug pr-2">
+                    {item.question}
+                  </span>
+                  <ChevronDown
+                    className={`w-[18px] h-[18px] shrink-0 transition-all duration-300 ease-out ${
+                      isOpen
+                        ? "rotate-180 text-indigo-600 opacity-100"
+                        : "rotate-0 text-stone-400 opacity-60 group-hover:opacity-85 group-hover:text-stone-500"
+                    }`}
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                </button>
+
+                <div
+                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${
+                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
+                  aria-hidden={!isOpen}
+                >
+                  <div className="overflow-hidden">
+                    <div className="px-4 md:px-5 pb-3 md:pb-3.5 pt-0">
+                      <div className="border-t border-stone-200/70 pt-3">
+                        <p className="text-sm md:text-base text-stone-600 leading-relaxed">
                           {item.answer}
                         </p>
                       </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
 
-        {/* CTA секция */}
-        <div className="mt-12 md:mt-16 text-center">
-          <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 w-full max-w-none md:max-w-3xl mx-auto border border-gray-100">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-              Остались вопросы?
-            </h3>
-            <p className="text-gray-600 mb-6 text-sm md:text-base">
-              Получите персональную консультацию от наших экспертов
+        <div className="mt-9 md:mt-11 text-center">
+          <div className="rounded-2xl border border-stone-200/80 bg-white p-5 md:p-7 shadow-sm ring-1 ring-inset ring-white/90">
+            <h3 className="text-xl md:text-2xl font-bold text-stone-900 mb-2">Остались вопросы?</h3>
+            <p className="text-stone-600 mb-5 text-sm md:text-base max-w-md mx-auto">
+              Оставьте заявку или напишите нам — разберём вашу ситуацию и подскажем формат сопровождения
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center">
-              {phone ? (
-                <a 
-                  href={`tel:${phone.replace(/\s/g, "")}`}
-                  className="inline-flex items-center justify-center px-6 md:px-8 py-5 md:py-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm md:text-base w-full sm:w-[320px] whitespace-nowrap"
+            <div className="mx-auto max-w-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 p-1.5 rounded-xl bg-stone-50/90 border border-stone-200/80">
+                {phone ? (
+                  <a
+                    href={`tel:${phone.replace(/\s/g, "")}`}
+                    className="inline-flex h-10 items-center justify-center shrink-0 px-4 rounded-lg border border-stone-200/90 bg-white text-stone-700 font-medium text-sm hover:bg-stone-50 hover:border-stone-300/80 transition-all duration-200"
+                  >
+                    {phone}
+                  </a>
+                ) : null}
+
+                <button
+                  type="button"
+                  onClick={openContactForm}
+                  className="inline-flex h-10 flex-1 items-center justify-center px-5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-sm shadow-indigo-500/20 hover:shadow-md hover:shadow-indigo-500/25 transition-all duration-200"
                 >
-                  <svg className="w-4 h-4 md:w-5 md:h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-                  </svg>
-                  {phone}
+                  Получить консультацию
+                </button>
+
+                <a
+                  href={telegramLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-10 items-center justify-center shrink-0 px-4 rounded-lg text-sm font-medium text-stone-600 hover:text-stone-800 hover:bg-white/80 transition-colors duration-200"
+                >
+                  Telegram
                 </a>
-              ) : null}
-              
-              <button 
-                onClick={openContactForm}
-                className="inline-flex items-center justify-center px-6 md:px-8 py-5 md:py-6 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-colors font-medium text-sm md:text-base w-full sm:w-[320px]"
-              >
-                <svg className="w-4 h-4 md:w-5 md:h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                </svg>
-                Получить консультацию
-              </button>
-              
-              <a 
-                href={telegramLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-6 md:px-8 py-5 md:py-6 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm md:text-base w-full sm:w-[320px]"
-              >
-                <svg className="w-4 h-4 md:w-5 md:h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.13-.31-1.09-.65.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.97-1.36.08 0 .27.02.39.12.1.08.15.19.15.27-.01.06-.01.13-.02.2z"/>
-                </svg>
-                Написать в Telegram
-              </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      
+
       <QuizModal />
     </section>
   )
-} 
+}
