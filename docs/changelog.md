@@ -5,6 +5,21 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и проект следует [Semantic Versioning](https://semver.org/lang/ru/).
 
+## [2.4.4] - 2026-05-19 - Автоматическое обновление версии
+
+### Изменено
+- Автоматическое обновление версии до 2.4.4
+- Обновлен package.json
+
+## [2.4.4] - 2026-05-19 - Упрощение низа страницы
+
+### Удалено
+- Legacy feature-strip в контактах: «Быстрый ответ», «Удобное общение», «Гибкий график» (цветные кружки, border-t)
+
+### Изменено
+- `components/contacts.tsx`: секция контактов заканчивается сеткой карта/контакты без промежуточной полосы перед footer
+- Footer (`components/footer.tsx`) без изменений — minimal layout сохранён
+
 ## [2.4.3] - 2026-05-19 - Автоматическое обновление версии
 
 ### Изменено
@@ -26,6 +41,8 @@
 - Pricing: subtle premium-акцент на ценах (gradient + soft glow); semantic cleanup bullets
 - FAQ: группы по смыслу, semantic cleanup вопросов, accordion polish
 - FAQ final polish: tighter spacing, lighter group headers, subtle open/hover states, simplified CTA (2 buttons)
+- Footer: minimal premium layout (brand + contacts + legal), без дублирующей навигации
+- Settings: телефон из Supabase / `data/storage/site-settings.json` (+7 953 330-17-77), убран placeholder +7 999 000-00-00
 
 ## [2.4.0] - 2026-05-19 - FAQ, onboarding-секция, visibility, dev workflow
 

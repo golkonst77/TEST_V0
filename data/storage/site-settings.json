@@ -1,0 +1,22 @@
+{
+  "sitename": "Просто Бюро",
+  "sitedescription": "Бухгалтерские услуги",
+  "phone": "+7 953 330-17-77",
+  "email": "urist40@gmail.com",
+  "address": "Калуга, Дзержинского 37, офис 20",
+  "telegram": "@prostoburo",
+  "vk": "vk.com/buh_urist",
+  "maintenance_mode": false,
+  "analytics_enabled": true,
+  "quiz_mode": "custom",
+  "quiz_url": "#popup:marquiz_685a59bddc273b0019e372cd",
+  "working_hours": {
+    "monday_friday": "9:00 - 18:00",
+    "saturday": "По согласованию",
+    "sunday": "Выходной"
+  },
+  "logo_type": "image",
+  "logo_image_url": "/uploads/1764575675268_LOGO.jpg",
+  "logo_text": "Просто Бюро",
+  "logo_show": true
+}

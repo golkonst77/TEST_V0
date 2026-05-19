@@ -28,6 +28,10 @@ const seeds = [
     target: "pricing-admin.json",
     sources: ["data/storage/pricing-admin.json"],
   },
+  {
+    target: "site-settings.json",
+    sources: ["data/storage/site-settings.json"],
+  },
 ]
 
 function resolveSource(sources) {

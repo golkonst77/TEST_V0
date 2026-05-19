@@ -233,38 +233,6 @@ export function Contacts() {
           </div>
         </div>
 
-        {/* Дополнительная информация */}
-        <div className="mt-12 md:mt-16 pt-6 md:pt-8 border-t border-gray-700">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-center px-4">
-            <div>
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                <Phone className="w-5 h-5 md:w-6 md:h-6" />
-              </div>
-              <h3 className="font-semibold mb-2 text-sm md:text-base">Быстрый ответ</h3>
-              <p className="text-gray-400 text-xs md:text-sm">
-                Отвечаем на звонки и сообщения в течение 15 минут в рабочее время
-              </p>
-            </div>
-            <div>
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                <MessageCircle className="w-5 h-5 md:w-6 md:h-6" />
-              </div>
-              <h3 className="font-semibold mb-2 text-sm md:text-base">Удобное общение</h3>
-              <p className="text-gray-400 text-xs md:text-sm">
-                Предпочитаете мессенджеры? Мы активно используем Telegram и WhatsApp
-              </p>
-            </div>
-            <div>
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                <Clock className="w-5 h-5 md:w-6 md:h-6" />
-              </div>
-              <h3 className="font-semibold mb-2 text-sm md:text-base">Гибкий график</h3>
-              <p className="text-gray-400 text-xs md:text-sm">
-                Можем встретиться в удобное для вас время, включая выходные
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   )

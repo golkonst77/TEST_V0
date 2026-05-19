@@ -1,4 +1,8 @@
 import { createClient } from "@supabase/supabase-js"
+import { existsSync } from "fs"
+import { readCmsJson, getCmsStoragePath } from "./cms-storage"
+
+const DEFAULT_PHONE = "+7 953 330-17-77"
 
 // Next.js автоматически загружает .env файлы, явный вызов не нужен
 
@@ -52,7 +56,7 @@ if (supabaseUrl && supabaseKey) {
 let localSettings: SiteSettings = {
   siteName: "Просто Бюро",
   siteDescription: "Бухгалтерские услуги",
-  phone: "+7 999 000-00-00",
+  phone: DEFAULT_PHONE,
   email: "urist40@gmail.com",
   address: "Калуга, Дзержинского 37, офис 20",
   telegram: "@prostoburo",
@@ -77,7 +81,7 @@ function mapDatabaseToSettings(dbData: any): SiteSettings {
   return {
     siteName: dbData.sitename ?? dbData.site_name ?? "Просто Бюро",
     siteDescription: dbData.sitedescription ?? dbData.site_description ?? "Бухгалтерские услуги",
-    phone: dbData.phone ?? "+7 999 000-00-00",
+    phone: dbData.phone ?? DEFAULT_PHONE,
     email: dbData.email ?? "urist40@gmail.com",
     address: dbData.address ?? "Калуга, Дзержинского 37, офис 20",
     telegram: dbData.telegram ?? "@prostoburo",
@@ -98,21 +102,39 @@ function mapDatabaseToSettings(dbData: any): SiteSettings {
   }
 }
 
-export async function getSettings(): Promise<any> {
-  // Если Supabase не настроен, сразу возвращаем локальные настройки
-  if (!supabase) {
-    console.warn("Supabase not configured - returning local settings")
-    return {
-      ...localSettings,
-      header: {
-        logo: {
-          show: localSettings.logoShow !== undefined ? localSettings.logoShow : true,
-          type: localSettings.logoType || "text",
-          imageUrl: localSettings.logoImageUrl || "",
-          text: localSettings.logoText || localSettings.siteName || "ПростоБюро"
-        }
-      }
+function withHeaderLogo(settings: SiteSettings) {
+  return {
+    ...settings,
+    header: {
+      logo: {
+        show: settings.logoShow !== undefined ? settings.logoShow : true,
+        type: settings.logoType || "text",
+        imageUrl: settings.logoImageUrl || "",
+        text: settings.logoText || settings.siteName || "ПростоБюро",
+      },
+    },
+  }
+}
+
+async function getSettingsFallback() {
+  try {
+    const path = getCmsStoragePath("site-settings.json")
+    if (existsSync(path)) {
+      const data = await readCmsJson<Record<string, unknown>>("site-settings.json")
+      console.log("Settings loaded from CMS storage:", path)
+      return withHeaderLogo(mapDatabaseToSettings(data))
     }
+  } catch (error) {
+    console.warn("CMS settings fallback failed:", error)
+  }
+  console.warn("Using in-memory settings fallback")
+  return withHeaderLogo(localSettings)
+}
+
+export async function getSettings(): Promise<any> {
+  if (!supabase) {
+    console.warn("Supabase not configured - using stored settings fallback")
+    return getSettingsFallback()
   }
 
   try {
@@ -127,70 +149,24 @@ export async function getSettings(): Promise<any> {
       console.error("Error fetching settings from Supabase:", error);
       
       // Если таблица не существует, возвращаем локальные настройки
-      if (error.code === '42P01') {
-        console.log("Settings table doesn't exist, returning local settings");
-        return {
-          ...localSettings,
-          header: {
-            logo: {
-              show: localSettings.logoShow !== undefined ? localSettings.logoShow : true,
-              type: localSettings.logoType || "text",
-              imageUrl: localSettings.logoImageUrl || "",
-              text: localSettings.logoText || localSettings.siteName || "ПростоБюро"
-            }
-          }
-        };
+      if (error.code === "42P01") {
+        console.log("Settings table doesn't exist, using stored settings fallback")
       }
-      
-      return {
-        ...localSettings,
-        header: {
-          logo: {
-            show: localSettings.logoShow !== undefined ? localSettings.logoShow : true,
-            type: localSettings.logoType || "text",
-            imageUrl: localSettings.logoImageUrl || "",
-            text: localSettings.logoText || localSettings.siteName || "ПростоБюро"
-          }
-        }
-      };
+      return getSettingsFallback()
     }
-    
-    console.log("Settings fetched successfully from Supabase:", data);
-    const settings = mapDatabaseToSettings(data);
-    // Возвращаем с header.logo для совместимости с компонентом Logo
-    return {
-      ...settings,
-      header: {
-        logo: {
-          show: settings.logoShow !== undefined ? settings.logoShow : true,
-          type: settings.logoType || "text",
-          imageUrl: settings.logoImageUrl || "",
-          text: settings.logoText || settings.siteName || "ПростоБюро"
-        }
-      }
-    }
+
+    console.log("Settings fetched successfully from Supabase:", data)
+    return withHeaderLogo(mapDatabaseToSettings(data))
   } catch (error) {
-    console.error("Exception while fetching settings:", error);
-    // Добавляем детальную информацию об ошибке для отладки
+    console.error("Exception while fetching settings:", error)
     if (error instanceof Error) {
       console.error("Error details:", {
         message: error.message,
         name: error.name,
-        stack: error.stack
-      });
+        stack: error.stack,
+      })
     }
-    // Возвращаем локальные настройки с правильной структурой
-    return {
-      ...localSettings,
-      header: {
-        logo: {
-          show: localSettings.logoShow !== undefined ? localSettings.logoShow : true,
-          type: localSettings.logoType || "text",
-          imageUrl: localSettings.logoImageUrl || "",
-          text: localSettings.logoText || localSettings.siteName || "ПростоБюро"
-        }
-      }
-    };
+    return getSettingsFallback()
   }
 }
 
