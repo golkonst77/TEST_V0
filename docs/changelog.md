@@ -5,6 +5,12 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и проект следует [Semantic Versioning](https://semver.org/lang/ru/).
 
+## [2.4.3] - 2026-05-19 - Автоматическое обновление версии
+
+### Изменено
+- Автоматическое обновление версии до 2.4.3
+- Обновлен package.json
+
 ## [2.4.2] - 2026-05-19 - Автоматическое обновление версии
 
 ### Изменено
@@ -18,6 +24,8 @@
 - Обновлен package.json
 - Pricing на главной: по 3 ключевых пункта на тариф (упрощённые bullets, `slice(0, 3)`)
 - Pricing: subtle premium-акцент на ценах (gradient + soft glow); semantic cleanup bullets
+- FAQ: группы по смыслу, semantic cleanup вопросов, accordion polish
+- FAQ final polish: tighter spacing, lighter group headers, subtle open/hover states, simplified CTA (2 buttons)
 
 ## [2.4.0] - 2026-05-19 - FAQ, onboarding-секция, visibility, dev workflow
 
