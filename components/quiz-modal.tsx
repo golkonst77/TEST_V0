@@ -27,6 +27,7 @@ import {
   RefreshCw,
   BadgeCheck,
   Sparkles,
+  CheckCircle2,
 } from "lucide-react"
 import { sendYandexMetric, YANDEX_METRICS_EVENTS } from "@/utils/yandex-metrics"
 import { QuizFinalStep, type QuizFinalStepHandle } from "@/components/quiz/QuizFinalStep"
@@ -53,6 +54,7 @@ import {
   quizSidebarGlowClass,
   quizSidebarShellClass,
   quizStep2PanelClass,
+  quizCtaEnabledClass,
 } from "@/components/quiz/quiz-design-tokens"
 
 const SIDEBAR_POINT_ICONS = [BadgeCheck, Sparkles, ShieldCheck] as const
@@ -734,25 +736,38 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean; onOpenChange
       </Dialog>
 
       <Dialog open={showThanks} onOpenChange={setShowThanks}>
-        <DialogTitle className="sr-only">Благодарность за заполнение опроса</DialogTitle>
-        <DialogDescription className="sr-only">Рекомендации отправлены</DialogDescription>
-        <DialogContent className="max-w-md p-8 text-center flex flex-col items-center justify-center">
-          <button
-            onClick={() => setShowThanks(false)}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-          >
-            <X className="w-6 h-6" />
-          </button>
-          <h2 className="text-2xl font-bold mb-4 text-green-700">Спасибо за уделенное время!</h2>
-          <p className="text-base text-gray-700 mb-4">
-            Предварительные рекомендации отправлены на ваш email, проверьте почту
-          </p>
-          <Button
-            onClick={() => setShowThanks(false)}
-            className="mt-2 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl"
-          >
-            Закрыть
-          </Button>
+        <DialogTitle className="sr-only">Спасибо за заявку</DialogTitle>
+        <DialogDescription className="sr-only">
+          Мы получили ваши ответы и свяжемся с вами в ближайшее время
+        </DialogDescription>
+        <DialogContent className="max-w-md gap-0 border-stone-200/80 bg-gradient-to-br from-white via-white to-indigo-50/40 p-0 overflow-hidden rounded-2xl shadow-2xl shadow-stone-900/12">
+          <div className="relative px-6 py-8 md:px-8 md:py-9 text-center">
+            <button
+              type="button"
+              onClick={() => setShowThanks(false)}
+              className="absolute top-4 right-4 rounded-lg p-1.5 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700"
+              aria-label="Закрыть"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <span className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 shadow-sm ring-1 ring-indigo-100/80">
+              <CheckCircle2 className="h-7 w-7 text-indigo-600" strokeWidth={2} />
+            </span>
+            <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight mb-3">
+              Спасибо за заявку!
+            </h2>
+            <p className="text-sm md:text-base text-stone-600 leading-relaxed mb-6 max-w-sm mx-auto">
+              Мы получили ваши ответы и в ближайшее время свяжемся с вами, чтобы обсудить вашу ситуацию и
+              подготовить рекомендации.
+            </p>
+            <Button
+              type="button"
+              onClick={() => setShowThanks(false)}
+              className={`${quizCtaEnabledClass} w-full sm:w-auto min-w-[10rem] px-8`}
+            >
+              <span className="relative z-10">Закрыть</span>
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </>

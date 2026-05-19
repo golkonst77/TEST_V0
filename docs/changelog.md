@@ -5,11 +5,17 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и проект следует [Semantic Versioning](https://semver.org/lang/ru/).
 
-## [2.3.6] - 2026-05-19 - Автоматическое обновление версии
+## [2.3.7] - 2026-05-19 - Автоматическое обновление версии
 
 ### Изменено
-- Автоматическое обновление версии до 2.3.6
+- Автоматическое обновление версии до 2.3.7
 - Обновлен package.json
+
+## [2.3.6] - 2026-05-19 - Quiz success modal refresh
+
+### Изменено
+- Success modal после квиза: универсальный текст без email, premium UI в стиле quiz (indigo CTA, CheckCircle)
+- Версия проекта: 2.3.6
 
 ## [2.3.5] - 2026-05-19 - Quiz UX: materials dropdown & trust badges
 
