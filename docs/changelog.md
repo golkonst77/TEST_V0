@@ -5,11 +5,19 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и проект следует [Semantic Versioning](https://semver.org/lang/ru/).
 
+## [2.4.2] - 2026-05-19 - Автоматическое обновление версии
+
+### Изменено
+- Автоматическое обновление версии до 2.4.2
+- Обновлен package.json
+
 ## [2.4.1] - 2026-05-19 - Автоматическое обновление версии
 
 ### Изменено
 - Автоматическое обновление версии до 2.4.1
 - Обновлен package.json
+- Pricing на главной: по 3 ключевых пункта на тариф (упрощённые bullets, `slice(0, 3)`)
+- Pricing: subtle premium-акцент на ценах (gradient + soft glow); semantic cleanup bullets
 
 ## [2.4.0] - 2026-05-19 - FAQ, onboarding-секция, visibility, dev workflow
 
@@ -18,6 +26,7 @@
 
 ### Изменено
 - FAQ: новый контент и premium accordion (`components/faq.tsx`)
+- Pricing на главной: premium visual polish (`components/pricing-section.tsx`) — спокойные цены, карточки, кнопки
 - Секция «О компании»: onboarding/process в `components/guarantees.tsx` (5 шагов, «Что фиксируем в работе», CTA)
 - Исправлен рендер секции `about` на главной (`app/page.tsx`)
 - Quiz: success modal и polish финального шага

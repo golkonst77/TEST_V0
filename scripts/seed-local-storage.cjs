@@ -24,6 +24,10 @@ const seeds = [
     target: "header-config.json",
     sources: ["data/storage/header-config.json"],
   },
+  {
+    target: "pricing-admin.json",
+    sources: ["data/storage/pricing-admin.json"],
+  },
 ]
 
 function resolveSource(sources) {

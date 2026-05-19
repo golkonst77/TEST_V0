@@ -3,9 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Check, Star, ArrowRight } from "lucide-react"
+import { Check, ArrowRight } from "lucide-react"
 import { QuizModal } from "@/components/quiz-modal"
-import { useCruiseClick } from "@/hooks/use-cruise-click"
 import { useEffect, useState } from "react"
 
 interface PricingPlan {
@@ -55,25 +54,69 @@ function audienceLineForPlan(plan: PricingPlan, index: number): string {
 function strengthenFeatureText(text: string): string {
   const t = text.trim()
   const lower = t.toLowerCase()
-  if (lower.includes("ведение учета в 1с") || lower.includes("ведение учёта в 1с")) {
-    return "Ведение учета в 1С"
-  }
-  if (lower.includes("кудир")) {
-    return "Ведение КУДиР"
-  }
-  if (lower.includes("сдача всех отчетов") || lower.includes("сдача всех отчётов")) {
-    return "Сдача всех отчетов"
-  }
+  if (lower.includes("кудир")) return "Ведение КУДиР"
   if (lower.includes("сдача отчетности в фнс") || lower.includes("сдача отчётности в фнс")) {
     return "Сдача отчётности в ФНС"
   }
-  if (lower.includes("расчет и подача деклараций") || lower.includes("расчёт и подача деклараций")) {
-    return "Расчёт и подача деклараций"
+  if (lower.includes("сдача всех отчетов") || lower.includes("сдача всех отчётов")) {
+    return "Отчётность в ФНС"
+  }
+  if (lower.includes("отчётность в фнс") || lower.includes("отчетность в фнс")) {
+    return "Отчётность в ФНС"
+  }
+  if (lower.includes("расчёт взносов ип") || lower.includes("расчет взносов ип")) {
+    return "Учёт взносов и регулярных платежей"
+  }
+  if (lower.includes("учёт взносов") || lower.includes("учет взносов")) {
+    return "Учёт взносов и регулярных платежей"
+  }
+  if (
+    lower.includes("кадрового учёта") ||
+    lower.includes("кадрового учета") ||
+    (lower.includes("кадр") && lower.includes("зарплат"))
+  ) {
+    return "Кадры и расчёт зарплаты"
+  }
+  if (lower.includes("пфр") || lower.includes("фсс")) {
+    return "Зарплата и кадровые отчёты"
+  }
+  if (lower.includes("зарплата и кадровые")) {
+    return "Зарплата и кадровые отчёты"
+  }
+  if (lower.includes("финансовая аналитика") || lower.includes("аналитика и налоговое")) {
+    return "Аналитика и налоговое планирование"
   }
   if (lower.includes("ведение бухучета") || lower.includes("ведение бухучёта")) {
     return "Ведение бухучёта"
   }
+  if (lower.includes("расчёт налогов") || lower.includes("расчет налогов")) {
+    return "Расчёт налогов"
+  }
   return t
+}
+
+function planPriceGlowClassName(popular: boolean) {
+  return popular
+    ? "pointer-events-none absolute -inset-x-4 top-1/2 h-[1.35em] -translate-y-1/2 rounded-full bg-indigo-500/[0.08] blur-2xl"
+    : "pointer-events-none absolute -inset-x-4 top-1/2 h-[1.35em] -translate-y-1/2 rounded-full bg-indigo-500/[0.05] blur-2xl"
+}
+
+function planPriceClassName(popular: boolean) {
+  return popular
+    ? "relative text-3xl md:text-[2rem] font-bold tracking-tight bg-gradient-to-br from-slate-900 via-indigo-950 to-indigo-800 bg-clip-text text-transparent [filter:drop-shadow(0_1px_0_rgba(255,255,255,0.45))_drop-shadow(0_10px_28px_rgba(79,70,229,0.1))]"
+    : "relative text-3xl md:text-[2rem] font-bold tracking-tight bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent [filter:drop-shadow(0_1px_0_rgba(255,255,255,0.5))_drop-shadow(0_8px_22px_rgba(79,70,229,0.06))]"
+}
+
+function planCardClassName(popular: boolean) {
+  return popular
+    ? "relative h-full flex flex-col rounded-2xl border border-indigo-300/70 bg-gradient-to-b from-white to-indigo-50/20 shadow-md ring-1 ring-indigo-100/50 transition-[box-shadow,border-color] duration-300 md:hover:shadow-lg md:hover:border-indigo-300"
+    : "relative h-full flex flex-col rounded-2xl border border-stone-200 bg-white shadow-sm transition-[box-shadow,border-color] duration-300 md:hover:shadow-md md:hover:border-indigo-200"
+}
+
+function planButtonClassName(popular: boolean) {
+  return popular
+    ? "h-10 w-full max-w-[280px] text-sm font-semibold rounded-xl bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 md:hover:-translate-y-px md:hover:shadow-md transition-[transform,background-color,box-shadow] duration-300 ease-out"
+    : "h-10 w-full max-w-[280px] text-sm font-medium rounded-xl bg-white border border-stone-200 text-stone-800 shadow-sm hover:border-indigo-200 hover:bg-stone-50/80 md:hover:-translate-y-px md:hover:shadow-md transition-[transform,background-color,box-shadow,border-color] duration-300 ease-out"
 }
 
 export function PricingSection() {
@@ -108,7 +151,6 @@ export function PricingSection() {
         const groupedIp = mappedPlans.filter((plan) => plan.group !== "ooo")
         const groupedOoo = mappedPlans.filter((plan) => plan.group === "ooo")
 
-        // Совместимость с текущим дизайном: первые 3 карточки ИП, следующие 3 — ООО.
         const nextIp = (groupedIp.length > 0 ? groupedIp : mappedPlans.slice(0, 3)).slice(0, 3)
         const nextOoo = (groupedOoo.length > 0 ? groupedOoo : mappedPlans.slice(3, 6)).slice(0, 3)
 
@@ -130,198 +172,145 @@ export function PricingSection() {
     return null
   }
 
+  const renderPlanCards = (plans: PricingPlan[]) => (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 px-4">
+      {plans.map((plan, index) => (
+        <Card key={`${plan.id}-${index}`} className={planCardClassName(plan.popular)}>
+          {plan.popular && (
+            <Badge
+              variant="outline"
+              className="absolute -top-2.5 left-1/2 -translate-x-1/2 border-indigo-200/80 bg-indigo-50 text-indigo-700 text-[11px] font-medium px-2.5 py-0.5 shadow-sm pointer-events-none"
+            >
+              Оптимальный выбор
+            </Badge>
+          )}
+          <CardHeader className="text-center pb-2 pt-6 px-5">
+            <CardTitle className="text-lg font-semibold text-stone-900">{plan.name}</CardTitle>
+            <span className="block text-xs text-stone-500 mt-2 leading-snug">
+              {audienceLineForPlan(plan, index)}
+            </span>
+            <div className="mt-4 flex flex-wrap items-baseline justify-center gap-x-1.5">
+              <span className="relative inline-block">
+                <span className={planPriceGlowClassName(plan.popular)} aria-hidden />
+                <span className={planPriceClassName(plan.popular)}>{formatPlanPrice(plan.price)}</span>
+              </span>
+              <span className="text-sm text-stone-500">/ {plan.period}</span>
+            </div>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col px-5 pb-5 pt-0">
+            <ul className="space-y-2">
+              {plan.features.slice(0, 3).map((feature, idx) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <Check
+                    className="h-4 w-4 text-indigo-500/70 mr-0 mt-0.5 flex-shrink-0"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  <span className="text-sm text-stone-600 leading-snug">
+                    {strengthenFeatureText(feature)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+
+  const renderPlanButtons = (plans: PricingPlan[]) => (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 justify-items-center mt-5 md:mt-6 w-full px-4">
+      {plans.map((plan, index) => (
+        <Button
+          key={`btn-${plan.id}-${index}`}
+          type="button"
+          variant="ghost"
+          className={planButtonClassName(plan.popular)}
+          onClick={() => setQuizOpen(true)}
+        >
+          Обсудить тариф
+          <ArrowRight className="ml-1.5 h-4 w-4 opacity-70" />
+        </Button>
+      ))}
+    </div>
+  )
+
   return (
-    <section className="py-8 bg-white" id="pricing">
-      <style jsx global>{`
-        @keyframes priceGlow {
-          0%, 100% {
-            color: rgb(17, 24, 39);
-            text-shadow: 0 0 0 transparent;
-            transform: scale(1);
-          }
-          50% {
-            color: rgb(59, 130, 246);
-            text-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
-            transform: scale(1.05);
-          }
-        }
-        
-        .price-animate {
-          animation: priceGlow 2s ease-in-out infinite;
-          display: inline-block;
-        }
-      `}</style>
-      
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
+    <section
+      id="pricing"
+      className="py-14 md:py-20 bg-gradient-to-b from-white via-stone-50/40 to-white border-b border-stone-100/80"
+    >
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="text-center mb-10 md:mb-12">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900 mb-4">
             Выберите формат бухгалтерского обслуживания
           </h2>
-          <div className="flex justify-center w-full mb-6">
-            <div className="px-4 md:px-6 py-3 rounded-xl shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 text-sm md:text-base font-medium text-gray-900 text-center">
+          <div className="flex justify-center w-full">
+            <p className="px-4 py-2 rounded-full border border-stone-200/80 bg-stone-50/60 text-sm text-stone-600 text-center max-w-xl">
               От базового сопровождения до бухгалтерии под ключ
-            </div>
+            </p>
           </div>
         </div>
 
-        {/* ИП Тарифы */}
-        <div className="mb-10">
-          <div className="text-center mb-4">
-            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 px-4">Тарифы для ИП</h3>
+        <div className="mb-16 md:mb-20">
+          <div className="text-center mb-6 md:mb-8">
+            <h3 className="text-xl md:text-2xl font-semibold text-stone-900 tracking-tight mb-1 px-4">
+              Тарифы для ИП
+            </h3>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 px-4">
-            {ipPlans.map((plan, index) => (
-              <Card
-                key={index}
-                className={`relative shadow-xl h-full flex flex-col ${
-                  plan.popular ? "border-2 border-blue-500 scale-105" : "border border-gray-200"
-                }`}
-              >
-                {plan.popular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
-                    <Star className="w-3 h-3 mr-1" />
-                    Оптимальный выбор
-                  </Badge>
-                )}
-                <CardHeader className="text-center">
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <span className="block text-xs sm:text-sm text-gray-600 mt-2 leading-snug">{audienceLineForPlan(plan, index)}</span>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold price-animate">{formatPlanPrice(plan.price)}</span>
-                    <span className="text-gray-600 ml-2">/ {plan.period}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col px-6">
-                  <ul className="space-y-3">
-                    {plan.features.slice(0, 5).map((feature, idx) => (
-                      <li key={idx} className="flex items-start">
-                        <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{strengthenFeatureText(feature)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          {/* Кнопки под карточками ИП */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 justify-items-center mt-6 md:mt-8 mb-8 md:mb-12 w-full px-4">
-            {ipPlans.map((plan, index) => (
-              <Button
-                key={index}
-                size="lg"
-                className={`w-full max-w-[320px] text-base md:text-lg font-bold shadow-xl flex items-center justify-center rounded-xl px-6 md:px-8 py-3 md:py-4 transition-all duration-200 ${
-                  plan.popular ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" : "bg-white border-2 border-blue-200 hover:border-blue-400 text-blue-900"
-                }`}
-                variant={plan.popular ? "default" : "outline"}
-                onClick={() => setQuizOpen(true)}
-              >
-                Обсудить тариф
-                <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5" />
-              </Button>
-            ))}
-          </div>
+          {renderPlanCards(ipPlans)}
+          {renderPlanButtons(ipPlans)}
         </div>
 
-        {/* ООО Тарифы */}
         <div>
-          <div className="text-center mb-4">
-            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 px-4">Тарифы для ООО</h3>
+          <div className="text-center mb-6 md:mb-8">
+            <h3 className="text-xl md:text-2xl font-semibold text-stone-900 tracking-tight mb-1 px-4">
+              Тарифы для ООО
+            </h3>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 px-4">
-            {oooPlans.map((plan, index) => (
-              <Card
-                key={index}
-                className={`relative shadow-xl h-full flex flex-col ${
-                  plan.popular ? "border-2 border-blue-500 scale-105" : "border border-gray-200"
-                }`}
-              >
-                {plan.popular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
-                    <Star className="w-3 h-3 mr-1" />
-                    Оптимальный выбор
-                  </Badge>
-                )}
-                <CardHeader className="text-center">
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <span className="block text-xs sm:text-sm text-gray-600 mt-2 leading-snug">{audienceLineForPlan(plan, index)}</span>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold price-animate">{formatPlanPrice(plan.price)}</span>
-                    <span className="text-gray-600 ml-2">/ {plan.period}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col px-6">
-                  <ul className="space-y-3">
-                    {plan.features.slice(0, 5).map((feature, idx) => (
-                      <li key={idx} className="flex items-start">
-                        <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{strengthenFeatureText(feature)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          {/* Кнопки под карточками ООО */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 justify-items-center mt-6 md:mt-8 mb-8 md:mb-12 w-full px-4">
-            {oooPlans.map((plan, index) => (
-              <Button
-                key={index}
-                size="lg"
-                className={`w-full max-w-[320px] text-base md:text-lg font-bold shadow-xl flex items-center justify-center rounded-xl px-6 md:px-8 py-3 md:py-4 transition-all duration-200 ${
-                  plan.popular ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" : "bg-white border-2 border-blue-200 hover:border-blue-400 text-blue-900"
-                }`}
-                variant={plan.popular ? "default" : "outline"}
-                onClick={() => setQuizOpen(true)}
-              >
-                Обсудить тариф
-                <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5" />
-              </Button>
-            ))}
-          </div>
+          {renderPlanCards(oooPlans)}
+          {renderPlanButtons(oooPlans)}
         </div>
 
-        {/* Дополнительные услуги */}
-        <div 
-          className="mt-12 md:mt-20 rounded-2xl p-4 md:p-8 relative bg-cover bg-center bg-no-repeat mx-4"
+        <div
+          className="mt-12 md:mt-16 rounded-2xl p-4 md:p-8 relative bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.85), rgba(30, 58, 138, 0.85)), url('/business-services-bg.jpg')`
+            backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.88), rgba(30, 41, 59, 0.88)), url('/business-services-bg.jpg')`,
           }}
         >
           <div className="relative z-10">
             <div className="text-center mb-6 md:mb-8">
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-4">Дополнительные услуги</h3>
-              <p className="text-blue-100 text-sm md:text-base">Разовые услуги и консультации</p>
+              <h3 className="text-xl md:text-2xl font-semibold text-white mb-2">
+                Дополнительные услуги
+              </h3>
+              <p className="text-stone-300 text-sm md:text-base">Разовые услуги и консультации</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              <div className="text-center bg-white/30 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white/20 hover:bg-white/40 transition-all duration-300">
-                <h4 className="font-semibold text-white mb-2 text-sm md:text-base">Регистрация ИП</h4>
-                <p className="text-xl md:text-2xl font-bold text-blue-300 mb-2 price-animate">3 990 ₽<span className="text-blue-200 align-super text-sm md:text-base">*</span></p>
-                <p className="text-xs md:text-sm text-blue-100">Под ключ за 3 дня</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-colors duration-300">
+                <h4 className="font-medium text-white mb-2 text-sm md:text-base">Регистрация ИП</h4>
+                <p className="text-lg md:text-xl font-semibold text-white/95 mb-1">3 990 ₽*</p>
+                <p className="text-xs text-stone-300">Под ключ за 3 дня</p>
               </div>
-              <div className="text-center bg-white/30 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white/20 hover:bg-white/40 transition-all duration-300">
-                <h4 className="font-semibold text-white mb-2 text-sm md:text-base">Регистрация ООО</h4>
-                <p className="text-xl md:text-2xl font-bold text-blue-300 mb-2 price-animate">9 990 ₽<span className="text-blue-200 align-super text-sm md:text-base">*</span></p>
-                <p className="text-xs md:text-sm text-blue-100">Полное сопровождение</p>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-colors duration-300">
+                <h4 className="font-medium text-white mb-2 text-sm md:text-base">Регистрация ООО</h4>
+                <p className="text-lg md:text-xl font-semibold text-white/95 mb-1">9 990 ₽*</p>
+                <p className="text-xs text-stone-300">Полное сопровождение</p>
               </div>
-              <div className="text-center bg-white/30 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white/20 hover:bg-white/40 transition-all duration-300">
-                <h4 className="font-semibold text-white mb-2 text-sm md:text-base">Налоговая консультация</h4>
-                <p className="text-xl md:text-2xl font-bold text-blue-300 mb-2 price-animate">2 500 ₽</p>
-                <p className="text-xs md:text-sm text-blue-100">1 час с экспертом</p>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-colors duration-300">
+                <h4 className="font-medium text-white mb-2 text-sm md:text-base">Налоговая консультация</h4>
+                <p className="text-lg md:text-xl font-semibold text-white/95 mb-1">2 500 ₽</p>
+                <p className="text-xs text-stone-300">1 час с экспертом</p>
               </div>
-              <div className="text-center bg-white/30 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white/20 hover:bg-white/40 transition-all duration-300">
-                <h4 className="font-semibold text-white mb-2 text-sm md:text-base">Восстановление учета</h4>
-                <p className="text-xl md:text-2xl font-bold text-blue-300 mb-2 price-animate">от 15 000 ₽</p>
-                <p className="text-xs md:text-sm text-blue-100">За период</p>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-colors duration-300">
+                <h4 className="font-medium text-white mb-2 text-sm md:text-base">Восстановление учета</h4>
+                <p className="text-lg md:text-xl font-semibold text-white/95 mb-1">от 15 000 ₽</p>
+                <p className="text-xs text-stone-300">За период</p>
               </div>
             </div>
           </div>
-
         </div>
+
         <QuizModal open={quizOpen} onOpenChange={setQuizOpen} />
       </div>
     </section>
