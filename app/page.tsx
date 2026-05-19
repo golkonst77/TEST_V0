@@ -70,17 +70,14 @@ export default function HomePage() {
 
   const deviceTypeForVisibility = deviceType === 'tablet' ? 'desktop' : deviceType
 
-  const check = (sectionKey: string) => {
-    const visible = isSectionVisible(sectionKey, deviceTypeForVisibility)
-    console.log("SECTION CHECK", sectionKey, visible, deviceTypeForVisibility)
-    return visible
-  }
+  const check = (sectionKey: string) =>
+    isSectionVisible(sectionKey, deviceTypeForVisibility)
 
   return (
     <main id="home-page" className="min-h-screen">
       {check('hero') && <Hero />}
       {check('trust') && <TrustSection />}
-      {check('guarantees') && <Guarantees />}
+      {(check("about") || check("guarantees")) && <Guarantees />}
       {check('services') && <Services showTitle />}
       {check('technologies') && <Technologies />}
       {check('ai-documents') && <AIDocuments />}

@@ -46,7 +46,7 @@ export function Guarantees() {
   const deviceTypeForVisibility = deviceType === "tablet" ? "desktop" : deviceType
   const aiVisible = isSectionVisible("ai-documents", deviceTypeForVisibility)
   return (
-    <section className="py-12 bg-white">
+    <section id="about" className="py-12 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-4">
