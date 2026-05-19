@@ -7,6 +7,13 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import InputMask from "react-input-mask"
+import { User, Mail, Phone, Gift, Check, ChevronDown } from "lucide-react"
+import {
+  quizConsentCardClass,
+  quizFormPanelClass,
+  quizInputClass,
+  quizOptionalLabelClass,
+} from "@/components/quiz/quiz-design-tokens"
 
 type SiteKind = "main" | "ausn"
 
@@ -177,6 +184,14 @@ function isValidEmail(email: string): boolean {
   return emailRegex.test(email)
 }
 
+function phoneDigits(phone: string): string {
+  return phone.replace(/\D/g, "")
+}
+
+function hasValidPhone(phone: string): boolean {
+  return phoneDigits(phone).length >= 10
+}
+
 export const QuizFinalStep = forwardRef<
   QuizFinalStepHandle,
   {
@@ -245,12 +260,12 @@ export const QuizFinalStep = forwardRef<
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const canSubmit = useMemo(() => {
-    const trimmedEmail = email.trim()
-    if (!trimmedEmail || !isValidEmail(trimmedEmail)) return false
     if (!consentPd) return false
-    const digits = phone.trim().replace(/\D/g, "")
+    const trimmedEmail = email.trim()
+    if (trimmedEmail && !isValidEmail(trimmedEmail)) return false
+    const digits = phoneDigits(phone)
     if (digits.length > 0 && digits.length < 10) return false
-    return true
+    return hasValidPhone(phone)
   }, [consentPd, email, phone])
 
   useEffect(() => {
@@ -272,15 +287,6 @@ export const QuizFinalStep = forwardRef<
     const trimmedEmail = email.trim()
     const trimmedPhone = phone.trim()
 
-    if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
-      toast({
-        title: "Проверьте email",
-        description: "Введите корректный email.",
-        variant: "destructive",
-      })
-      return
-    }
-
     if (!consentPd) {
       toast({
         title: "Нужно согласие",
@@ -290,11 +296,29 @@ export const QuizFinalStep = forwardRef<
       return
     }
 
-    const digits = trimmedPhone.replace(/\D/g, "")
+    if (trimmedEmail && !isValidEmail(trimmedEmail)) {
+      toast({
+        title: "Проверьте email",
+        description: "Введите корректный email или оставьте поле пустым.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    const digits = phoneDigits(trimmedPhone)
     if (digits.length > 0 && digits.length < 10) {
       toast({
         title: "Проверьте телефон",
-        description: "Телефон указан не полностью (можно оставить поле пустым).",
+        description: "Телефон указан не полностью.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!hasValidPhone(trimmedPhone)) {
+      toast({
+        title: "Укажите телефон",
+        description: "Введите номер телефона или мессенджер, чтобы мы могли связаться с вами.",
         variant: "destructive",
       })
       return
@@ -304,15 +328,16 @@ export const QuizFinalStep = forwardRef<
 
     try {
       const utm = readUtmFromStorage()
+      const trimmedName = name.trim()
       const lead = {
         ...mapQuizDataToLead(site, quizData),
-        ...(name.trim() ? { name: name.trim() } : {}),
+        name: trimmedName || "Не указано",
         ...utm,
       }
 
       const payload: NormalizedLeadPayload = {
         site,
-        email: trimmedEmail,
+        email: trimmedEmail && isValidEmail(trimmedEmail) ? trimmedEmail : "",
         ...(trimmedPhone ? { phone: trimmedPhone } : {}),
         lead,
         raw_quiz_answers: quizData,
@@ -358,103 +383,117 @@ export const QuizFinalStep = forwardRef<
   }
 
   return (
-    <div className="flex flex-col h-[600px] min-h-0">
-      <div className="flex-1 min-h-0 overflow-y-auto px-0 pt-2 pb-0 text-center max-w-lg mx-auto w-full flex flex-col items-stretch justify-start">
-        <h2 className="text-2xl font-bold mb-2 text-gray-900">{texts.title}</h2>
-        <p className="text-base text-gray-600 mb-4 leading-relaxed">{texts.subtitle}</p>
+    <div className="flex flex-col min-h-0 w-full max-w-xl mx-auto md:flex-1 md:justify-center">
+      <h2 className="text-xl md:text-[1.65rem] font-bold mb-0.5 text-stone-900 text-center tracking-tight shrink-0">
+        {texts.title}
+      </h2>
+      <p className="text-sm text-stone-600 mb-2.5 text-center shrink-0 leading-snug max-w-md mx-auto">{texts.subtitle}</p>
 
-        <div className="space-y-3">
+      <section className={quizFormPanelClass}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="text-left">
-            <Label htmlFor="quiz-final-name" className="text-sm text-gray-700">
-              Как к вам обращаться
+            <Label htmlFor="quiz-final-name" className="text-sm font-semibold text-stone-800 tracking-tight">
+              Как к вам обращаться <span className={quizOptionalLabelClass}>(необязательно)</span>
             </Label>
-            <Input
-              id="quiz-final-name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Имя"
-              className="mt-1 text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
-            />
+            <div className="relative">
+              <User className="absolute left-3.5 top-[calc(50%+6px)] -translate-y-1/2 h-4 w-4 text-stone-400 pointer-events-none" />
+              <Input
+                id="quiz-final-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Имя"
+                className={quizInputClass}
+              />
+            </div>
           </div>
+
           <div className="text-left">
-            <Label htmlFor="quiz-final-email" className="text-sm text-gray-700">
-              Email — если удобно получить материалы письмом
+            <Label htmlFor="quiz-final-phone" className="text-sm font-semibold text-stone-800">
+              Телефон или мессенджер <span className="text-indigo-600">*</span>
             </Label>
+            <div className="relative">
+              <Phone className="absolute left-3.5 top-[calc(50%+6px)] -translate-y-1/2 h-4 w-4 text-stone-400 pointer-events-none z-10" />
+              <InputMask mask="+7 (999) 999-99-99" value={phone} onChange={(e) => setPhone(e.target.value)}>
+                {(inputProps) => (
+                  <Input
+                    {...inputProps}
+                    id="quiz-final-phone"
+                    type="tel"
+                    placeholder="+7 (___) ___-__-__"
+                    className={quizInputClass}
+                  />
+                )}
+              </InputMask>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-left">
+          <Label htmlFor="quiz-final-email" className="text-sm font-semibold text-stone-800">
+            Email <span className={quizOptionalLabelClass}>(необязательно)</span>
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-3.5 top-[calc(50%+6px)] -translate-y-1/2 h-4 w-4 text-stone-400 pointer-events-none" />
             <Input
               id="quiz-final-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="mt-1 text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
+              className={quizInputClass}
             />
           </div>
+        </div>
 
-          <div className="text-left">
-            <Label htmlFor="quiz-final-phone" className="text-sm text-gray-700">
-              Телефон или мессенджер
-            </Label>
-            <InputMask mask="+7 (999) 999-99-99" value={phone} onChange={(e) => setPhone(e.target.value)}>
-              {(inputProps) => (
-                <Input
-                  {...inputProps}
-                  id="quiz-final-phone"
-                  type="tel"
-                  placeholder="+7 (___) ___-__-__"
-                  className="mt-1 text-center text-base py-3 border-2 border-gray-200 focus:border-cyan-400 rounded-2xl shadow-sm w-full"
-                />
-              )}
-            </InputMask>
-          </div>
+        <div className={quizConsentCardClass}>
+          <Checkbox
+            id="quiz-final-consent-pd"
+            checked={consentPd}
+            onCheckedChange={(checked) => setConsentPd(checked === true || checked === "indeterminate")}
+            className="mt-0.5 border-stone-300 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600 w-4 h-4 shrink-0 rounded-[4px] shadow-sm"
+          />
+          <Label htmlFor="quiz-final-consent-pd" className="cursor-pointer text-sm font-medium text-stone-700 leading-snug">
+            Согласие на обработку персональных данных
+          </Label>
+        </div>
 
-          <div className="flex items-start space-x-2 mt-2 text-left">
-            <Checkbox
-              id="quiz-final-consent-pd"
-              checked={consentPd}
-              onCheckedChange={(checked) => setConsentPd(checked === true || checked === "indeterminate")}
-              className="mt-1 text-cyan-600 border-2 border-cyan-300 w-5 h-5"
+        <details className="group rounded-xl border border-stone-300/90 bg-stone-50/80 ring-1 ring-inset ring-white/80 transition-colors hover:border-indigo-300/70 hover:bg-indigo-50/40 open:border-indigo-200/80 open:bg-white">
+          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden rounded-xl px-3.5 py-2.5 flex items-center gap-3 transition-colors hover:bg-stone-100/60 group-open:bg-stone-50/80">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100/80">
+              <Gift className="h-4 w-4 shrink-0" />
+            </span>
+            <span className="min-w-0 flex-1 text-left">
+              <span className="block text-sm font-semibold text-stone-800">{texts.giftLabel}</span>
+              <span className="block text-xs text-stone-500 mt-0.5">Выберите чек-лист</span>
+            </span>
+            <ChevronDown
+              className="h-4 w-4 shrink-0 text-stone-500 transition-transform duration-200 group-open:rotate-180"
+              aria-hidden
             />
-            <Label
-              htmlFor="quiz-final-consent-pd"
-              className="cursor-pointer leading-relaxed text-gray-700"
-            >
-              Я даю согласие на обработку персональных данных
-            </Label>
+          </summary>
+          <div className="border-t border-stone-200/70 px-3.5 pb-3.5 pt-2.5">
+          <select
+            value={giftPdfFilename}
+            onChange={(e) => setGiftPdfFilename(e.target.value)}
+            className="w-full border border-stone-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 rounded-lg px-2.5 py-2 text-sm bg-white h-10"
+          >
+            {resolvedGiftOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
           </div>
+        </details>
 
-          <div className="mt-3 text-left">
-            <div className="rounded-2xl border-2 border-cyan-300 bg-cyan-50/70 p-3 shadow-sm">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm text-gray-900 font-bold">{texts.giftLabel}</Label>
-                <span className="text-xs font-bold text-cyan-700 bg-white/70 border border-cyan-200 px-2 py-1 rounded-full">
-                  PDF
-                </span>
-              </div>
-              <select
-                value={giftPdfFilename}
-                onChange={(e) => setGiftPdfFilename(e.target.value)}
-                className="mt-2 w-full border-2 border-cyan-300 focus:border-cyan-500 rounded-2xl shadow-sm px-3 py-3 text-sm bg-white"
-              >
-                {resolvedGiftOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="shrink-0 bg-white pt-2 pb-2">
-        <div className="bg-gray-50 rounded-2xl p-4 text-center mt-2">
-          <p className="text-xs font-bold text-gray-900 uppercase tracking-wide">БЕЗОПАСНО И КОНФИДЕНЦИАЛЬНО</p>
-          <p className="text-xs text-gray-600 mt-2 normal-case tracking-normal font-normal">
-            Без спама и навязывания услуг. Свяжемся, чтобы уточнить детали и предложить подходящий вариант.
-          </p>
-        </div>
-      </div>
+        <p className="flex items-center justify-center gap-1.5 text-[11px] text-stone-500 pt-0.5">
+          <span className="inline-flex h-5 items-center gap-1.5 rounded-full bg-indigo-50/80 px-2.5 py-0.5 text-stone-600 ring-1 ring-indigo-100/80">
+            <Check className="h-3 w-3 text-indigo-500 shrink-0" />
+            Без спама · ответим в рабочее время
+          </span>
+        </p>
+      </section>
     </div>
   )
 })

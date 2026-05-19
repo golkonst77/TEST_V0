@@ -5,6 +5,43 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и проект следует [Semantic Versioning](https://semver.org/lang/ru/).
 
+## [2.3.6] - 2026-05-19 - Автоматическое обновление версии
+
+### Изменено
+- Автоматическое обновление версии до 2.3.6
+- Обновлен package.json
+
+## [2.3.5] - 2026-05-19 - Quiz UX: materials dropdown & trust badges
+
+### Изменено
+- Финальный шаг: блок «Материалы по теме» с постоянным chevron, hint и hover — очевидный раскрывающийся блок
+- Sidebar: крупнее trust badges (text-sm, py-2, icon 16px)
+
+## [2.3.4] - 2026-05-19 - Quiz unified design system
+
+### Изменено
+- Единая design system: `components/quiz/quiz-design-tokens.ts` (surfaces, cards, CTA, sidebar, inputs, progress)
+- Layout modal: ~68% контент / ~32% sidebar, header с бейджем «3 шага · без спама»
+- Selected states: сильнее accent (indigo-600, ring, shadow)
+- CTA: enabled/disabled gradient states, sticky footer на mobile
+- Final step: имя необязательно; submit по телефону + согласию; onboarding-form UI
+
+## [2.3.3] - 2026-05-19 - Quiz premium onboarding polish
+
+### Изменено
+- Quiz modal: surface hierarchy (gradient modal, layered cards/panels), tactile option cards с hover lift и premium selected state
+- Sidebar: крупнее заголовок и иконки, compact trust badges, micro-hover на пунктах
+- CTA: richer gradient, depth, press/hover transitions
+- QuizFinalStep: premium inputs, consent card, reassurance pill на всех breakpoints
+- Вертикальный ритм: плотнее progress и заголовки без потери воздуха
+
+## [2.3.2] - 2026-05-18 - Quiz v2.3 UI polish
+
+### Изменено
+- Quiz modal: 3 mini-panels на шаге 1, grid-карточки на шаге 2 (5 пунктов), упрощённый sidebar
+- Финальный шаг: panel-обёртка, имя и телефон в 2 колонки на desktop
+- Карточки: вертикальный layout, короче тексты, ярче selected state
+
 ## [2.3.1] - 2026-05-18 - Автоматическое обновление версии
 
 ### Изменено

@@ -489,7 +489,7 @@ export async function POST(request: NextRequest) {
     const quizData = normalized.raw_quiz_answers
     const giftPdfFilename = normalized.giftPdfFilename || null
 
-    if (!email || !isValidEmail(email)) {
+    if (email && !isValidEmail(email)) {
       return NextResponse.json({ success: false, error: 'INVALID_EMAIL' }, { status: 400 })
     }
 
@@ -498,6 +498,13 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedPhone = normalizePhone(phone)
+    const phoneDigits = (phone || '').replace(/\D/g, '')
+    const hasValidEmail = Boolean(email && isValidEmail(email))
+    const hasValidPhone = phoneDigits.length >= 10
+
+    if (!hasValidEmail && !hasValidPhone) {
+      return NextResponse.json({ success: false, error: 'INVALID_CONTACT' }, { status: 400 })
+    }
 
     if (quizData == null) {
       return NextResponse.json({ success: false, error: 'MISSING_QUIZ_DATA' }, { status: 400 })
@@ -590,6 +597,8 @@ export async function POST(request: NextRequest) {
     const quizSummary = extractQuizSummary(quizData)
 
     const sendClientEmail = async () => {
+      if (!hasValidEmail) return
+
       const subject = 'Новая заявка на подбор бухгалтерского сопровождения'
       const html = `
         <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.5">
