@@ -4,6 +4,13 @@ import { useState, useEffect } from "react"
 import ReactMarkdown from "react-markdown"
 import { Logo } from "./logo"
 import { VersionInfo } from "./version-info"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog"
 
 const INN = "4027132996"
 const OGRN = "1174027006592"
