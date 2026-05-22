@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react'
-import { useContactForm } from "@/hooks/use-contact-form"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
 
 interface Settings {
@@ -19,7 +18,6 @@ interface Settings {
 
 export function Contacts() {
   const [settings, setSettings] = useState<Settings | null>(null)
-  const { openContactForm } = useContactForm()
   const { handleCruiseClick } = useCruiseClick()
 
   useEffect(() => {

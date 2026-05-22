@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import { QuizModal } from "@/components/quiz-modal"
-import { useContactForm } from "@/hooks/use-contact-form"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 
 type FaqItem = {
   question: string
@@ -135,7 +135,7 @@ function faqItemKey(groupId: string, itemIndex: number) {
 export function FAQ({ showHeader = true }: { showHeader?: boolean }) {
   const [openItems, setOpenItems] = useState<string[]>([DEFAULT_OPEN_KEY])
   const [telegramLink, setTelegramLink] = useState("https://t.me/prostoburo")
-  const { openContactForm } = useContactForm()
+  const { handleCruiseClick } = useCruiseClick()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -284,7 +284,7 @@ export function FAQ({ showHeader = true }: { showHeader?: boolean }) {
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-center">
               <button
                   type="button"
-                  onClick={openContactForm}
+                  onClick={handleCruiseClick}
                   className="inline-flex h-11 w-full sm:flex-1 sm:max-w-[220px] items-center justify-center px-5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-sm shadow-indigo-500/15 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 transition-all duration-200"
                 >
                   Получить консультацию

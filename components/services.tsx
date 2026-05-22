@@ -14,7 +14,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { useState } from "react"
-import { useContactForm } from "@/hooks/use-contact-form"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 
 const services = [
   {
@@ -68,7 +68,7 @@ const serviceDetails = [
 
 export function Services({ showTitle = false }: { showTitle?: boolean }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
-  const { openContactForm } = useContactForm()
+  const { handleCruiseClick } = useCruiseClick()
   return (
     <section className="pt-8 pb-16 bg-white" id="services">
       <div className="max-w-7xl mx-auto w-full px-2 md:px-4 xl:px-8">
@@ -134,7 +134,7 @@ export function Services({ showTitle = false }: { showTitle?: boolean }) {
                     </div>
                     <Button
                       className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold text-lg py-4 mt-8 shadow-xl transition-all text-left"
-                      onClick={openContactForm}
+                      onClick={handleCruiseClick}
                     >
                       Получить консультацию
                     </Button>

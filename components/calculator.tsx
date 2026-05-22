@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { CalculatorIcon, ArrowRight } from "lucide-react"
-import { useContactForm } from "@/hooks/use-contact-form"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 
 interface CalculatorConfig {
   services: {
@@ -49,7 +49,7 @@ const DEFAULT_EMPLOYEE_MULTIPLIERS = {
 }
 
 export function Calculator() {
-  const { openContactForm } = useContactForm()
+  const { handleCruiseClick } = useCruiseClick()
   const [config, setConfig] = useState<CalculatorConfig | null>(null)
   const [configLoading, setConfigLoading] = useState(true)
   const [state, setState] = useState<CalculatorState>({
@@ -373,7 +373,7 @@ export function Calculator() {
                     <Button
                       size="lg"
                       className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold py-3 md:py-4 px-6 md:px-8 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 text-sm md:text-base"
-                      onClick={openContactForm}
+                      onClick={handleCruiseClick}
                     >
                       {totalPrice > 0 ? "Получить точный расчет" : "Получить консультацию"}
                       <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />

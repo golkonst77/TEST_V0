@@ -1,7 +1,7 @@
 "use client"
 
 import { Shield, Clock, Lock, Users, ChevronRight } from "lucide-react"
-import { useContactForm } from "@/hooks/use-contact-form"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 
 const PROCESS_STEPS = [
   {
@@ -55,7 +55,7 @@ const COMMITMENTS = [
 ] as const
 
 export function Guarantees() {
-  const { openContactForm } = useContactForm()
+  const { handleCruiseClick } = useCruiseClick()
 
   return (
     <section
@@ -128,7 +128,7 @@ export function Guarantees() {
           </p>
           <button
             type="button"
-            onClick={openContactForm}
+            onClick={handleCruiseClick}
             className="inline-flex w-full sm:w-auto items-center justify-center px-7 py-3.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 shadow-sm hover:bg-indigo-700 hover:shadow-md md:hover:-translate-y-px transition-[transform,background-color,box-shadow] duration-300 ease-out"
           >
             Обсудить переход

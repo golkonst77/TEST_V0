@@ -431,7 +431,7 @@ const getBusinessStepValue = (answers: QuizAnswer[]) => {
 }
 
 export function QuizModal({ open, onOpenChange }: { open?: boolean; onOpenChange?: (open: boolean) => void } = {}) {
-  const { isOpen, closeContactForm } = useContactForm()
+  const { isOpen, formType, closeContactForm } = useContactForm()
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState<QuizAnswer[]>([])
   const finalStepRef = useRef<QuizFinalStepHandle | null>(null)
@@ -521,7 +521,7 @@ export function QuizModal({ open, onOpenChange }: { open?: boolean; onOpenChange
 
   return (
     <>
-      <Dialog open={!!(open !== undefined ? open : isOpen)} onOpenChange={onOpenChange || closeContactForm}>
+      <Dialog open={!!(open !== undefined ? open : isOpen && formType === "quiz")} onOpenChange={onOpenChange || closeContactForm}>
         <DialogTitle className="sr-only">Короткий опрос для подбора условий</DialogTitle>
         <DialogDescription className="sr-only">
           Ответьте на несколько вопросов — мы подготовим персональное предложение

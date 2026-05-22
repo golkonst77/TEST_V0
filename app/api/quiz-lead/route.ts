@@ -657,6 +657,56 @@ ${leadId ? `ID заявки: ${leadId}` : ''}
         console.error('[quiz-lead] Failed to read settings for admin email (non-blocking):', e)
       }
 
+      const isSimpleContactForm =
+        quizData?.type === 'simple_contact_form' ||
+        normalized.lead.source === 'simple_contact_form'
+
+      if (isSimpleContactForm) {
+        const simpleMessage =
+          typeof quizData?.message === 'string' && quizData.message.trim()
+            ? quizData.message.trim()
+            : normalized.lead.city || '—'
+        const pageUrl = typeof quizData?.pageUrl === 'string' ? quizData.pageUrl : '—'
+
+        const notificationText = `
+Заявка из простой формы вместо квиза
+
+Контакты:
+Имя: ${normalized.lead.name || quizData?.name || '—'}
+Телефон: ${normalizedPhone || '—'}
+Email: ${email || '—'}
+
+Задача:
+${simpleMessage}
+
+Страница:
+${pageUrl}
+
+Источник:
+simple_contact_form
+
+Служебные данные:
+Site: ${site}
+Lead ID: ${leadId ?? '—'}
+Время: ${new Date().toLocaleString('ru-RU')}
+        `.trim()
+
+        const subject = 'Заявка из простой формы вместо квиза'
+        const html = notificationText.replace(/\n/g, '<br>')
+
+        const emailResult = await sendEmail({
+          to: adminEmail,
+          subject,
+          html,
+          text: notificationText,
+        })
+
+        if (!emailResult.success) {
+          console.error('[quiz-lead] Admin email send failed (non-blocking):', emailResult.error)
+        }
+        return
+      }
+
       const answers = Array.isArray(quizData?.answers) ? quizData.answers : []
 
       const notificationText = `

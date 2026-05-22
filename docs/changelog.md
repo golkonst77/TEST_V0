@@ -5,11 +5,32 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и проект следует [Semantic Versioning](https://semver.org/lang/ru/).
 
+## [2.4.7] - 2026-05-22 - Автоматическое обновление версии
+
+### Изменено
+- Автоматическое обновление версии до 2.4.7
+- Обновлен package.json
+
 ## [2.4.6] - 2026-05-22 - Автоматическое обновление версии
 
 ### Изменено
 - Автоматическое обновление версии до 2.4.6
 - Обновлен package.json
+
+## [2.4.6] - 2026-05-22 - Простая форма вместо квиза
+
+### Добавлено
+- Третий режим квиза `disabled`: CTA открывают простую форму заявки вместо квиза
+- Компонент `SimpleContactFormModal` с полями имя, телефон, email, описание задачи
+- Нормализация `quizMode`: `default` | `custom` | `disabled` (+ backward compat для `external`)
+- Версия сайта снова отображается в footer через `VersionInfo`
+
+### Изменено
+- `use-cruise-click.ts`: маршрутизация CTA по режиму квиза
+- Все CTA-компоненты переведены на единый `handleCruiseClick`
+- Админка `/admin/settings`: понятные названия режимов квиза
+- `site-settings.json` сохраняется в CMS storage при изменении настроек
+- `quiz-lead` API: отдельное admin-уведомление для `simple_contact_form`
 
 ## [2.4.5] - 2026-05-22 - Persistent storage для медиафайлов и фона hero
 

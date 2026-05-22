@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Phone, MessageCircle, Menu, X, ChevronDown } from "lucide-react"
-import { useContactForm } from "@/hooks/use-contact-form"
 import { useCruiseClick } from "@/hooks/use-cruise-click"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -48,7 +47,6 @@ interface HeaderMenuItem {
 }
 
 export const Header = () => {
-  const { openContactForm } = useContactForm()
   const { handleCruiseClick, modalOpen, setModalOpen, quizUrl } = useCruiseClick()
   const [authOpen, setAuthOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)

@@ -1,10 +1,11 @@
 "use client"
 
 import { useContactForm } from "./use-contact-form"
+import { normalizeQuizMode } from "@/lib/quiz-mode"
 import { useState } from "react"
 
 export const useCruiseClick = () => {
-  const { openContactForm } = useContactForm()
+  const { openQuiz, openSimpleForm } = useContactForm()
   const [modalOpen, setModalOpen] = useState(false)
   const [quizUrl, setQuizUrl] = useState<string | null>(null)
 
@@ -12,11 +13,19 @@ export const useCruiseClick = () => {
     try {
       const res = await fetch("/api/settings", { cache: "no-store" })
       const settings = await res.json()
-      console.log("[CRUISE] settings:", settings)
-      
-      if (settings.quiz_mode === "custom") {
-        openContactForm()
-      } else if (settings.quiz_mode === "external" && settings.quiz_url) {
+      const mode = normalizeQuizMode(settings.quiz_mode)
+
+      if (mode === "disabled") {
+        openSimpleForm()
+        return
+      }
+
+      if (mode === "custom") {
+        openQuiz()
+        return
+      }
+
+      if (settings.quiz_url) {
         let url = settings.quiz_url
         if (url.startsWith("#popup:marquiz_")) {
           const quizId = url.split("_")[1]
@@ -24,13 +33,14 @@ export const useCruiseClick = () => {
         }
         setQuizUrl(url)
         setModalOpen(true)
-      } else {
-        openContactForm()
+        return
       }
-    } catch (error) {
-      openContactForm()
+
+      openQuiz()
+    } catch {
+      openQuiz()
     }
   }
 
   return { handleCruiseClick, modalOpen, setModalOpen, quizUrl }
-} 
+}

@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js"
 import { existsSync } from "fs"
-import { readCmsJson, getCmsStoragePath } from "./cms-storage"
+import { readCmsJson, getCmsStoragePath, writeCmsJson } from "./cms-storage"
+import type { QuizMode } from "./quiz-mode"
+import { normalizeQuizMode } from "./quiz-mode"
 
 const DEFAULT_PHONE = "+7 953 330-17-77"
 
@@ -17,7 +19,7 @@ export interface SiteSettings {
   vk: string
   maintenanceMode: boolean
   analyticsEnabled: boolean
-  quiz_mode?: "custom" | "external"
+  quiz_mode?: QuizMode | "external"
   quiz_url?: string
   // Время работы
   working_hours?: {
@@ -88,7 +90,7 @@ function mapDatabaseToSettings(dbData: any): SiteSettings {
     vk: dbData.vk ?? "vk.com/buh_urist",
     maintenanceMode: dbData.maintenance_mode ?? dbData.maintenancemode ?? false,
     analyticsEnabled: dbData.analytics_enabled ?? dbData.analyticsenabled ?? true,
-    quiz_mode: dbData.quiz_mode ?? "custom",
+    quiz_mode: normalizeQuizMode(dbData.quiz_mode ?? "custom"),
     quiz_url: dbData.quiz_url ?? "#popup:marquiz_685a59bddc273b0019e372cd",
     working_hours: {
       monday_friday: dbData.working_hours?.monday_friday ?? "9:00 - 18:00",
@@ -170,10 +172,51 @@ export async function getSettings(): Promise<any> {
   }
 }
 
-export async function updateSettings(newSettings: Partial<SiteSettings>): Promise<SiteSettings | null> {
-  if (!supabase) {
-    console.error("Supabase not configured - settings update aborted (non-persistent mode)")
+async function updateSettingsInCms(newSettings: Partial<SiteSettings>): Promise<SiteSettings | null> {
+  try {
+    const path = getCmsStoragePath("site-settings.json")
+    let existing: Record<string, unknown> = {}
+    if (existsSync(path)) {
+      existing = await readCmsJson<Record<string, unknown>>("site-settings.json")
+    }
+
+    const merged: Record<string, unknown> = {
+      ...existing,
+    }
+
+    if (newSettings.siteName !== undefined) merged.sitename = newSettings.siteName
+    if (newSettings.siteDescription !== undefined) merged.sitedescription = newSettings.siteDescription
+    if (newSettings.phone !== undefined) merged.phone = newSettings.phone
+    if (newSettings.email !== undefined) merged.email = newSettings.email
+    if (newSettings.address !== undefined) merged.address = newSettings.address
+    if (newSettings.telegram !== undefined) merged.telegram = newSettings.telegram
+    if (newSettings.vk !== undefined) merged.vk = newSettings.vk
+    if (newSettings.maintenanceMode !== undefined) merged.maintenance_mode = newSettings.maintenanceMode
+    if (newSettings.analyticsEnabled !== undefined) merged.analytics_enabled = newSettings.analyticsEnabled
+    if (newSettings.quiz_mode !== undefined) merged.quiz_mode = newSettings.quiz_mode
+    if (newSettings.quiz_url !== undefined) merged.quiz_url = newSettings.quiz_url
+    if (newSettings.working_hours !== undefined) merged.working_hours = newSettings.working_hours
+    if (newSettings.logoType !== undefined) merged.logo_type = newSettings.logoType
+    if (newSettings.logoImageUrl !== undefined) merged.logo_image_url = newSettings.logoImageUrl
+    if (newSettings.logoText !== undefined) merged.logo_text = newSettings.logoText
+    if (newSettings.logoShow !== undefined) merged.logo_show = newSettings.logoShow
+
+    await writeCmsJson("site-settings.json", merged)
+    return mapDatabaseToSettings(merged)
+  } catch (error) {
+    console.error("Failed to update CMS settings:", error)
     return null
+  }
+}
+
+export async function updateSettings(newSettings: Partial<SiteSettings>): Promise<SiteSettings | null> {
+  const cmsUpdated = await updateSettingsInCms(newSettings)
+  if (cmsUpdated) {
+    console.log("Settings saved to CMS storage")
+  }
+
+  if (!supabase) {
+    return cmsUpdated
   }
 
   try {
@@ -228,20 +271,20 @@ export async function updateSettings(newSettings: Partial<SiteSettings>): Promis
         
         if (insertError) {
           console.error("Error inserting settings in Supabase:", insertError);
-          return null;
+          return cmsUpdated;
         }
         
         console.log("Settings inserted successfully:", insertData);
-        return insertData?.[0] ? mapDatabaseToSettings(insertData[0]) : null;
+        return insertData?.[0] ? mapDatabaseToSettings(insertData[0]) : cmsUpdated;
       }
       
-      return null;
+      return cmsUpdated;
     }
     
     console.log("Settings updated successfully:", updateData);
-    return updateData?.[0] ? mapDatabaseToSettings(updateData[0]) : null;
+    return updateData?.[0] ? mapDatabaseToSettings(updateData[0]) : cmsUpdated;
   } catch (error) {
     console.error("Exception while updating settings:", error);
-    return null;
+    return cmsUpdated;
   }
 }

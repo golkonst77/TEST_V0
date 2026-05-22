@@ -8,8 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Save } from "lucide-react"
-import { useState, useEffect } from "react"
+import { quizModeFromStorageValue } from "@/lib/quiz-mode"
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState({
@@ -39,7 +38,7 @@ export default function AdminSettingsPage() {
           siteDescription: data.sitedescription || "",
           maintenanceMode: data.maintenancemode ?? false,
           analyticsEnabled: data.analyticsenabled ?? true,
-          quiz_mode: data.quiz_mode || "custom",
+          quiz_mode: quizModeFromStorageValue(data.quiz_mode),
           quiz_url: data.quiz_url || "",
           adminEmail: data.admin_email || "admin@prostoburo.com"
         })
@@ -161,12 +160,20 @@ export default function AdminSettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white z-50">
-                  <SelectItem value="custom">Собственный</SelectItem>
-                  <SelectItem value="external">Внешний сервис</SelectItem>
-                  <SelectItem value="disabled">Отключен</SelectItem>
+                  <SelectItem value="custom">Собственный квиз</SelectItem>
+                  <SelectItem value="default">Стандартный квиз (Marquiz)</SelectItem>
+                  <SelectItem value="disabled">Отключить квиз и показывать форму</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-gray-600 mt-1">
+                {settings.quiz_mode === "disabled"
+                  ? "Все кнопки, которые открывали квиз, будут открывать простую форму заявки."
+                  : settings.quiz_mode === "default"
+                    ? "CTA открывают внешний квиз Marquiz по указанному URL."
+                    : "CTA открывают встроенный квиз на сайте."}
+              </p>
             </div>
+            {settings.quiz_mode === "default" ? (
             <div>
               <Label htmlFor="quiz_url" className="text-sm">URL квиза</Label>
               <Input
@@ -177,6 +184,7 @@ export default function AdminSettingsPage() {
                 className="h-8 text-sm mt-1"
               />
             </div>
+            ) : null}
           </CardContent>
         </Card>
 

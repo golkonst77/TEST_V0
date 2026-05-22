@@ -3,13 +3,7 @@
 import { useState, useEffect } from "react"
 import ReactMarkdown from "react-markdown"
 import { Logo } from "./logo"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog"
+import { VersionInfo } from "./version-info"
 
 const INN = "4027132996"
 const OGRN = "1174027006592"
@@ -129,7 +123,10 @@ export function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col items-start gap-3 border-t border-stone-200/80 pt-6 text-xs text-stone-500 md:flex-row md:items-center md:justify-between">
-          <p>&copy; 2026 ПростоБюро</p>
+          <div className="space-y-1">
+            <p>&copy; 2026 ПростоБюро</p>
+            <VersionInfo inline showDate={false} className="text-stone-400" />
+          </div>
           <p>
             Сайт разработан{" "}
             <span className="font-medium text-stone-600">GØL Design Studio</span>
