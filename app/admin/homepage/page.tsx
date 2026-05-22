@@ -551,10 +551,11 @@ export default function HomepageEditor() {
                 </div>
                 <div>
                   <Label className="text-sm">Отступ слева: {config.layout.marginLeft}px</Label>
+                  <p className="text-xs text-gray-500 mt-0.5">Сдвигает весь текст hero (заголовок, кнопку, карточки) вправо</p>
                   <Slider
                     value={[config.layout.marginLeft]}
                     onValueChange={([value]) => updateConfig("layout.marginLeft", value)}
-                    max={200}
+                    max={400}
                     step={10}
                     className="mt-2"
                   />

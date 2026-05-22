@@ -125,24 +125,51 @@ export function Hero() {
     )
   }
 
+  const layout = config.layout ?? {
+    alignment: "left",
+    maxWidth: "max-w-4xl",
+    marginLeft: 0,
+    marginTop: 0,
+    marginBottom: 0,
+    paddingX: 0,
+  }
+
+  const alignment = layout.alignment === "center" || layout.alignment === "right" ? layout.alignment : "left"
+  const rowJustifyClass =
+    alignment === "center" ? "justify-center" : alignment === "right" ? "justify-end" : "justify-start"
+  const textAlignClass =
+    alignment === "center" ? "text-center" : alignment === "right" ? "text-right" : "text-left"
+  const overlayOpacity = Math.min(100, Math.max(0, config.background?.overlay ?? 0)) / 100
+  const contentOffset = Math.max(0, layout.marginLeft || layout.paddingX || 0)
+
   return (
     <section 
-      className="relative min-h-[600px] md:min-h-screen flex items-center justify-center px-4 md:px-8 overflow-hidden"
+      className="relative min-h-[600px] md:min-h-screen flex items-center px-4 md:px-8 overflow-hidden"
       style={{
         backgroundImage: `url(${bgImageUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundColor: '#f3f4f6', // Fallback цвет
+        backgroundColor: '#f3f4f6',
+        paddingTop: layout.marginTop,
+        paddingBottom: layout.marginBottom,
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-white/0 z-10" />
-      <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-8 md:py-12">
-        <div className="relative z-10 w-full flex justify-start">
-          <div className="w-full max-w-none md:max-w-4xl text-left px-4">
+      {overlayOpacity > 0 ? (
+        <div
+          className="absolute inset-0 z-10"
+          style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity})` }}
+        />
+      ) : null}
+      <div
+        className={`relative z-20 flex w-full py-8 md:py-12 ${rowJustifyClass}`}
+        style={contentOffset > 0 ? { paddingLeft: contentOffset } : undefined}
+      >
+        <div className={`w-full ${layout.maxWidth || "max-w-4xl"} ${textAlignClass}`}>
             {/* Badge */}
             {config.badge.show && (
-              <div className="mb-4 md:mb-6">
+              <div className={`mb-4 md:mb-6 ${alignment === "center" ? "flex justify-center" : alignment === "right" ? "flex justify-end" : ""}`}>
                 <Badge 
                   variant="secondary" 
                   className="px-3 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium bg-sky-200 text-sky-700 border-sky-300 shadow-md hover:bg-sky-300 hover:border-sky-400"
@@ -153,23 +180,23 @@ export function Hero() {
             )}
 
             {/* Title */}
-            <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 md:mb-6 leading-tight text-white text-left">
+            <h1 className={`text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 md:mb-6 leading-tight text-white ${textAlignClass}`}>
               {config.title.text}{" "}
               {config.title.highlightText ? <span className="text-blue-400">{config.title.highlightText}</span> : null}
             </h1>
 
             {/* Description */}
-            <p className="text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed text-gray-800 font-medium w-full max-w-none md:max-w-2xl text-left">
+            <p className={`text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed text-gray-800 font-medium w-full max-w-none md:max-w-2xl ${textAlignClass} ${alignment === "center" ? "mx-auto" : alignment === "right" ? "ml-auto" : ""}`}>
               {config.description}
             </p>
 
             {/* CTA Button */}
             {config.button.show && (
-              <div className="mb-8 md:mb-12 text-left">
+              <div className={`mb-8 md:mb-12 ${textAlignClass}`}>
                 <Button 
                   size="lg" 
                   onClick={handleCruiseClick}
-                  className="relative overflow-hidden w-full sm:w-auto justify-center text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-base md:text-lg px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 border-2 border-blue-500 hover:border-blue-400"
+                  className={`relative overflow-hidden w-full sm:w-auto justify-center text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-base md:text-lg px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 border-2 border-blue-500 hover:border-blue-400 ${alignment === "center" ? "mx-auto flex" : alignment === "right" ? "ml-auto flex" : ""}`}
                   style={{
                     boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
                   }}
@@ -180,8 +207,8 @@ export function Hero() {
             )}
 
             {/* Features */}
-            <div className="w-full mt-8 md:mt-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full max-w-none md:max-w-6xl text-left">
+            <div className={`w-full mt-8 md:mt-12 ${textAlignClass}`}>
+              <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full max-w-none md:max-w-6xl ${textAlignClass}`}>
                 {config.features.filter(feature => feature.show).map((feature, idx) => {
                   const bgVariants = [
                     'bg-[#FFF8F0]', // самая светлая
@@ -192,7 +219,7 @@ export function Hero() {
                   return (
                     <div
                       key={feature.id}
-                      className={`${cardBg} rounded-xl shadow-md p-4 md:p-6 w-full flex flex-col justify-start text-left`}
+                      className={`${cardBg} rounded-xl shadow-md p-4 md:p-6 w-full flex flex-col justify-start ${textAlignClass}`}
                     >
                       <div>
                         <AnimatedContent direction="vertical" distance={40} duration={0.7} ease="power3.out" threshold={0.2} animateOpacity={true} initialOpacity={0}>
@@ -202,14 +229,13 @@ export function Hero() {
                             {feature.title}
                           </div>
                         </AnimatedContent>
-                        <div className="text-gray-700 text-xs md:text-sm mb-2 text-left">{feature.description}</div>
+                        <div className={`text-gray-700 text-xs md:text-sm mb-2 ${textAlignClass}`}>{feature.description}</div>
                       </div>
                     </div>
                   )
                 })}
               </div>
             </div>
-          </div>
         </div>
       </div>
     </section>

@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState, useEffect } from "react"
+import { Save } from "lucide-react"
 import { quizModeFromStorageValue } from "@/lib/quiz-mode"
 
 export default function AdminSettingsPage() {
@@ -70,7 +72,15 @@ export default function AdminSettingsPage() {
       if (response.ok) {
         setMessage("Настройки сохранены")
         if (data.settings) {
-          setSettings(data.settings)
+          setSettings({
+            siteName: data.settings.siteName || data.settings.sitename || "",
+            siteDescription: data.settings.siteDescription || data.settings.sitedescription || "",
+            maintenanceMode: data.settings.maintenanceMode ?? data.settings.maintenancemode ?? false,
+            analyticsEnabled: data.settings.analyticsEnabled ?? data.settings.analyticsenabled ?? true,
+            quiz_mode: quizModeFromStorageValue(data.settings.quiz_mode),
+            quiz_url: data.settings.quiz_url || "",
+            adminEmail: data.settings.admin_email || data.settings.adminEmail || "admin@prostoburo.com",
+          })
         }
       } else {
         setMessage("Не удалось сохранить настройки")
