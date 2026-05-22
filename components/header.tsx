@@ -47,7 +47,7 @@ interface HeaderMenuItem {
 }
 
 export const Header = () => {
-  const { handleCruiseClick, modalOpen, setModalOpen, quizUrl } = useCruiseClick()
+  const { handleCruiseClick } = useCruiseClick()
   const [authOpen, setAuthOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)

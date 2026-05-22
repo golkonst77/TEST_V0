@@ -118,6 +118,28 @@ function withHeaderLogo(settings: SiteSettings) {
   }
 }
 
+async function applyCmsSettingsOverlay(settings: SiteSettings): Promise<SiteSettings> {
+  try {
+    const path = getCmsStoragePath("site-settings.json")
+    if (!existsSync(path)) return settings
+
+    const cms = await readCmsJson<Record<string, unknown>>("site-settings.json")
+    const overlaid: SiteSettings = { ...settings }
+
+    if (cms.quiz_mode !== undefined && cms.quiz_mode !== null) {
+      overlaid.quiz_mode = normalizeQuizMode(String(cms.quiz_mode))
+    }
+    if (cms.quiz_url !== undefined && cms.quiz_url !== null) {
+      overlaid.quiz_url = String(cms.quiz_url)
+    }
+
+    return overlaid
+  } catch (error) {
+    console.warn("CMS settings overlay failed:", error)
+    return settings
+  }
+}
+
 async function getSettingsFallback() {
   try {
     const path = getCmsStoragePath("site-settings.json")
@@ -158,7 +180,8 @@ export async function getSettings(): Promise<any> {
     }
 
     console.log("Settings fetched successfully from Supabase:", data)
-    return withHeaderLogo(mapDatabaseToSettings(data))
+    const settings = await applyCmsSettingsOverlay(mapDatabaseToSettings(data))
+    return withHeaderLogo(settings)
   } catch (error) {
     console.error("Exception while fetching settings:", error)
     if (error instanceof Error) {
@@ -200,9 +223,14 @@ async function updateSettingsInCms(newSettings: Partial<SiteSettings>): Promise<
     if (newSettings.logoImageUrl !== undefined) merged.logo_image_url = newSettings.logoImageUrl
     if (newSettings.logoText !== undefined) merged.logo_text = newSettings.logoText
     if (newSettings.logoShow !== undefined) merged.logo_show = newSettings.logoShow
+    if ((newSettings as Record<string, unknown>).admin_email !== undefined) {
+      merged.admin_email = (newSettings as Record<string, unknown>).admin_email
+    }
 
     await writeCmsJson("site-settings.json", merged)
-    return mapDatabaseToSettings(merged)
+    const saved = mapDatabaseToSettings(merged)
+    localSettings = { ...localSettings, ...saved }
+    return saved
   } catch (error) {
     console.error("Failed to update CMS settings:", error)
     return null
@@ -275,14 +303,14 @@ export async function updateSettings(newSettings: Partial<SiteSettings>): Promis
         }
         
         console.log("Settings inserted successfully:", insertData);
-        return insertData?.[0] ? mapDatabaseToSettings(insertData[0]) : cmsUpdated;
+        return cmsUpdated ?? (insertData?.[0] ? mapDatabaseToSettings(insertData[0]) : null);
       }
       
       return cmsUpdated;
     }
     
     console.log("Settings updated successfully:", updateData);
-    return updateData?.[0] ? mapDatabaseToSettings(updateData[0]) : cmsUpdated;
+    return cmsUpdated ?? (updateData?.[0] ? mapDatabaseToSettings(updateData[0]) : null);
   } catch (error) {
     console.error("Exception while updating settings:", error);
     return cmsUpdated;

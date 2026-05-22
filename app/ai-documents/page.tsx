@@ -1,14 +1,14 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Brain, Zap, Shield, Clock, CheckCircle, FileText, Database, Cloud } from "lucide-react"
 import Link from "next/link"
-import { QuizModal } from "@/components/quiz-modal"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 
 export default function AIDocumentsPage() {
-  const [quizOpen, setQuizOpen] = useState(false)
+  const { handleCruiseClick } = useCruiseClick()
   const features = [
     {
       icon: Brain,
@@ -216,15 +216,13 @@ export default function AIDocumentsPage() {
                          <Button 
                size="lg" 
                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold"
-               onClick={() => setQuizOpen(true)}
+               onClick={handleCruiseClick}
              >
                Получить скидку
              </Button>
           </div>
                  </div>
        </div>
-       
-       <QuizModal open={quizOpen} onOpenChange={setQuizOpen} />
      </div>
    )
  }

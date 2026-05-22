@@ -2,18 +2,25 @@
 
 import { useContactForm } from "./use-contact-form"
 import { normalizeQuizMode } from "@/lib/quiz-mode"
-import { useState } from "react"
+
+function readQuizMode(settings: Record<string, unknown>): ReturnType<typeof normalizeQuizMode> {
+  const raw = settings.quiz_mode ?? settings.quizMode
+  return normalizeQuizMode(typeof raw === "string" ? raw : null)
+}
 
 export const useCruiseClick = () => {
-  const { openQuiz, openSimpleForm } = useContactForm()
-  const [modalOpen, setModalOpen] = useState(false)
-  const [quizUrl, setQuizUrl] = useState<string | null>(null)
+  const { openQuiz, openSimpleForm, openMarquiz } = useContactForm()
 
   const handleCruiseClick = async () => {
     try {
       const res = await fetch("/api/settings", { cache: "no-store" })
-      const settings = await res.json()
-      const mode = normalizeQuizMode(settings.quiz_mode)
+      if (!res.ok) {
+        console.error("Failed to load settings for CTA:", res.status)
+        return
+      }
+
+      const settings = (await res.json()) as Record<string, unknown>
+      const mode = readQuizMode(settings)
 
       if (mode === "disabled") {
         openSimpleForm()
@@ -25,22 +32,22 @@ export const useCruiseClick = () => {
         return
       }
 
-      if (settings.quiz_url) {
-        let url = settings.quiz_url
+      const quizUrl = typeof settings.quiz_url === "string" ? settings.quiz_url : ""
+      if (quizUrl) {
+        let url = quizUrl
         if (url.startsWith("#popup:marquiz_")) {
           const quizId = url.split("_")[1]
           url = `https://quiz.marquiz.ru/${quizId}`
         }
-        setQuizUrl(url)
-        setModalOpen(true)
+        openMarquiz(url)
         return
       }
 
       openQuiz()
-    } catch {
-      openQuiz()
+    } catch (error) {
+      console.error("CTA settings error:", error)
     }
   }
 
-  return { handleCruiseClick, modalOpen, setModalOpen, quizUrl }
+  return { handleCruiseClick }
 }

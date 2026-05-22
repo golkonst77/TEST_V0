@@ -36,13 +36,13 @@ export default function AdminSettingsPage() {
       if (response.ok) {
         const data = await response.json()
         setSettings({
-          siteName: data.sitename || "",
-          siteDescription: data.sitedescription || "",
-          maintenanceMode: data.maintenancemode ?? false,
-          analyticsEnabled: data.analyticsenabled ?? true,
+          siteName: data.siteName || data.sitename || "",
+          siteDescription: data.siteDescription || data.sitedescription || "",
+          maintenanceMode: data.maintenanceMode ?? data.maintenancemode ?? data.maintenance_mode ?? false,
+          analyticsEnabled: data.analyticsEnabled ?? data.analyticsenabled ?? data.analytics_enabled ?? true,
           quiz_mode: quizModeFromStorageValue(data.quiz_mode),
           quiz_url: data.quiz_url || "",
-          adminEmail: data.admin_email || "admin@prostoburo.com"
+          adminEmail: data.admin_email || data.adminEmail || "admin@prostoburo.com",
         })
         setMessage("Настройки загружены")
       } else {

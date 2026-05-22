@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, ArrowRight } from "lucide-react"
-import { QuizModal } from "@/components/quiz-modal"
+import { useCruiseClick } from "@/hooks/use-cruise-click"
 import { useEffect, useState } from "react"
 
 interface PricingPlan {
@@ -120,7 +120,7 @@ function planButtonClassName(popular: boolean) {
 }
 
 export function PricingSection() {
-  const [quizOpen, setQuizOpen] = useState(false)
+  const { handleCruiseClick } = useCruiseClick()
   const [ipPlans, setIpPlans] = useState<PricingPlan[]>([])
   const [oooPlans, setOooPlans] = useState<PricingPlan[]>([])
 
@@ -226,7 +226,7 @@ export function PricingSection() {
           type="button"
           variant="ghost"
           className={planButtonClassName(plan.popular)}
-          onClick={() => setQuizOpen(true)}
+          onClick={handleCruiseClick}
         >
           Обсудить тариф
           <ArrowRight className="ml-1.5 h-4 w-4 opacity-70" />
@@ -311,7 +311,6 @@ export function PricingSection() {
           </div>
         </div>
 
-        <QuizModal open={quizOpen} onOpenChange={setQuizOpen} />
       </div>
     </section>
   )
