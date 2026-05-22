@@ -190,6 +190,9 @@ export default function AdminMediaPage() {
                         src={file.url || "/placeholder.svg"}
                         alt={file.name}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/placeholder.svg"
+                        }}
                       />
                     </div>
                     <CardContent className="p-3">

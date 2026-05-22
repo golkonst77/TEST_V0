@@ -110,6 +110,34 @@ for FILE in "homepage.json" "homepage-sections.json" "pricing-admin.json" "calcu
     echo "[WARNING] No source file found for $FILE (will rely on API writes)"
 done
 
+# Постоянное хранилище медиафайлов вне git-репозитория
+UPLOADS_DIR="${UPLOADS_DIR:-$CMS_STORAGE_DIR/uploads}"
+echo "[INFO] Using uploads dir: $UPLOADS_DIR"
+mkdir -p "$UPLOADS_DIR"
+export UPLOADS_DIR
+
+if [ -f ".env.local" ]; then
+    if grep -q "^UPLOADS_DIR=" ".env.local"; then
+        sed -i "s|^UPLOADS_DIR=.*|UPLOADS_DIR=$UPLOADS_DIR|g" ".env.local"
+    else
+        echo "UPLOADS_DIR=$UPLOADS_DIR" >> .env.local
+    fi
+    echo "[INFO] UPLOADS_DIR is set in .env.local"
+fi
+
+echo "[INFO] Migrating existing uploads into persistent storage..."
+if [ -d "$PROJECT_PATH/public/uploads" ]; then
+    shopt -s nullglob
+    for UPLOAD_FILE in "$PROJECT_PATH/public/uploads"/*; do
+        TARGET_UPLOAD="$UPLOADS_DIR/$(basename "$UPLOAD_FILE")"
+        if [ ! -f "$TARGET_UPLOAD" ]; then
+            cp "$UPLOAD_FILE" "$TARGET_UPLOAD"
+            echo "[INFO] Copied upload: $UPLOAD_FILE -> $TARGET_UPLOAD"
+        fi
+    done
+    shopt -u nullglob
+fi
+
 # Установка зависимостей
 echo "[INFO] Installing dependencies..."
 npm install --production=false

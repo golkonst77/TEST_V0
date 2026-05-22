@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { writeFile, mkdir } from "fs/promises"
+import { writeFile } from "fs/promises"
 import { join } from "path"
+import { ensureUploadsDir, getUploadPublicUrl } from "@/lib/uploads-storage"
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,25 +31,14 @@ export async function POST(request: NextRequest) {
     const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_")
     const fileName = `${timestamp}_${originalName}`
 
-    // Путь к папке uploads
-    const uploadsDir = join(process.cwd(), "public", "uploads")
-    
-    // Создаем папку uploads, если её нет
-    try {
-      await mkdir(uploadsDir, { recursive: true })
-    } catch (error) {
-      console.error("Ошибка создания папки uploads:", error)
-    }
-
-    // Путь к файлу
+    const uploadsDir = await ensureUploadsDir()
     const filePath = join(uploadsDir, fileName)
 
     try {
       // Сохраняем файл локально
       await writeFile(filePath, buffer)
       
-      // Возвращаем URL для доступа к файлу
-      const fileUrl = `/uploads/${fileName}`
+      const fileUrl = getUploadPublicUrl(fileName)
 
       return NextResponse.json({
         success: true,

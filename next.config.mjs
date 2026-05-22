@@ -38,6 +38,14 @@ const nextConfig = {
   env: {
     NEXT_FONT_GOOGLE_TIMEOUT: '10000', // Увеличиваем таймаут до 10 секунд
   },
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: '/api/uploads/:path*',
+      },
+    ]
+  },
   // Настройки webpack для production
   webpack: (config, { isServer }) => {
     if (!isServer) {

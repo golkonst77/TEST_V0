@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "fs"
 import { join } from "path"
 import { getCmsFileMeta, readCmsJsonStrict, writeCmsJson } from "@/lib/cms-storage"
+import { extractUploadFileName, uploadFileExists } from "@/lib/uploads-storage"
 
 // Хранилище настроек главной страницы
 interface HeroConfig {
@@ -125,6 +126,18 @@ export async function saveHeroConfig(config: HeroConfig) {
   if (!isValidHomepageConfig(config)) {
     throw new Error("Invalid homepage config payload")
   }
+
+  const imageUrl = config.background?.image?.trim()
+  if (imageUrl) {
+    const fileName = extractUploadFileName(imageUrl)
+    if (fileName) {
+      const exists = await uploadFileExists(fileName)
+      if (!exists) {
+        throw new Error(`Файл фона не найден на сервере: ${imageUrl}`)
+      }
+    }
+  }
+
   const writeResult = await writeCmsJson(HOMEPAGE_CONFIG_FILE, config)
   const meta = await getCmsFileMeta(HOMEPAGE_CONFIG_FILE)
   return {

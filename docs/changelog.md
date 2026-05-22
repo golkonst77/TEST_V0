@@ -5,6 +5,25 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и проект следует [Semantic Versioning](https://semver.org/lang/ru/).
 
+## [2.4.6] - 2026-05-22 - Автоматическое обновление версии
+
+### Изменено
+- Автоматическое обновление версии до 2.4.6
+- Обновлен package.json
+
+## [2.4.5] - 2026-05-22 - Persistent storage для медиафайлов и фона hero
+
+### Исправлено
+- Медиафайлы и фон главной страницы теперь сохраняются в persistent storage (`CMS_STORAGE_DIR/uploads`), а не только в `public/uploads` внутри git-репозитория
+- Добавлен API `/api/uploads/*` и rewrite `/uploads/*` для надёжной раздачи файлов на production
+- Исправлен autosave фона hero после загрузки (устранён stale closure в `handleImageUpload`)
+- При сохранении hero проверяется, что локальный файл фона реально существует на сервере
+- В редакторе главной страницы добавлена кнопка «Выбрать из медиафайлов» и предупреждение, если файл не найден
+
+### Изменено
+- `deploy-server.sh`: миграция существующих uploads в persistent storage, переменная `UPLOADS_DIR`
+- `app/admin/homepage/page.tsx`: media picker, улучшенный preview фона
+
 ## [2.4.4] - 2026-05-19 - Автоматическое обновление версии
 
 ### Изменено

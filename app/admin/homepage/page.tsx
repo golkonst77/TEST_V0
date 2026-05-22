@@ -12,7 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
-import { Save, Eye, Upload, Image, Trash2 } from "lucide-react"
+import { Save, Eye, Upload, Image, Trash2, Images } from "lucide-react"
+import { MediaPickerDialog } from "@/components/admin/media-picker-dialog"
 
 interface HeroConfig {
   badge: {
@@ -57,6 +58,8 @@ export default function HomepageEditor() {
   const [uploadingImage, setUploadingImage] = useState(false)
   const [lastSaved, setLastSaved] = useState<string>("")
   const [imageKey, setImageKey] = useState(0)
+  const [imageLoadError, setImageLoadError] = useState(false)
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -93,23 +96,16 @@ export default function HomepageEditor() {
     }
   }
 
-  const saveConfig = async () => {
-    if (!config) return
-
+  const persistConfig = async (nextConfig: HeroConfig, successMessage = "Настройки главной страницы сохранены") => {
     setSaving(true)
     try {
-      console.log("SENDING FULL CONFIG", config)
-      console.log("SENDING FEATURES", config.features)
-      console.log("SAVE PAYLOAD", JSON.stringify({ hero: config }, null, 2))
-
       const response = await fetch("/api/admin/homepage", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hero: config }),
+        body: JSON.stringify({ hero: nextConfig }),
       })
 
       const data = await response.json().catch(() => null)
-      console.log("API RESPONSE", data)
 
       if (!response.ok) {
         toast({
@@ -117,23 +113,16 @@ export default function HomepageEditor() {
           description: data?.message || "Не удалось сохранить настройки",
           variant: "destructive",
         })
-        return
+        return false
       }
 
       setLastSaved(new Date().toLocaleTimeString())
       if (data?.hero) setConfig(data.hero)
       toast({
         title: "Сохранено",
-        description: "Настройки главной страницы сохранены",
+        description: successMessage,
       })
-
-      try {
-        const publicRes = await fetch(`/api/homepage?afterSave=${Date.now()}`, { cache: "no-store" })
-        const publicData = await publicRes.json().catch(() => null)
-        console.log("PUBLIC API AFTER SAVE", publicData)
-      } catch (e) {
-        console.error("PUBLIC API AFTER SAVE (fetch failed)", e)
-      }
+      return true
     } catch (error) {
       console.error("Ошибка при сохранении:", error)
       toast({
@@ -141,8 +130,34 @@ export default function HomepageEditor() {
         description: "Не удалось сохранить настройки",
         variant: "destructive",
       })
+      return false
     } finally {
       setSaving(false)
+    }
+  }
+
+  const saveConfig = async () => {
+    if (!config) return
+    await persistConfig(config)
+  }
+
+  const applyBackgroundImage = async (url: string, autoSave = false) => {
+    if (!config) return
+
+    const nextConfig: HeroConfig = {
+      ...config,
+      background: {
+        ...config.background,
+        image: url,
+      },
+    }
+
+    setConfig(nextConfig)
+    setImageLoadError(false)
+    setImageKey((prev) => prev + 1)
+
+    if (autoSave) {
+      await persistConfig(nextConfig, "Фоновое изображение сохранено")
     }
   }
 
@@ -179,12 +194,13 @@ export default function HomepageEditor() {
   }
 
   const handleImageUpload = async (file: File) => {
+    if (!config) return
+
     setUploadingImage(true)
     const formData = new FormData()
     formData.append('file', file)
 
     try {
-      console.log("Homepage: Uploading background image:", file.name)
       const response = await fetch('/api/admin/upload', {
         method: 'POST',
         body: formData,
@@ -192,79 +208,13 @@ export default function HomepageEditor() {
 
       if (response.ok) {
         const data = await response.json()
-        console.log("Homepage: Upload result:", data)
-        
-        // Обновляем состояние с новым URL изображения
-        updateConfig("background.image", data.url)
-        
-        // Принудительно обновляем состояние для отображения
-        setConfig(prev => prev ? {
-          ...prev,
-          background: {
-            ...prev.background,
-            image: data.url
-          }
-        } : prev)
-        
-        // Принудительно обновляем изображение
-        setImageKey(prev => prev + 1)
-        
         toast({
           title: "Изображение загружено!",
           description: "Фоновое изображение успешно загружено",
         })
-        
-        // Автосохранение через 500мс
-        setTimeout(async () => {
-          try {
-            // Проверяем что config загружен
-            if (!config) {
-              console.log("Homepage: Skipping auto-save, config not loaded yet")
-              return
-            }
-            
-            const saveResponse = await fetch("/api/admin/homepage", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ 
-                hero: {
-                  ...config,
-                  background: {
-                    ...config.background,
-                    image: data.url
-                  }
-                }
-              }),
-            })
-            
-            if (saveResponse.ok) {
-              setLastSaved(new Date().toLocaleTimeString())
-              console.log("Homepage: Auto-saved after image upload")
-              toast({
-                title: "Успешно",
-                description: "Изображение сохранено",
-              })
-            } else {
-              const errorData = await saveResponse.json()
-              toast({
-                title: "Ошибка",
-                description: errorData.message || "Ошибка сохранения файла",
-                variant: "destructive",
-              })
-            }
-          } catch (error) {
-            console.error("Homepage: Auto-save failed:", error)
-            toast({
-              title: "Ошибка",
-              description: "Ошибка сохранения файла",
-              variant: "destructive",
-            })
-          }
-        }, 500)
-        
+        await applyBackgroundImage(data.url, true)
       } else {
         const errorData = await response.json()
-        console.error("Homepage: Upload error:", errorData)
         toast({
           title: "Ошибка",
           description: errorData.error || "Ошибка при загрузке изображения",
@@ -486,24 +436,40 @@ export default function HomepageEditor() {
                         <div className="flex-1">
                           <p className="text-sm font-medium text-gray-900">Текущее изображение</p>
                           <p className="text-xs text-gray-500">{config.background.image}</p>
+                          {imageLoadError && (
+                            <p className="text-xs text-red-600 mt-1">
+                              Файл не найден на сервере. Выберите изображение из медиафайлов или загрузите новое.
+                            </p>
+                          )}
                         </div>
-                        <img 
-                          src={`${config.background.image}?v=${imageKey}`} 
-                          alt="Фон" 
-                          className="h-16 w-24 object-cover rounded border"
-                          key={`${config.background.image}-${imageKey}`}
-                        />
+                        {!imageLoadError ? (
+                          <img 
+                            src={`${config.background.image}?v=${imageKey}`} 
+                            alt="Фон" 
+                            className="h-16 w-24 object-cover rounded border"
+                            key={`${config.background.image}-${imageKey}`}
+                            onError={() => setImageLoadError(true)}
+                            onLoad={() => setImageLoadError(false)}
+                          />
+                        ) : (
+                          <div className="h-16 w-24 rounded border border-dashed border-red-300 bg-red-50 flex items-center justify-center text-[10px] text-red-600 text-center px-1">
+                            Нет файла
+                          </div>
+                        )}
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => updateConfig("background.image", "")}
+                          onClick={() => {
+                            updateConfig("background.image", "")
+                            setImageLoadError(false)
+                          }}
                           className="h-8 w-8 p-0 text-red-500"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     )}
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
@@ -513,6 +479,15 @@ export default function HomepageEditor() {
                       >
                         <Upload className="h-4 w-4" />
                         <span>{uploadingImage ? "Загрузка..." : "Загрузить изображение"}</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setMediaPickerOpen(true)}
+                        className="flex items-center space-x-2"
+                      >
+                        <Images className="h-4 w-4" />
+                        <span>Выбрать из медиафайлов</span>
                       </Button>
                       <input
                         id="background-upload"
@@ -609,6 +584,15 @@ export default function HomepageEditor() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <MediaPickerDialog
+        open={mediaPickerOpen}
+        onOpenChange={setMediaPickerOpen}
+        selectedUrl={config?.background.image}
+        onSelect={(url) => {
+          void applyBackgroundImage(url, true)
+        }}
+      />
     </AdminLayout>
   )
 }

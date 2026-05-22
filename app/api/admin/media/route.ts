@@ -2,10 +2,11 @@ import { NextResponse } from "next/server"
 import { readdir, stat } from "fs/promises"
 import { join } from "path"
 import { existsSync } from "fs"
+import { ensureUploadsDir, getUploadPublicUrl, getUploadsDir } from "@/lib/uploads-storage"
 
 export async function GET() {
   try {
-    const uploadsDir = join(process.cwd(), "public", "uploads")
+    const uploadsDir = await ensureUploadsDir()
 
     if (!existsSync(uploadsDir)) {
       return NextResponse.json({ files: [] })
@@ -21,7 +22,7 @@ export async function GET() {
 
         return {
           name: file,
-          url: `/uploads/${file}`,
+          url: getUploadPublicUrl(file),
           size: stats.size,
           uploadDate: stats.birthtime,
           modifiedDate: stats.mtime,
@@ -29,10 +30,12 @@ export async function GET() {
       }),
     )
 
-    // Сортируем по дате загрузки (новые сначала)
     filesWithInfo.sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime())
 
-    return NextResponse.json({ files: filesWithInfo })
+    return NextResponse.json({
+      files: filesWithInfo,
+      uploadsDir: getUploadsDir(),
+    })
   } catch (error) {
     console.error("Ошибка получения медиафайлов:", error)
     return NextResponse.json({ error: "Ошибка сервера" }, { status: 500 })
@@ -47,7 +50,8 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Имя файла не указано" }, { status: 400 })
     }
 
-    const filePath = join(process.cwd(), "public", "uploads", fileName)
+    const uploadsDir = getUploadsDir()
+    const filePath = join(uploadsDir, fileName)
 
     if (!existsSync(filePath)) {
       return NextResponse.json({ error: "Файл не найден" }, { status: 404 })
